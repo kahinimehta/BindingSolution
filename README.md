@@ -6,6 +6,8 @@
 
 *Categorize collections, find cross-project threads, group papers without duplication, plan what to read, and match papers to a project spec — locally, with Claude.*
 
+Paper groups batch your shelf into **10–30 paper reading sets** (split oversized themes, merge small clusters, absorb stragglers) to **minimize standalone** leftovers.
+
 </div>
 
 ---
@@ -54,7 +56,7 @@ Use any view in any order.
 </p>
 
 <p align="center">
-  <img src="docs/screenshots/groups.svg" alt="Groups view with large-type layout, Papers KPI matching Library, set summaries, standalone papers, and drop suggestions" width="1000" />
+  <img src="docs/screenshots/groups.svg" alt="Groups view with large-type layout, 10–30 papers per set, Papers KPI matching Library, set summaries, standalone papers, and drop suggestions" width="1000" />
 </p>
 
 <p align="center">

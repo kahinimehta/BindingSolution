@@ -125,7 +125,7 @@ when a folder has 10–30 papers, and tag clustering across collections); with a
 Claude key the same 10–30 paper schema is filled by the model.
 
 <p align="center">
-  <img src="screenshots/groups.svg" alt="Groups view with large-type layout, Papers KPI matching Library, set summaries, standalone papers, and drop suggestions" width="1000" />
+  <img src="screenshots/groups.svg" alt="Groups view with large-type layout, 10–30 papers per set, Papers KPI matching Library, set summaries, standalone papers, and drop suggestions" width="1000" />
 </p>
 
 ## 5. ↯ Plan your reading — *Strategies*
