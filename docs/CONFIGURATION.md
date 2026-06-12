@@ -90,8 +90,11 @@ To start fresh:
 Long-running work (sync, categorization, spec screening, etc.) runs as background
 jobs. Use the sidebar **Running** dropdown to monitor progress after closing the
 progress window or reloading the page. The dropdown opens upward with an opaque
-background so multiple jobs stay readable. Only stopping the server (e.g.
-Ctrl+C) cancels in-flight jobs. Progress bars are **indeterminate** when a step is one
+background so multiple jobs stay readable. Close the progress popup **✕** to keep
+working — that does not cancel the job. To cancel, open **Running** and click **✕**
+on the active job row (cooperative; may wait for the current API call to finish).
+Stopping the server (Ctrl+C) aborts all jobs immediately. Progress bars are
+**indeterminate** when a step is one
 long operation that cannot be split (single Claude call or PubMed search):
 categorize one project, design a reading plan, discover on PubMed, load demo
 library, and the **analyze** step of **Find connections** and **Group papers**

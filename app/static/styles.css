@@ -247,12 +247,14 @@ a { color: inherit; text-decoration: none; }
 }
 .job-rail-item.done .job-rail-item-fill { background: #7fce9b; }
 .job-rail-item.error .job-rail-item-fill { background: #e07a6d; }
+.job-rail-item.cancelled .job-rail-item-fill { background: #b8a88a; }
 .job-rail-dismiss {
   flex-shrink: 0; width: 66px; height: 66px; padding: 0;
   border: none; border-radius: 18px; background: transparent;
   color: #9fb3a8; font-size: .82rem; line-height: 1; cursor: pointer;
 }
 .job-rail-dismiss:hover { background: rgba(255,255,255,.1); color: #fff; }
+.job-rail-dismiss.job-rail-cancel:hover { background: rgba(224,122,109,.28); color: #ffd4ce; }
 .job-rail-empty {
   font-size: .72rem; color: #8fa89a; padding: 18px 12px; line-height: 1.4;
 }

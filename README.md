@@ -41,7 +41,7 @@ Use any view in any order.
 
 - **Large-type layout** — 3× scaled typography and spacing for ultrawide / high-DPI displays; project cards show full summaries (no inner scroll)
 - **Zotero sync** — Web API or local Zotero 7; bundled demo library; **Sync library** / **Purge library** in the hero toolbar
-- **Running** — sidebar dropdown tracks background jobs (opens upward, opaque over nav); **indeterminate** bars for single-shot Claude steps (reading plans, categorize) and the **analyze** phase of connections/groups; close the progress window or switch views without stopping work
+- **Running** — sidebar dropdown tracks background jobs (opens upward, opaque over nav); **indeterminate** bars for single-shot Claude steps (reading plans, categorize) and the **analyze** phase of connections/groups; close the progress popup to keep working — cancel only via **✕** on a running row here (not the popup)
 - **Active vs excluded** — only folders with 2+ papers are analyzed; empty, single-paper, and unfiled collections are reference-only
 - **Categorize** — discipline, themes, methods, keywords, summary per collection
 - **Connections** — shared threads and suggested groupings across projects; phase-based progress (prepare → analyze → apply)

@@ -140,7 +140,9 @@ def create_app() -> FastAPI:
 
         def work(job: jobs.Job) -> dict:
             job.set_progress(0, 1, f"Categorizing {proj['name']}", indeterminate=True)
+            job.check_cancelled()
             category = analyzer.categorize_project(proj)
+            job.check_cancelled()
             store.set_project_category(key, category)
             job.set_progress(1, 1, "Done")
             return {"key": key, "category": category}
@@ -162,6 +164,7 @@ def create_app() -> FastAPI:
             total = len(projects)
             done = []
             for i, proj in enumerate(projects, start=1):
+                job.check_cancelled()
                 job.set_progress(i, total, f"Categorizing {proj['name']}", indeterminate=True)
                 category = analyzer.categorize_project(proj)
                 store.set_project_category(proj["key"], category)
@@ -189,7 +192,9 @@ def create_app() -> FastAPI:
             scope = f"{len(projects)} active projects"
             job.set_progress(0, steps, f"Preparing {scope}")
             job.set_progress(1, steps, f"Analyzing connections across {scope}", indeterminate=True)
+            job.check_cancelled()
             result = analyzer.find_connections(projects)
+            job.check_cancelled()
             job.set_progress(2, steps, "Applying connections")
             store.set_connections({**result, "generated_at": _now()})
             job.set_progress(steps, steps, "Done")
@@ -226,7 +231,9 @@ def create_app() -> FastAPI:
             )
             job.set_progress(0, steps, f"Preparing {scope}")
             job.set_progress(1, steps, f"Analyzing {scope}", indeterminate=True)
+            job.check_cancelled()
             result = analyzer.find_paper_groups(projects)
+            job.check_cancelled()
             job.set_progress(2, steps, "Applying groups")
             result = finalize_shelf_coverage(result, all_projects)
             store.set_paper_groups({**result, "generated_at": _now()})
@@ -287,7 +294,9 @@ def create_app() -> FastAPI:
 
         def work(job: jobs.Job) -> dict:
             job.set_progress(0, 1, "Designing reading strategy", indeterminate=True)
+            job.check_cancelled()
             result = analyzer.reading_strategy(projects, plan_goal)
+            job.check_cancelled()
             if spec:
                 result = attach_spec_mapping(result, spec)
                 result = attach_reading_schedule(result, projects)
@@ -423,16 +432,30 @@ def create_app() -> FastAPI:
 
             store.update_spec(spec_id, status="analyzing", analysis=existing)
             new_results: dict[str, dict] = {}
-            for i, (project_key, paper) in enumerate(to_screen, start=1):
-                job.set_progress(i - 1, batch_total, f"Screening “{paper['title'][:60]}”")
-                assessment = analyzer.assess_paper(spec_text, paper)
-                screened.add(paper["key"])
-                if assessment.get("relevance") in _RELEVANT:
-                    assessment["project_key"] = project_key
-                    assessment["title"] = paper["title"]
-                    new_results[paper["key"]] = assessment
-                if i % 5 == 0:
+            try:
+                for i, (project_key, paper) in enumerate(to_screen, start=1):
+                    job.check_cancelled()
+                    job.set_progress(i - 1, batch_total, f"Screening “{paper['title'][:60]}”")
+                    assessment = analyzer.assess_paper(spec_text, paper)
+                    screened.add(paper["key"])
+                    if assessment.get("relevance") in _RELEVANT:
+                        assessment["project_key"] = project_key
+                        assessment["title"] = paper["title"]
+                        new_results[paper["key"]] = assessment
+                    if i % 5 == 0:
+                        store.merge_spec_analysis(spec_id, new_results)
+            except jobs.JobCancelled:
+                if new_results:
                     store.merge_spec_analysis(spec_id, new_results)
+                merged_partial = {**existing, **new_results}
+                store.update_spec(
+                    spec_id,
+                    status="analyzed",
+                    analysis=merged_partial,
+                    screened_keys=sorted(screened),
+                    num_screened=len(screened),
+                )
+                raise
             store.merge_spec_analysis(spec_id, new_results)
             merged = {**existing, **new_results}
             store.update_spec(
@@ -468,7 +491,9 @@ def create_app() -> FastAPI:
 
         def work(job: jobs.Job) -> dict:
             job.set_progress(0, 1, "Searching PubMed for new papers", indeterminate=True)
+            job.check_cancelled()
             hits = discover_for_spec(spec, projects, use_mock=use_mock)
+            job.check_cancelled()
             store.update_spec(
                 spec_id,
                 discoveries=hits,
@@ -547,6 +572,18 @@ def create_app() -> FastAPI:
             raise HTTPException(404, "Job not found")
         return job.to_dict()
 
+    @app.post("/api/jobs/{job_id}/cancel")
+    def cancel_job(job_id: str) -> dict:
+        job = jobs.get(job_id)
+        if job is None:
+            raise HTTPException(404, "Job not found")
+        if not jobs.cancel(job_id):
+            raise HTTPException(
+                409,
+                f"Job is already {job.status} and cannot be cancelled.",
+            )
+        return {"id": job_id, "status": "cancelling"}
+
     # ── frontend ─────────────────────────────────────────────────────
     if STATIC_DIR.exists():
         app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
@@ -590,7 +627,9 @@ def _run_demo_sync() -> dict:
 
     def work(job: jobs.Job) -> dict:
         job.set_progress(0, 1, "Loading demo library", indeterminate=True)
+        job.check_cancelled()
         projects = demo_projects()
+        job.check_cancelled()
         store.replace_projects(projects, source="demo")
         job.set_progress(1, 1, "Done")
         return {"num_projects": len(projects), "source": "demo"}
@@ -612,10 +651,12 @@ def _run_zotero_sync() -> dict:
         from .zotero_client import fetch_projects
 
         def progress(cur: int, total: int, msg: str) -> None:
+            job.check_cancelled()
             job.set_progress(cur, total, f"Syncing “{msg}”")
 
         try:
             projects = fetch_projects(settings, progress)
+            job.check_cancelled()
         except Exception as exc:
             raise AnalysisError(f"Zotero sync failed: {exc}") from exc
         store.replace_projects(projects, source=settings.zotero_mode or "zotero")

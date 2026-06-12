@@ -95,10 +95,15 @@ still in the registry. The dropdown is an opaque popover anchored above the
 **Running** tab so concurrent jobs do not overlap nav items.
 
 Closing a progress modal, navigating between views, or reloading the page does
-**not** cancel a job — only stopping the Python process (e.g. Ctrl+C in the
-terminal running `make run`) does. Dismissing a row in **Running** hides it from
-the UI only. Spec screening persists relevant hits incrementally, so partial
-progress survives an interruption.
+**not** cancel a job. The popup **✕** only dismisses the dialog. Cooperative
+cancel is `POST /api/jobs/{id}/cancel`, triggered from **✕** on an active row in
+the sidebar **Running** dropdown (not from the popup). `Job.check_cancelled()`
+is polled between steps in sync loops, spec screening, and before/after long
+Claude calls; mid-request API calls cannot be interrupted. Cancelled jobs get
+status `cancelled`. **✕** on a finished row only hides it from the UI. Stopping
+the Python process (Ctrl+C) still aborts all threads immediately. Spec
+screening persists relevant hits incrementally, so partial progress survives an
+interruption or cancel.
 
 Job progress exposes `current`, `total`, `message`, and `indeterminate`. Steps
 that are a single long API call (or otherwise non-linear) set
@@ -257,6 +262,7 @@ a corrupt file is set aside rather than crashing. No database to run.
 | `POST` | `/api/specs/{id}/discover` | PubMed discovery; papers not in library → job |
 | `GET` | `/api/jobs` | List jobs (`?active=true` for queued/running only) |
 | `GET` | `/api/jobs/{id}` | Poll a background job |
+| `POST` | `/api/jobs/{id}/cancel` | Cooperative cancel (queued/running only) |
 
 Endpoints that return `{"job_id": ...}` are asynchronous — poll `/api/jobs/{id}`
 until `status` is `done` (then read `result`) or `error`.

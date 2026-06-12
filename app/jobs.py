@@ -17,11 +17,15 @@ _lock = threading.Lock()
 _MAX_FINISHED = 50  # keep memory bounded
 
 
+class JobCancelled(Exception):
+    """Raised when a cooperative cancel is requested for a running job."""
+
+
 class Job:
     def __init__(self, kind: str) -> None:
         self.id = uuid.uuid4().hex[:12]
         self.kind = kind
-        self.status = "queued"  # queued | running | done | error
+        self.status = "queued"  # queued | running | done | error | cancelled
         self.progress: dict[str, Any] = {
             "current": 0, "total": 0, "message": "", "indeterminate": False,
         }
@@ -29,6 +33,18 @@ class Job:
         self.error: str | None = None
         self.created_at = time.time()
         self.finished_at: float | None = None
+        self._cancel = threading.Event()
+
+    def request_cancel(self) -> bool:
+        """Request cooperative cancellation. Returns False if already finished."""
+        if self.status in ("done", "error", "cancelled"):
+            return False
+        self._cancel.set()
+        return True
+
+    def check_cancelled(self) -> None:
+        if self._cancel.is_set():
+            raise JobCancelled("Cancelled")
 
     def set_progress(
         self,
@@ -38,6 +54,7 @@ class Job:
         *,
         indeterminate: bool = False,
     ) -> None:
+        self.check_cancelled()
         self.progress = {
             "current": current,
             "total": total,
@@ -90,6 +107,14 @@ def start(kind: str, fn: Callable[[Job], Any]) -> Job:
             job.result = fn(job)
             _finalize_done_progress(job)
             job.status = "done"
+        except JobCancelled:
+            job.error = "Cancelled"
+            job.status = "cancelled"
+            job.progress = {
+                **job.progress,
+                "message": "Cancelled",
+                "indeterminate": False,
+            }
         except Exception as exc:  # surfaced to the UI via job.error
             job.error = str(exc) or exc.__class__.__name__
             job.status = "error"
@@ -103,6 +128,15 @@ def start(kind: str, fn: Callable[[Job], Any]) -> Job:
 def get(job_id: str) -> Job | None:
     with _lock:
         return _registry.get(job_id)
+
+
+def cancel(job_id: str) -> bool:
+    """Request cooperative cancellation for a queued or running job."""
+    with _lock:
+        job = _registry.get(job_id)
+        if job is None:
+            return False
+        return job.request_cancel()
 
 
 def reset_registry() -> None:

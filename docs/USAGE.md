@@ -15,10 +15,13 @@ whether Claude and Zotero are connected.
 **Background jobs:** long tasks (sync, categorize, connections, groups, reading
 plans, spec screening, PubMed discovery) start a server-side job and return
 immediately. You can close the progress window (✕), switch sidebar views, or
-refresh the page — work continues until it finishes. Open **Running** to see
-live progress; click a row to reopen the progress window. Dismissing a row only
-hides it from the list — it does not stop the job. The only way to stop work is
-to interrupt the server process in your terminal (e.g. Ctrl+C on `make run`).
+refresh the page — work continues until it finishes. The progress popup **✕**
+only closes the dialog; it does **not** cancel the job. Open **Running** to see
+live progress; click a row to reopen the progress window. To **cancel** a
+running job, open **Running** and click **✕** on that row (cooperative cancel —
+stops at the next safe step; a long Claude call may finish its current request
+first). **✕** on a finished row removes it from the list. Stopping the server
+(Ctrl+C on `make run`) still cancels everything immediately.
 Progress bars are **indeterminate** (animated) during steps that are one long
 operation — a single Claude call or PubMed search — and **step-based** when work
 can be counted (sync per collection, spec screening per paper, categorize-all
@@ -279,8 +282,9 @@ the flow offline.
 ### Workflow
 
 - Every analysis runs as a **background job**. Progress opens in a centered
-  dialog; you can close it (✕), switch views, or refresh — work continues until
-  done. Track jobs in the sidebar **Running** dropdown (badge shows active count).
+  dialog; closing it (✕) keeps the job running. Cancel only from **✕** on the
+  job row in the **Running** dropdown (not the progress popup). Track jobs there
+  (badge shows active count).
 - **Find in library** saves results after the first run. **Re-screen library**
   only assesses **new** papers added since the last screen (e.g. after a Zotero
   sync) — already-screened papers are skipped (see [BILLING.md](BILLING.md)).

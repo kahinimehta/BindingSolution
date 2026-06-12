@@ -134,6 +134,7 @@ async function pollActiveJobs() {
       updateProgressModal(entry);
       renderJobRail();
       if (job.status === "done") finishJobEntry(entry, job.result);
+      else if (job.status === "cancelled") cancelJobEntry(entry, job.error || "Cancelled");
       else if (job.status === "error") failJobEntry(entry, job.error || "Job failed");
     } catch (e) {
       if (entry.handlers.length) failJobEntry(entry, e.message);
@@ -176,6 +177,56 @@ function failJobEntry(entry, message) {
   }, 12000);
 }
 
+function cancelJobEntry(entry, message = "Cancelled") {
+  const handlers = entry.handlers.splice(0);
+  entry.status = "cancelled";
+  entry.error = message;
+  entry.progress = {
+    ...(entry.progress || {}),
+    message: "Cancelled",
+    indeterminate: false,
+  };
+  renderJobRail();
+  dismissProgressModalIfJob(entry.id);
+  persistJobStore();
+  const err = new Error(message);
+  err.cancelled = true;
+  handlers.forEach((h) => h.reject(err));
+  toast(`${entry.label} cancelled.`, "ok");
+  setTimeout(() => {
+    jobStore.byId.delete(entry.id);
+    persistJobStore();
+    renderJobRail();
+  }, 8000);
+}
+
+function jobWasCancelled(err) {
+  return !!err?.cancelled || err?.message === "Cancelled";
+}
+
+function notifyJobFailure(err, { close = false } = {}) {
+  if (jobWasCancelled(err)) {
+    if (close) closeModal();
+    return true;
+  }
+  if (close) closeModal();
+  toast(err.message, "err");
+  return false;
+}
+
+async function dismissOrCancelJobEntry(entry) {
+  if (entry.status === "queued" || entry.status === "running") {
+    try {
+      await api.post(`/jobs/${entry.id}/cancel`);
+    } catch (e) {
+      toast(e.message, "err");
+    }
+    return;
+  }
+  entry.hidden = true;
+  renderJobRail();
+}
+
 function softRefreshView() {
   const name = location.hash.replace("#/", "") || "library";
   const fn = routes[name];
@@ -216,7 +267,7 @@ function renderJobRail() {
 
   const visible = [...jobStore.byId.values()].filter((e) => !e.hidden);
   const running = visible.filter((e) => e.status === "queued" || e.status === "running");
-  const recent = visible.filter((e) => e.status === "done" || e.status === "error");
+  const recent = visible.filter((e) => e.status === "done" || e.status === "error" || e.status === "cancelled");
 
   if (badge) {
     badge.hidden = !running.length;
@@ -230,7 +281,7 @@ function renderJobRail() {
 
   if (!visible.length) {
     panel.replaceChildren(el("p", { class: "job-rail-empty" },
-      "No background tasks. Long jobs keep running after you close the progress window, refresh, or switch views."));
+      "No background tasks. Close the progress window to keep working in the background; cancel from ✕ on a running row here."));
     return;
   }
 
@@ -240,10 +291,11 @@ function renderJobRail() {
     const done = entry.status === "done";
     const indeterminate = !done && !!entry.progress?.indeterminate;
     const ratio = done ? 1 : indeterminate ? 0.4 : total ? cur / total : 0.08;
-    const cls = `job-rail-item${entry.status === "done" ? " done" : ""}${entry.status === "error" ? " error" : ""}`;
+    const active = entry.status === "queued" || entry.status === "running";
+    const cls = `job-rail-item${entry.status === "done" ? " done" : ""}${entry.status === "error" ? " error" : ""}${entry.status === "cancelled" ? " cancelled" : ""}`;
     const reopen = () => {
-      if (entry.status === "queued" || entry.status === "running") {
-        showProgressModal(entry.label, entry.progress?.message || "Working", entry.id);
+      if (active) {
+        showProgressModal(entry.label, entry.progress?.message || "Working", entry.id, { kind: entry.kind });
       }
     };
     return el("div", { class: cls, style: "cursor:pointer", onclick: reopen },
@@ -254,10 +306,10 @@ function renderJobRail() {
             entry.error || entry.progress?.message || (entry.status === "done" ? "Finished" : "Working"))),
         el("button", {
           type: "button",
-          class: "job-rail-dismiss",
-          title: "Remove from list (job keeps running)",
-          "aria-label": "Dismiss",
-          onclick: (e) => { e.stopPropagation(); entry.hidden = true; renderJobRail(); },
+          class: `job-rail-dismiss${active ? " job-rail-cancel" : ""}`,
+          title: active ? "Cancel job" : "Remove from list",
+          "aria-label": active ? "Cancel job" : "Remove from list",
+          onclick: (e) => { e.stopPropagation(); dismissOrCancelJobEntry(entry); },
         }, "✕")),
       el("div", { class: "job-rail-item-bar" },
         el("div", {
@@ -309,12 +361,18 @@ function unlockScroll() {
   }
 }
 
-function buildModalNode(title, bodyNode, size = "dialog", { onClose } = {}) {
+function buildModalNode(title, bodyNode, size = "dialog", { onClose, closeLabel, closeTitle } = {}) {
   const closeFn = onClose || closeModal;
   return el("div", { class: `modal modal-${size}`, tabindex: "-1" },
     el("div", { class: "modal-head" },
       el("h2", {}, title),
-      el("button", { type: "button", class: "modal-x", onclick: closeFn, "aria-label": "Close" }, "✕")),
+      el("button", {
+        type: "button",
+        class: "modal-x",
+        onclick: closeFn,
+        "aria-label": closeLabel || "Close",
+        title: closeTitle || closeLabel || "Close",
+      }, "✕")),
     el("div", { class: "modal-body" }, bodyNode));
 }
 
@@ -386,7 +444,11 @@ function showProgressModal(title, message, jobId, { kind } = {}) {
   _progressModalJobId = jobId || null;
   _progressModalUpdater = bar.update;
   const host = $("#modal-host");
-  const modalNode = buildModalNode(title, box, "dialog", { onClose: dismissProgressModal });
+  const modalNode = buildModalNode(title, box, "dialog", {
+    onClose: dismissProgressModal,
+    closeLabel: "Close progress window",
+    closeTitle: "Close progress window (job keeps running)",
+  });
   host.hidden = false;
   host.replaceChildren(modalNode);
   host.onclick = (e) => { if (e.target === host) dismissProgressModal(); };
@@ -480,7 +542,7 @@ async function doSync(source) {
     if (location.hash.replace("#/", "") === "library") renderLibrary();
     else location.hash = "#/library";
   } catch (e) {
-    toast(e.message, "err");
+    if (!jobWasCancelled(e)) toast(e.message, "err");
   } finally {
     btn.classList.remove("busy"); btn.disabled = false;
     $(".sync-label", btn).textContent = "Sync library";
@@ -802,7 +864,10 @@ async function categorizeOne(key, btn) {
     await runJob(start, { label: "Categorize project" });
     toast("Categorized.", "ok");
     await renderLibrary();
-  } catch (e) { toast(e.message, "err"); if (btn) { btn.disabled = false; btn.textContent = "✦ Categorize"; } }
+  } catch (e) {
+    if (!jobWasCancelled(e)) toast(e.message, "err");
+    if (btn) { btn.disabled = false; btn.textContent = "✦ Categorize"; }
+  }
 }
 
 async function categorizeAll(e) {
@@ -816,8 +881,7 @@ async function categorizeAll(e) {
     toast("All projects categorized.", "ok");
     await renderLibrary();
   } catch (err) {
-    closeModal();
-    toast(err.message, "err");
+    notifyJobFailure(err, { close: true });
   } finally {
     if (btn) btn.disabled = false;
   }
@@ -906,8 +970,7 @@ async function findConnections() {
     const { connections } = await api.get("/connections");
     renderConnectionMap(connections);
   } catch (e) {
-    closeModal();
-    toast(e.message, "err");
+    notifyJobFailure(e, { close: true });
     renderConnections();
   }
 }
@@ -1178,8 +1241,7 @@ async function findPaperGroups() {
     renderPaperGroups(g);
     await renderKpiStrip("groups");
   } catch (e) {
-    closeModal();
-    toast(e.message, "err");
+    notifyJobFailure(e, { close: true });
     renderGroups();
   }
 }
@@ -1372,8 +1434,7 @@ async function submitStrategy(e) {
     strategySelection.clear();
     await renderStrategies();
   } catch (err) {
-    closeModal();
-    toast(err.message, "err");
+    notifyJobFailure(err, { close: true });
   } finally {
     btn.disabled = false;
   }
@@ -1630,7 +1691,7 @@ async function runAnalyzeSpec(specId) {
     selectedSpecId = specId;
     specsTab = "upload";
     await renderSpecs();
-  } catch (e) { closeModal(); toast(e.message, "err"); }
+  } catch (e) { notifyJobFailure(e, { close: true }); }
 }
 
 async function loadLibraryMatches() {
@@ -1750,7 +1811,7 @@ async function runDiscoverSpec(specId) {
     selectedSpecId = specId;
     specsTab = "discover";
     await renderSpecs();
-  } catch (e) { closeModal(); toast(e.message, "err"); }
+  } catch (e) { notifyJobFailure(e, { close: true }); }
 }
 
 async function openSpec(specId) {
@@ -1775,8 +1836,7 @@ async function buildReadingPlanFromSpec(specId) {
     toast("Reading plan ready — mapped from your spec.", "ok");
     openStrategy(saved);
   } catch (e) {
-    closeModal();
-    toast(e.message, "err");
+    notifyJobFailure(e, { close: true });
   }
 }
 

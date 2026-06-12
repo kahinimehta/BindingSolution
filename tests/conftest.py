@@ -34,5 +34,7 @@ def run_job(client, start_response):
             return job["result"]
         if job["status"] == "error":
             raise AssertionError(f"job failed: {job['error']}")
+        if job["status"] == "cancelled":
+            raise AssertionError(f"job cancelled: {job['error']}")
         time.sleep(0.02)
     raise AssertionError("job did not finish in time")
