@@ -82,7 +82,7 @@ a corrupt file is set aside rather than crashing. No database to run.
 | `GET` / `DELETE` | `/api/strategies[/{id}]` | List / delete saved plans |
 | `POST` | `/api/specs` | Upload a spec (file or `text`) |
 | `GET` / `DELETE` | `/api/specs[/{id}]` | List / fetch / delete specs |
-| `POST` | `/api/specs/{id}/analyze` | Score every paper against a spec → job |
+| `POST` | `/api/specs/{id}/analyze` | Screen library; store only relevant papers → job |
 | `GET` | `/api/jobs/{id}` | Poll a background job |
 
 Endpoints that return `{"job_id": ...}` are asynchronous — poll `/api/jobs/{id}`

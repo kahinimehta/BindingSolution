@@ -167,7 +167,7 @@ const viewMeta = {
   specs: {
     step: "Step 4",
     title: "Project specs",
-    subtitle: "Score every paper in your library against a grant aim or project description.",
+    subtitle: "Upload a project description and see which library papers are relevant, with why.",
   },
 };
 
@@ -250,8 +250,8 @@ async function renderKpiStrip(route) {
     const analyzed = specs.filter((s) => s.status === "analyzed").length;
     items.push(
       kpiItem(specs.length, "Specs", "Uploaded descriptions", true),
-      kpiItem(analyzed, "Analyzed", "Scored against library"),
-      kpiItem(usableProjects().length ? totalPapers(true) : "—", "Papers", "Available to score"),
+      kpiItem(analyzed, "With suggestions", "Specs with relevant papers"),
+      kpiItem(usableProjects().length ? totalPapers(true) : "—", "Papers", "Screened from library"),
     );
   }
 
@@ -527,7 +527,7 @@ function buildStrategyForm() {
       modeToggle),
     el("div", { class: "field", id: "strat-choose-field" }, el("label", {}, "Projects"), chooser),
     el("div", { class: "field mt-2" }, el("label", {}, "Your goal (optional)"), goal),
-    el("div", { class: "mt-2" }, el("button", { class: "btn btn-primary", id: "strat-go", onclick: submitStrategy }, "↯ Generate strategy")));
+    el("div", { class: "mt-2" }, el("button", { type: "button", class: "btn btn-primary", id: "strat-go", onclick: submitStrategy }, "↯ Generate strategy")));
   applyModeUI(card);
   return card;
 }
@@ -560,19 +560,30 @@ function prefillStrategy(keys) {
 
 async function submitStrategy(e) {
   const btn = e.currentTarget;
-  const goal = $("#strat-goal").value.trim();
+  const goal = $("#strat-goal")?.value.trim() || "";
   const keys = [...strategySelection];
   if (strategyMode === "manual" && keys.length === 0) { toast("Pick at least one project, or switch to “Let the agent decide”.", "err"); return; }
   btn.disabled = true;
   const bar = progressBlock("Designing your reading path…");
-  btn.after(bar.node);
+  openModal("Generating reading plan", (() => {
+    const box = el("div", {}, bar.node);
+    box._update = bar.update;
+    return box;
+  })());
+  const box = $(".modal-body > div");
   try {
     const start = await api.post("/strategies", { goal, mode: strategyMode, project_keys: keys });
-    await runJob(start, { onProgress: bar.update });
+    await runJob(start, { onProgress: (p) => box._update(p) });
+    closeModal();
     toast("Reading plan ready.", "ok");
     strategySelection.clear();
     await renderStrategies();
-  } catch (err) { toast(err.message, "err"); bar.node.remove(); btn.disabled = false; }
+  } catch (err) {
+    closeModal();
+    toast(err.message, "err");
+  } finally {
+    btn.disabled = false;
+  }
 }
 
 async function loadStrategies() {
@@ -619,18 +630,49 @@ async function deleteStrategy(id) {
 }
 
 /* ── 4. SPECS ─────────────────────────────────────────────────── */
+let specsTab = "upload";
+let selectedSpecId = null;
+
 async function renderSpecs() {
   await loadProjects();
   setView("specs");
   await renderKpiStrip("specs");
   const wrap = el("div", {});
-  wrap.append(viewHero("Match papers to a project",
-    "Drop in a project spec (PDF, Word, Markdown, or text) or paste a grant aim. Every paper gets summarized and scored for relevance."));
-  wrap.append(specUploader());
-  wrap.append(el("div", { class: "section-head mt-3" }, el("div", {}, el("h2", {}, "Your specs"))));
-  wrap.append(el("div", { id: "spec-list" }, el("div", { class: "muted" }, "Loading…")));
+  wrap.append(el("div", { class: "sub-tabs" },
+    el("button", { type: "button", class: specsTab === "upload" ? "on" : "", onclick: () => switchSpecsTab("upload") }, "Upload & manage"),
+    el("button", { type: "button", class: specsTab === "suggestions" ? "on" : "", onclick: () => switchSpecsTab("suggestions") }, "Suggested papers")));
+  wrap.append(el("div", { id: "specs-panel" }));
   view().replaceChildren(wrap);
-  await loadSpecs();
+  await renderSpecsPanel();
+}
+
+async function switchSpecsTab(tab) {
+  if (specsTab === tab) return;
+  specsTab = tab;
+  $$(".sub-tabs button").forEach((b, i) => b.classList.toggle("on", (tab === "upload") === (i === 0)));
+  await renderSpecsPanel();
+}
+
+async function renderSpecsPanel() {
+  const panel = $("#specs-panel");
+  if (!panel) return;
+  if (specsTab === "upload") {
+    panel.replaceChildren(
+      viewHero("Upload a project spec",
+        "Drop in a grant aim, proposal, or project description (PDF, Word, Markdown, or text). Irrelevant uploads are rejected with guidance on what to upload instead."),
+      specUploader(),
+      el("div", { class: "section-head mt-3" }, el("div", {}, el("h2", {}, "Your specs"))),
+      el("div", { id: "spec-list" }, el("div", { class: "muted" }, "Loading…")),
+    );
+    await loadSpecs();
+  } else {
+    panel.replaceChildren(
+      viewHero("Suggested papers",
+        "Relevant papers from your library for each project spec, with a short explanation of why each one matters."),
+      el("div", { id: "spec-suggestions" }, el("div", { class: "muted" }, "Loading…")),
+    );
+    await loadSpecSuggestions();
+  }
 }
 
 function specUploader() {
@@ -686,10 +728,10 @@ function specRow(s) {
     el("div", { style: "flex:1;cursor:pointer", onclick: () => openSpec(s.id) },
       el("div", { class: "spread", style: "justify-content:flex-start;gap:10px" },
         el("h4", {}, s.title),
-        el("span", { class: `pill ${status}` }, s.status === "analyzed" ? `${s.num_assessed} assessed` : s.status)),
+        el("span", { class: `pill ${status}` }, s.status === "analyzed" ? `${s.num_relevant ?? 0} relevant` : s.status)),
       el("div", { class: "muted", style: "margin-top:3px" }, esc(s.preview).slice(0, 120) + "…")),
     el("div", { style: "display:flex;gap:8px" },
-      el("button", { class: "btn btn-primary btn-sm", onclick: () => confirmAnalyzeSpec(s.id) }, s.status === "analyzed" ? "Re-analyze" : "Analyze"),
+      el("button", { class: "btn btn-primary btn-sm", onclick: () => confirmAnalyzeSpec(s.id) }, s.status === "analyzed" ? "Refresh suggestions" : "Find relevant papers"),
       el("button", { class: "btn btn-ghost btn-sm btn-danger", onclick: () => deleteSpec(s.id) }, "Delete")));
 }
 function offerAnalyze(spec) {
@@ -703,18 +745,18 @@ function confirmAnalyzeSpec(specId) {
   const paperLabel = papers === 1 ? "paper" : "papers";
   const body = el("div", {},
     el("p", { class: "lead" },
-      `This will assess every paper in your active library (${papers} ${paperLabel}) against your project spec.`),
+      `This will screen your active library (${papers} ${paperLabel}) and list only the papers that look relevant to your project spec.`),
     el("p", { class: "muted", style: "margin-top:12px;font-size:.9rem" },
       "Depending on how many papers you have, this can take a while — from under a minute for a small library to several minutes for a large one. You can keep using the app while it runs."),
     el("div", { class: "spread mt-3", style: "justify-content:flex-end;gap:10px" },
-      el("button", { class: "btn btn-ghost", onclick: closeModal }, "Cancel"),
-      el("button", { class: "btn btn-primary", onclick: () => { closeModal(); runAnalyzeSpec(specId); } }, "Start analysis")));
-  openModal("Start spec analysis?", body);
+      el("button", { type: "button", class: "btn btn-ghost", onclick: closeModal }, "Cancel"),
+      el("button", { type: "button", class: "btn btn-primary", onclick: () => { closeModal(); runAnalyzeSpec(specId); } }, "Find relevant papers")));
+  openModal("Find relevant papers?", body);
 }
 
 async function runAnalyzeSpec(specId) {
-  openModal("Analyzing spec", (() => {
-    const bar = progressBlock("Assessing each paper against your project…");
+  openModal("Finding relevant papers", (() => {
+    const bar = progressBlock("Screening your library against the project spec…");
     const box = el("div", {}, bar.node);
     box._update = bar.update;
     return box;
@@ -722,42 +764,73 @@ async function runAnalyzeSpec(specId) {
   const box = $(".modal-body > div");
   try {
     const start = await api.post(`/specs/${specId}/analyze`, {});
-    await runJob(start, { onProgress: (p) => box._update(p) });
+    const result = await runJob(start, { onProgress: (p) => box._update(p) });
     closeModal();
-    toast("Analysis complete.", "ok");
-    await loadSpecs();
-    openSpec(specId);
+    const n = result?.relevant ?? 0;
+    toast(n ? `Found ${n} relevant paper${n === 1 ? "" : "s"}.` : "No relevant papers found.", n ? "ok" : "");
+    selectedSpecId = specId;
+    specsTab = "suggestions";
+    await renderSpecs();
   } catch (e) { closeModal(); toast(e.message, "err"); }
 }
 
-async function openSpec(specId) {
+async function loadSpecSuggestions() {
+  const host = $("#spec-suggestions");
+  if (!host) return;
   try {
-    const spec = await api.get(`/specs/${specId}`);
-    const results = Object.values(spec.analysis || {}).sort((a, b) => (b.score || 0) - (a.score || 0));
-    const body = el("div", {});
-    body.append(el("p", { class: "lead", style: "white-space:pre-wrap;max-height:140px;overflow:auto;background:var(--surface-2);padding:12px;border-radius:9px;font-size:.86rem" }, spec.text.slice(0, 1200) + (spec.text.length > 1200 ? "…" : "")));
-    if (!results.length) {
-      body.append(el("div", { class: "mt-2" }, el("button", { class: "btn btn-primary", onclick: () => { closeModal(); confirmAnalyzeSpec(specId); } }, "✦ Analyze against library")));
-    } else {
-      const core = results.filter((r) => r.relevance === "core" || r.relevance === "supporting").length;
-      body.append(el("p", { class: "muted mt-2", style: "font-size:.86rem" }, `${results.length} papers assessed · ${core} relevant`));
-      for (const r of results) body.append(relevanceRow(r));
+    const { specs } = await api.get("/specs");
+    const analyzed = specs.filter((s) => s.status === "analyzed");
+    if (!analyzed.length) {
+      host.replaceChildren(el("div", { class: "empty" },
+        el("div", { class: "emoji" }, "✦"),
+        el("h3", {}, "No suggestions yet"),
+        el("p", {}, "Upload a project spec and click Find relevant papers to see which library papers matter for your aim."),
+        el("button", { type: "button", class: "btn btn-primary", onclick: () => switchSpecsTab("upload") }, "Upload a spec")));
+      return;
     }
-    openModal(spec.title, body);
-  } catch (e) { toast(e.message, "err"); }
+    const pick = selectedSpecId && analyzed.some((s) => s.id === selectedSpecId)
+      ? selectedSpecId
+      : analyzed[0].id;
+    selectedSpecId = pick;
+    const spec = await api.get(`/specs/${pick}`);
+    const results = Object.values(spec.analysis || {}).sort((a, b) => (b.score || 0) - (a.score || 0));
+    const wrap = el("div", {});
+    const picker = el("div", { class: "field" },
+      el("label", {}, "Project spec"),
+      el("select", {
+        class: "input",
+        onchange: async (e) => { selectedSpecId = e.target.value; await loadSpecSuggestions(); },
+      }, ...analyzed.map((s) => {
+        const opt = el("option", { value: s.id }, s.title);
+        if (s.id === pick) opt.selected = true;
+        return opt;
+      })));
+    wrap.append(picker);
+    wrap.append(el("p", { class: "muted", style: "margin:12px 0;font-size:.86rem" },
+      spec.num_screened
+        ? `${results.length} relevant of ${spec.num_screened} screened`
+        : `${results.length} relevant papers`));
+    if (!results.length) {
+      wrap.append(el("p", { class: "muted" }, "No relevant papers found for this spec. Try refreshing after syncing more papers."));
+      wrap.append(el("button", { type: "button", class: "btn btn-primary mt-2", onclick: () => confirmAnalyzeSpec(pick) }, "Refresh suggestions"));
+    } else {
+      for (const r of results) wrap.append(relevanceRow(r));
+    }
+    host.replaceChildren(wrap);
+  } catch (e) { host.replaceChildren(el("p", { class: "muted" }, e.message)); }
 }
-function heatColor(score) {
-  const stops = ["--heat-0", "--heat-1", "--heat-2", "--heat-3", "--heat-4"];
-  const idx = Math.min(4, Math.floor((score / 100) * 5));
-  return `var(${stops[idx]})`;
+
+async function openSpec(specId) {
+  selectedSpecId = specId;
+  specsTab = "suggestions";
+  await renderSpecs();
 }
+
 function relevanceRow(r) {
-  return el("div", { class: "relevance-row" },
-    el("div", { class: "heat", style: `background:${heatColor(r.score)}` }, r.score),
+  return el("div", { class: "relevance-row relevance-row--suggest" },
     el("div", {},
       el("div", { class: "rel-title" }, r.title || r.paper_key),
       el("div", { class: "muted", style: "font-size:.76rem" }, projName(r.project_key)),
-      el("div", { class: "rel-summary" }, r.summary),
       el("div", { class: "rel-why" }, r.relevance_explanation),
       r.use_for?.length ? el("div", { class: "tag-row" }, ...r.use_for.map((u) => el("span", { class: "tag" }, u))) : null),
     el("span", { class: `rel-flag rel-${r.relevance}` }, r.relevance.replace("_", " ")));

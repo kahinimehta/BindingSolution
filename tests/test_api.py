@@ -65,10 +65,12 @@ def test_connections_after_demo(client):
 
 def test_reading_strategy_manual(client):
     _load_demo(client)
-    keys = [p["key"] for p in client.get("/api/projects").json()["projects"][:2]]
+    projects = [p for p in client.get("/api/projects").json()["projects"] if p["usable"]]
+    keys = [projects[0]["key"], projects[1]["key"]]
+    paper_count = projects[0]["num_items"] + projects[1]["num_items"]
     start = client.post("/api/strategies", json={"goal": "connect these", "mode": "manual", "project_keys": keys}).json()
     saved = run_job(client, start)
-    assert saved["plan"]["sequence"]
+    assert len(saved["plan"]["sequence"]) == paper_count
     listed = client.get("/api/strategies").json()["strategies"]
     assert len(listed) == 1
     # delete
@@ -94,13 +96,15 @@ def test_spec_upload_text_and_analyze(client):
     assert spec["id"]
     start = client.post(f"/api/specs/{spec['id']}/analyze", json={}).json()
     result = run_job(client, start)
-    assert result["assessed"] > 0
+    assert result["screened"] > 0
+    assert result["relevant"] > 0
+    assert result["relevant"] <= result["screened"]
     full = client.get(f"/api/specs/{spec['id']}").json()
     assert full["status"] == "analyzed"
-    # every paper got a relevance verdict + score
+    assert full["num_screened"] == result["screened"]
     for assessment in full["analysis"].values():
-        assert "relevance" in assessment
-        assert 0 <= assessment["score"] <= 100
+        assert assessment["relevance"] in {"core", "supporting"}
+        assert assessment["relevance_explanation"]
 
 
 def test_spec_rejects_too_short(client):

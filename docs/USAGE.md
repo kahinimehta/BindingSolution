@@ -65,21 +65,23 @@ causal inference"*) and click **Generate strategy**. You get:
 
 Plans are saved; open or delete them from the same screen.
 
-## 5. ✦ Match papers to a project — *Project specs*
+## 5. ✦ Find relevant papers — *Project specs*
 
-Open **Project specs**. Drop in a **PDF, Word (.doc/.docx), Markdown, or text**
-file — a grant aim, proposal, or one-paragraph description — or paste the text.
-Irrelevant uploads (shopping lists, filler text, published papers, admin docs) are
-rejected with a short explanation of what to upload instead. Then click
-**Analyze**. Every paper in your library (or a chosen subset) is:
+Open **Project specs**. Use two tabs:
 
-- **summarized** in 2–3 sentences
-- **scored 0–100** and flagged **core / supporting / tangential / not relevant**
-  *for that specific project*
-- given concrete **"use this for…"** suggestions
+- **Upload & manage** — drop a **PDF, Word (.doc/.docx), Markdown, or text**
+  file (grant aim, proposal, or project description) or paste the text.
+  Irrelevant uploads (shopping lists, filler text, published papers, admin docs)
+  are rejected with a short explanation of what to upload instead.
+- **Suggested papers** — after you click **Find relevant papers**, see only the
+  library papers that matter for that spec, each with:
 
-Results are ranked by relevance with a colour "heat" tile, so the papers that
-actually matter to your project rise to the top.
+  - a **core / supporting** flag
+  - a short **why it's relevant** explanation
+  - concrete **"use this for…"** suggestions where applicable
+
+The app screens your whole active library but only lists the relevant hits, ranked
+so the strongest matches appear first.
 
 ---
 
@@ -89,5 +91,5 @@ actually matter to your project rise to the top.
   can keep working while it runs.
 - Switching to a different `ANTHROPIC_MODEL` in `.env` (e.g. a faster model for
   bulk spec analysis) only needs a server restart.
-- Re-analyzing a spec re-scores against the current library, so it's worth
+- Refreshing suggestions re-screens against the current library, so it's worth
   re-running after you sync new papers.

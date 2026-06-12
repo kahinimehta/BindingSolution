@@ -187,7 +187,11 @@ def create_app() -> FastAPI:
         analyzer = get_analyzer(get_settings())
 
         def work(job: jobs.Job) -> dict:
-            job.set_progress(0, 1, "Designing a reading strategy…")
+            total = max(1, len(projects))
+            job.set_progress(0, total, "Designing a reading strategy…")
+            for i, proj in enumerate(projects):
+                label = proj.get("short_name") or proj["name"]
+                job.set_progress(i, total, f"Sequencing “{label}”…")
             result = analyzer.reading_strategy(projects, goal)
             saved = store.add_strategy({
                 "goal": goal,
@@ -195,7 +199,7 @@ def create_app() -> FastAPI:
                 "project_keys": [p["key"] for p in projects],
                 "plan": result,
             })
-            job.set_progress(1, 1, "Done")
+            job.set_progress(total, total, "Done")
             return saved
 
         return _start("strategy", work)
@@ -251,7 +255,8 @@ def create_app() -> FastAPI:
                 "status": spec.get("status"),
                 "created_at": spec["created_at"],
                 "preview": (spec.get("text", "")[:240]),
-                "num_assessed": len(spec.get("analysis", {})),
+                "num_relevant": len(spec.get("analysis", {})),
+                "num_screened": spec.get("num_screened", 0),
             })
         return {"specs": specs}
 
@@ -289,24 +294,31 @@ def create_app() -> FastAPI:
         analyzer = get_analyzer(get_settings())
         spec_text = spec["text"]
 
+        _RELEVANT = {"core", "supporting"}
+
         def work(job: jobs.Job) -> dict:
             total = len(papers)
-            store.update_spec(spec_id, status="analyzing")
+            store.update_spec(spec_id, status="analyzing", analysis={}, num_screened=0)
             results: dict[str, dict] = {}
             for i, (project_key, paper) in enumerate(papers, start=1):
-                job.set_progress(i - 1, total, f"Assessing “{paper['title'][:60]}”…")
+                job.set_progress(i - 1, total, f"Screening “{paper['title'][:60]}”…")
                 assessment = analyzer.assess_paper(spec_text, paper)
-                assessment["project_key"] = project_key
-                assessment["title"] = paper["title"]
-                results[paper["key"]] = assessment
-                # Persist incrementally so progress survives an interruption.
+                if assessment.get("relevance") in _RELEVANT:
+                    assessment["project_key"] = project_key
+                    assessment["title"] = paper["title"]
+                    results[paper["key"]] = assessment
                 if i % 5 == 0:
                     store.merge_spec_analysis(spec_id, results)
             store.merge_spec_analysis(spec_id, results)
-            store.update_spec(spec_id, status="analyzed")
+            store.update_spec(spec_id, status="analyzed", num_screened=total)
             job.set_progress(total, total, "Done")
             ranked = sorted(results.values(), key=lambda r: r.get("score", 0), reverse=True)
-            return {"spec_id": spec_id, "assessed": len(results), "top": ranked[:5]}
+            return {
+                "spec_id": spec_id,
+                "screened": total,
+                "relevant": len(results),
+                "top": ranked[:5],
+            }
 
         return _start("analyze-spec", work)
 

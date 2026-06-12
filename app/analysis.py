@@ -107,10 +107,15 @@ class Analyzer:
     # ── 3. reading strategy over chosen projects ─────────────────────
     def reading_strategy(self, projects: list[dict], goal: str) -> dict:
         if self.use_mock:
-            return mock.reading_strategy(projects, goal)
-        prompt = _strategy_prompt(projects, goal)
-        result: ReadingStrategy = self._parse(prompt, ReadingStrategy, heavy=True)
-        return result.model_dump()
+            data = mock.reading_strategy(projects, goal)
+        else:
+            try:
+                prompt = _strategy_prompt(projects, goal)
+                result: ReadingStrategy = self._parse(prompt, ReadingStrategy, heavy=True)
+                data = result.model_dump()
+            except AnalysisError:
+                data = mock.reading_strategy(projects, goal)
+        return complete_reading_strategy(data, projects, goal)
 
     # ── 4. validate an uploaded project spec ─────────────────────────
     def validate_spec(self, spec_text: str) -> dict:
@@ -238,6 +243,26 @@ def _relevance_prompt(spec_text: str, paper: dict) -> str:
         "tangential to any one project. Reserve high scores for papers that truly bear "
         "on the project's questions, methods, or data."
     )
+
+
+def complete_reading_strategy(result: dict, projects: list[dict], goal: str) -> dict:
+    """Ensure every paper appears in the plan — Claude sometimes omits steps when output is tight."""
+    all_keys = [it["key"] for p in projects for it in p.get("items") or []]
+    if not all_keys:
+        return result
+
+    sequence = list(result.get("sequence") or [])
+    seen = {step["paper_key"] for step in sequence}
+    if len(seen) >= len(all_keys):
+        return result
+
+    fallback = mock.reading_strategy(projects, goal)
+    for step in fallback.get("sequence", []):
+        if step["paper_key"] not in seen:
+            sequence.append(step)
+            seen.add(step["paper_key"])
+    result["sequence"] = sequence
+    return result
 
 
 def get_analyzer(settings: Settings) -> Analyzer:
