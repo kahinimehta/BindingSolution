@@ -89,9 +89,12 @@ The **Spec** view is a two-tab SPA panel (`Upload & manage` · `Suggested papers
 
 1. **Upload** — `POST /api/specs` extracts text (PDF/Word/MD/txt), validates
    that the content is a real project brief (`SpecValidation`), and stores it.
-2. **Screen library** — `POST /api/specs/{id}/analyze` assesses each paper in the
+2. **Screen library** — `POST /api/specs/{id}/analyze` assesses papers in the
    active library but only persists **core** and **supporting** hits in
-   `spec.analysis`. The UI lists those under **Library matches** on the upload tab.
+   `spec.analysis`. Re-runs are **incremental**: `screened_keys` tracks assessed
+   paper keys so only new shelf items are sent to Claude; removed papers are
+   pruned from saved matches. Progress appears in the sidebar **Running** panel,
+   not an “analyzing” badge on the spec row.
 3. **Discover on PubMed** — `POST /api/specs/{id}/discover` (`app/discovery.py`)
    builds a query from spec text and categorized keywords, fetches candidates via
    NCBI eutils, excludes titles already in the library, scores each hit by keyword

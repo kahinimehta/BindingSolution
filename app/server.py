@@ -20,6 +20,7 @@ from .projects import is_usable_project, summary_fields, usable_projects
 from .discovery import discover_for_spec
 from .reading_schedule import attach_reading_schedule
 from .spec_strategy import attach_spec_mapping, projects_from_spec
+from .spec_analysis import papers_to_screen, prune_analysis
 from .specs import extract_text
 from .store import Store
 
@@ -329,9 +330,14 @@ def create_app() -> FastAPI:
 
     @app.get("/api/specs/{spec_id}")
     def get_spec(spec_id: str) -> dict:
-        spec = get_store().get_spec(spec_id)
+        store = get_store()
+        spec = store.get_spec(spec_id)
         if spec is None:
             raise HTTPException(404, "Spec not found")
+        papers = _papers_for_spec_screen(store)
+        to_screen, _, skipped = papers_to_screen(spec, papers)
+        spec["papers_pending_screen"] = len(to_screen)
+        spec["papers_already_screened"] = skipped
         return spec
 
     @app.delete("/api/specs/{spec_id}")
@@ -348,13 +354,7 @@ def create_app() -> FastAPI:
             raise HTTPException(404, "Spec not found")
 
         keys = (payload or {}).get("project_keys") or []
-        all_projects = store.get_projects()
-        if keys:
-            projects = [all_projects[k] for k in keys if k in all_projects and is_usable_project(all_projects[k])]
-        else:
-            projects = usable_projects(all_projects)
-
-        papers = [(p["key"], it) for p in projects for it in p.get("items") or []]
+        papers = _papers_for_spec_screen(store, keys)
         if not papers:
             raise HTTPException(400, "No papers to analyze. Sync a library first.")
 
@@ -364,26 +364,59 @@ def create_app() -> FastAPI:
         _RELEVANT = {"core", "supporting"}
 
         def work(job: jobs.Job) -> dict:
-            total = len(papers)
-            store.update_spec(spec_id, status="analyzing", analysis={}, num_screened=0)
-            results: dict[str, dict] = {}
-            for i, (project_key, paper) in enumerate(papers, start=1):
-                job.set_progress(i - 1, total, f"Screening “{paper['title'][:60]}”…")
+            current_keys = {paper["key"] for _, paper in papers if paper.get("key")}
+            existing = prune_analysis(spec.get("analysis") or {}, current_keys)
+            to_screen, screened, skipped = papers_to_screen(spec, papers)
+            batch_total = len(to_screen)
+
+            if not to_screen:
+                store.update_spec(
+                    spec_id,
+                    status="analyzed",
+                    analysis=existing,
+                    screened_keys=sorted(screened),
+                    num_screened=len(screened),
+                )
+                job.set_progress(1, 1, "Up to date")
+                ranked = sorted(existing.values(), key=lambda r: r.get("score", 0), reverse=True)
+                return {
+                    "spec_id": spec_id,
+                    "screened": 0,
+                    "skipped": skipped,
+                    "relevant": len(existing),
+                    "new_relevant": 0,
+                    "top": ranked[:5],
+                }
+
+            store.update_spec(spec_id, status="analyzing", analysis=existing)
+            new_results: dict[str, dict] = {}
+            for i, (project_key, paper) in enumerate(to_screen, start=1):
+                job.set_progress(i - 1, batch_total, f"Screening “{paper['title'][:60]}”…")
                 assessment = analyzer.assess_paper(spec_text, paper)
+                screened.add(paper["key"])
                 if assessment.get("relevance") in _RELEVANT:
                     assessment["project_key"] = project_key
                     assessment["title"] = paper["title"]
-                    results[paper["key"]] = assessment
+                    new_results[paper["key"]] = assessment
                 if i % 5 == 0:
-                    store.merge_spec_analysis(spec_id, results)
-            store.merge_spec_analysis(spec_id, results)
-            store.update_spec(spec_id, status="analyzed", num_screened=total)
-            job.set_progress(total, total, "Done")
-            ranked = sorted(results.values(), key=lambda r: r.get("score", 0), reverse=True)
+                    store.merge_spec_analysis(spec_id, new_results)
+            store.merge_spec_analysis(spec_id, new_results)
+            merged = {**existing, **new_results}
+            store.update_spec(
+                spec_id,
+                status="analyzed",
+                analysis=merged,
+                screened_keys=sorted(screened),
+                num_screened=len(screened),
+            )
+            job.set_progress(batch_total, batch_total, "Done")
+            ranked = sorted(merged.values(), key=lambda r: r.get("score", 0), reverse=True)
             return {
                 "spec_id": spec_id,
-                "screened": total,
-                "relevant": len(results),
+                "screened": batch_total,
+                "skipped": skipped,
+                "relevant": len(merged),
+                "new_relevant": len(new_results),
                 "top": ranked[:5],
             }
 
@@ -438,6 +471,19 @@ def create_app() -> FastAPI:
 
 
 # ── helpers ──────────────────────────────────────────────────────────
+def _papers_for_spec_screen(store, project_keys: list[str] | None = None) -> list[tuple[str, dict]]:
+    all_projects = store.get_projects()
+    if project_keys:
+        projects = [
+            all_projects[k]
+            for k in project_keys
+            if k in all_projects and is_usable_project(all_projects[k])
+        ]
+    else:
+        projects = usable_projects(all_projects)
+    return [(p["key"], it) for p in projects for it in p.get("items") or []]
+
+
 def _now() -> float:
     import time
 

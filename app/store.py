@@ -129,6 +129,7 @@ class Store:
                 "created_at": time.time(),
                 "status": "new",
                 "analysis": {},
+                "screened_keys": [],
                 "discoveries": [],
                 "discover_status": "idle",
                 **spec,

@@ -1240,13 +1240,20 @@ async function loadSpecs() {
     host.replaceChildren(...specs.map(specRow));
   } catch { /* ignore */ }
 }
+function specStatusPill(s) {
+  const n = s.num_relevant ?? 0;
+  if (s.status === "analyzed" || (s.status === "analyzing" && n > 0)) {
+    return el("span", { class: "pill green" }, `${n} relevant`);
+  }
+  return null;
+}
+
 function specRow(s) {
-  const status = { new: "ink", analyzing: "brass", analyzed: "green" }[s.status] || "ink";
   return el("div", { class: "row-item" },
     el("div", { style: "flex:1;cursor:pointer", onclick: () => openSpec(s.id) },
       el("div", { class: "spread", style: "justify-content:flex-start;gap:10px" },
         el("h4", {}, s.title),
-        el("span", { class: `pill ${status}` }, s.status === "analyzed" ? `${s.num_relevant ?? 0} relevant` : s.status)),
+        specStatusPill(s)),
       el("div", { class: "muted", style: "margin-top:3px" }, esc(s.preview).slice(0, 120) + "…")),
     el("div", { style: "display:flex;gap:8px" },
       el("button", { class: "btn btn-primary btn-sm", onclick: () => confirmAnalyzeSpec(s.id) }, s.status === "analyzed" ? "Re-screen library" : "Find in library"),
@@ -1257,13 +1264,21 @@ function offerAnalyze(spec) {
   confirmAnalyzeSpec(spec.id);
 }
 
-function confirmAnalyzeSpec(specId) {
+async function confirmAnalyzeSpec(specId) {
   if (!usableProjects().length) { toast("Sync a library with papers in collections first.", "err"); return; }
-  const papers = totalPapers(true);
-  const paperLabel = papers === 1 ? "paper" : "papers";
+  let pending = totalPapers(true);
+  let already = 0;
+  try {
+    const spec = await api.get(`/specs/${specId}`);
+    pending = spec.papers_pending_screen ?? pending;
+    already = spec.papers_already_screened ?? 0;
+  } catch { /* use library totals */ }
+  const paperLabel = pending === 1 ? "paper" : "papers";
   const body = el("div", {},
     el("p", { class: "lead" },
-      `This will screen your active library (${papers} ${paperLabel}) and list only the papers that look relevant to your project spec.`),
+      already
+        ? `Re-screen screens only new papers (${pending} ${paperLabel} not screened yet). Saved matches are kept.`
+        : `This will screen your active library (${pending} ${paperLabel}) and list only the papers that look relevant to your project spec.`),
     el("p", { class: "muted", style: "margin-top:12px;font-size:.9rem" },
       "Depending on how many papers you have, this can take a while — from under a minute for a small library to several minutes for a large one. Close the progress window, switch views, or refresh — the job keeps running. Track it under ",
       el("strong", {}, "Running"),
@@ -1281,7 +1296,11 @@ async function runAnalyzeSpec(specId) {
     const result = await runJob(start, { label: "Screen library", onProgress: (p) => box._update(p) });
     closeModal();
     const n = result?.relevant ?? 0;
-    toast(n ? `Found ${n} library match${n === 1 ? "" : "es"}.` : "No library matches found.", n ? "ok" : "");
+    const screened = result?.screened ?? 0;
+    const skipped = result?.skipped ?? 0;
+    if (skipped && screened === 0) toast("Library up to date — no new papers to screen.", "");
+    else if (skipped) toast(`Screened ${screened} new — ${n} total match${n === 1 ? "" : "es"}.`, n ? "ok" : "");
+    else toast(n ? `Found ${n} library match${n === 1 ? "" : "es"}.` : "No library matches found.", n ? "ok" : "");
     selectedSpecId = specId;
     specsTab = "upload";
     await renderSpecs();

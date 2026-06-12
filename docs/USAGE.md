@@ -152,7 +152,10 @@ Open **Spec** in the sidebar. The view has two tabs with different jobs:
    papers, admin docs) are rejected with a short explanation of what to upload
    instead.
 3. Click **Find in library** on a saved spec. A confirmation explains how many
-   papers will be screened and that runtime scales with library size.
+   papers will be screened and that runtime scales with library size. **Re-screen
+   library** is incremental: after a sync, only papers you have not screened yet
+   are sent to Claude; existing library matches are kept. Track progress under
+   **Running** in the sidebar — the spec row no longer shows an “analyzing” badge.
 4. Scroll to **Library matches** on the same tab. Pick a spec, review core /
    supporting hits with **why it's relevant** notes, and click **↯ Build reading
    plan** to turn them into an ordered path in **Strategies**.
@@ -193,9 +196,10 @@ the flow offline.
   can keep working while it runs. Confirmations and progress (spec screening,
   reading plans, connections, bulk categorization) open in the same centered
   dialog so the page does not jump or rescroll behind you.
-- **Find in library** re-screens against the current shelf — each re-run calls
-  Claude again for every active paper (see [BILLING.md](BILLING.md)). PubMed
-  discovery is separate and does not use your Anthropic key.
+- **Find in library** saves results after the first run. **Re-screen library**
+  only assesses **new** papers added since the last screen (e.g. after a Zotero
+  sync) — already-screened papers are skipped (see [BILLING.md](BILLING.md)).
+  PubMed discovery is separate and does not use your Anthropic key.
 - Saved categorizations, connections, plans, and spec results are **free to
   re-open**; you only pay when you trigger a new analysis.
 

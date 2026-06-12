@@ -72,7 +72,8 @@ with 200 papers means ~200 API calls. The confirmation dialog shows how many
 papers will be screened — use it.
 
 - Run library screening when you have a real grant aim or proposal, not on a whim.
-- **Re-screen library** only after you sync meaningful new papers.
+- **Re-screen library** is incremental — only papers not screened before are sent
+  to Claude (typical after a Zotero sync adds new items).
 - **Discover new papers** on PubMed is separate and does not use your Anthropic key.
 - For very large libraries, consider a faster/cheaper model in `.env` for
   screening (see below).
