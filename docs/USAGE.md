@@ -80,13 +80,16 @@ Connections need at least two projects.
 
 ## 4. ◎ Group papers — *Groups*
 
-Open **Groups** and click **◎ Group papers**. BindingSolution reads across all
-active projects and proposes (progress tracks **papers** on your shelf, e.g.
-`72/184`, in the dialog and **Running** panel):
+Open **Groups** and click **◎ Group papers**. BindingSolution reads **every**
+active paper across your projects (progress tracks papers on your shelf, e.g.
+`72/184`, in the dialog and **Running** panel) and returns:
 
-- **Optimal paper sets** — non-overlapping reading groups that may span multiple
-  Zotero collections. Each paper appears in **at most one** set, so you are not
-  asked to read the same work twice under different folders.
+- **Optimal paper sets** — thematic reading groups that may span multiple
+  Zotero collections. Each set shows a **paper count** and a flat list (no
+  bullets). A paper appears in **at most one** set.
+- **Standalone papers** — active papers not placed in any thematic set (not
+  dropped). If a group only shows a handful of papers, the rest are usually here
+  or in **Suggested drops** — check the summary line (`N grouped · M standalone · …`).
 - **Suggested drops** — papers to remove or archive: duplicates filed in more
   than one collection, redundant surveys, weak fits, or entries that no longer
   match your shelf.

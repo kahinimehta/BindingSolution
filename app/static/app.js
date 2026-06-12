@@ -587,6 +587,7 @@ async function renderKpiStrip(route) {
       if (g?.stats) {
         items.push(
           kpiItem(g.stats.num_groups || 0, "Paper sets", "Non-overlapping"),
+          kpiItem(g.stats.num_ungrouped ?? "—", "Standalone", "Not in a set"),
           kpiItem(g.stats.num_drops || 0, "To drop", "Duplicates & weak fits"),
         );
       } else if (g) {
@@ -919,24 +920,48 @@ function renderPaperGroups(g) {
     g._mock ? el("span", { class: "mock-note", style: "margin-bottom:10px" }, "demo AI — connect a Claude key for real analysis") : null,
     el("p", { class: "lead", style: "margin:0;font-size:1.02rem" }, g.overview)));
 
+  const stats = g.stats || {};
+  if (stats.total_papers) {
+    root.append(el("p", { class: "muted", style: "margin:-8px 0 18px;font-size:.86rem" },
+      `${stats.papers_grouped ?? 0} grouped · ${stats.num_ungrouped ?? 0} standalone · ${stats.num_drops ?? 0} to drop · ${stats.total_papers} active papers`));
+  }
+
   if (g.groups?.length) {
     root.append(el("h3", { style: "font-family:var(--font-display);margin:6px 0 12px" }, "Optimal paper sets"));
     root.append(el("p", { class: "muted", style: "margin:-6px 0 14px;font-size:.88rem" },
-      "Each paper appears once. Sets may span multiple Zotero collections."));
+      "Thematic sets may span collections. Each paper is in at most one set."));
     for (const grp of g.groups) {
+      const n = grp.num_papers ?? grp.paper_keys?.length ?? grp.papers?.length ?? 0;
       const card = el("div", { class: "card spine cluster" },
-        el("h4", {}, grp.name),
+        el("div", { class: "spread", style: "align-items:baseline;gap:10px;flex-wrap:wrap" },
+          el("h4", { style: "margin:0" }, grp.name),
+          el("span", { class: "pill ink" }, `${n} paper${n === 1 ? "" : "s"}`)),
         el("div", { class: "links tag-row" }, ...grp.project_keys.map((k) => el("span", { class: "pill green" }, projName(k)))),
         el("p", { class: "muted", style: "margin:6px 0 12px;font-size:.88rem;line-height:1.5" }, grp.rationale));
-      const list = el("ul", { class: "paper-list", style: "margin:0;padding-left:18px;font-size:.88rem" });
+      const list = el("div", { class: "group-paper-lines" });
       for (const p of grp.papers || []) {
-        list.append(el("li", { style: "margin-bottom:6px" },
-          el("span", { style: "font-weight:600" }, p.title || p.paper_key),
-          el("span", { class: "muted" }, ` · ${projName(p.project_key)}`)));
+        list.append(el("div", { class: "paper-line" },
+          el("div", { class: "pt" }, p.title || p.paper_key),
+          el("div", { class: "pm" }, projName(p.project_key))));
       }
       card.append(list);
       root.append(card);
     }
+  }
+
+  if (g.ungrouped?.length) {
+    root.append(el("h3", { style: "font-family:var(--font-display);margin:22px 0 12px" }, "Standalone papers"));
+    root.append(el("p", { class: "muted", style: "margin:-6px 0 14px;font-size:.88rem" },
+      `${g.ungrouped.length} active paper${g.ungrouped.length === 1 ? "" : "s"} not placed in a thematic set — still on your shelf.`));
+    const solo = el("div", { class: "card spine cluster" });
+    const list = el("div", { class: "group-paper-lines" });
+    for (const p of g.ungrouped) {
+      list.append(el("div", { class: "paper-line" },
+        el("div", { class: "pt" }, p.title || p.paper_key),
+        el("div", { class: "pm" }, projName(p.project_key))));
+    }
+    solo.append(list);
+    root.append(solo);
   }
 
   if (g.drops?.length) {

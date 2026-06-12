@@ -115,12 +115,15 @@ The **Spec** view is a two-tab SPA panel (`Upload & manage` · `Suggested papers
 
 The **Groups** view calls `POST /api/groups` (`app/grouping.py`):
 
-1. **Analyze** — Claude (or `heuristic_paper_groups` offline) returns a
-   `PaperGroupingMap`: `groups` (non-overlapping `paper_keys` across projects)
-   and `drops` (duplicate, redundant, weak_fit, outdated). Job progress uses the
-   total active **paper** count as the denominator (not project count).
+1. **Analyze** — Claude (or `heuristic_paper_groups` offline) receives **all**
+   papers in active projects (not a per-collection sample). Returns a
+   `PaperGroupingMap`: `groups` (non-overlapping `paper_keys`), `drops`, and
+   server-filled `ungrouped` for papers in neither list. Job progress uses the
+   total active **paper** count as the denominator.
 2. **Validate** — `complete_paper_groups` drops invalid keys, ensures each paper
-   appears in at most one group, and enriches groups with `papers` display refs.
+   appears in at most one group, computes `ungrouped` + `stats` (`total_papers`,
+   `papers_grouped`, `num_ungrouped`, `num_drops`), and enriches groups with
+   `papers` display refs and `num_papers`.
 3. **Persist** — saved in `paper_groups` on the store until purge.
 
 Offline heuristics: normalized-title duplicate detection across collections,

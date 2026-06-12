@@ -181,19 +181,25 @@ def _categorize_prompt(project: dict) -> str:
 
 def _paper_groups_prompt(projects: list[dict]) -> str:
     blocks = []
+    total = 0
     for proj in projects:
+        items = proj.get("items") or []
+        total += len(items)
         blocks.append(
-            f"### Project [{proj['key']}] — {proj['name']} ({proj['num_items']} papers)\n"
-            f"{_render_papers(proj['items'], abstracts=True, limit=12)}"
+            f"### Project [{proj['key']}] — {proj['name']} ({len(items)} papers)\n"
+            f"{_render_papers(items, abstracts=True)}"
         )
     body = "\n\n".join(blocks)
     return (
-        "Organize this researcher's Zotero shelf across projects.\n\n"
+        f"Organize this researcher's Zotero shelf across projects ({total} papers total).\n\n"
         f"{body}\n\n"
         "Propose optimal PAPER groups (not project groups) for reading:\n"
         "- Each paper_key may appear in AT MOST one group.\n"
         "- Groups may span multiple projects when papers share themes, methods, or goals.\n"
+        "- Include every paper you can place in a coherent thematic set — list ALL "
+        "paper_keys for each group, not just examples.\n"
         "- Do not duplicate the same paper across groups.\n"
+        "- Papers you do not group or drop will appear as standalone on the shelf.\n"
         "- In `drops`, flag papers to remove or archive: duplicates filed in multiple "
         "collections, redundant surveys superseded by newer work, weak fits, or outdated "
         "papers that no longer match the shelf.\n"

@@ -103,6 +103,10 @@ class PaperGroupingMap(BaseModel):
     drops: list[PaperDropSuggestion] = Field(
         description="Papers to consider removing — duplicates across collections, redundant surveys, or weak fits."
     )
+    ungrouped: list[GroupedPaperRef] = Field(
+        default_factory=list,
+        description="Active papers not placed in any thematic group or drop list (filled by server).",
+    )
 
 
 class ReadingStep(BaseModel):

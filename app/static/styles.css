@@ -862,6 +862,10 @@ select.input, .input {
 
 .paper-line { padding: 11px 0; border-bottom: 1px solid var(--line); }
 .paper-line:last-child { border: none; }
+.group-paper-lines { margin-top: 4px; }
+.group-paper-lines .paper-line { padding: 9px 0; }
+.group-paper-lines .paper-line .pt { font-size: .88rem; }
+.group-paper-lines .paper-line .pm { font-size: .76rem; }
 .paper-line .pt { font-weight: 600; font-size: .92rem; }
 .paper-line .pm { font-size: .8rem; color: var(--ink-3); margin-top: 2px; }
 

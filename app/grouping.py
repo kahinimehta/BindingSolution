@@ -61,6 +61,7 @@ def complete_paper_groups(result: dict, projects: list[dict]) -> dict:
             "name": raw.get("name") or "Reading set",
             "paper_keys": keys,
             "papers": papers,
+            "num_papers": len(keys),
             "project_keys": sorted(projects_in),
             "rationale": (raw.get("rationale") or "").strip()
             or "Papers that belong together without overlapping other groups.",
@@ -83,20 +84,38 @@ def complete_paper_groups(result: dict, projects: list[dict]) -> dict:
             or "Consider removing from your active shelf.",
         })
 
+    ungrouped_keys = sorted(k for k in index if k not in used and k not in drop_keys)
+    ungrouped = [
+        {
+            "paper_key": key,
+            "title": index[key]["title"],
+            "project_key": index[key]["project_key"],
+        }
+        for key in ungrouped_keys
+    ]
+
+    total = len(index)
     overview = (result.get("overview") or "").strip()
     if not overview:
-        overview = (
-            f"Organized {len(used)} papers into {len(groups)} non-overlapping reading set"
-            f"{'s' if len(groups) != 1 else ''}"
-            + (f" and flagged {len(drops)} to drop." if drops else ".")
-        )
+        parts = [
+            f"Grouped {len(used)} of {total} papers into {len(groups)} reading set"
+            f"{'s' if len(groups) != 1 else ''}",
+        ]
+        if ungrouped:
+            parts.append(f"{len(ungrouped)} standalone")
+        if drops:
+            parts.append(f"{len(drops)} flagged to drop")
+        overview = ", ".join(parts) + "."
 
     return {
         "overview": overview,
         "groups": groups,
         "drops": drops,
+        "ungrouped": ungrouped,
         "stats": {
+            "total_papers": total,
             "papers_grouped": len(used),
+            "num_ungrouped": len(ungrouped),
             "num_groups": len(groups),
             "num_drops": len(drops),
             "num_projects": len(projects),
@@ -112,7 +131,15 @@ def heuristic_paper_groups(projects: list[dict]) -> dict:
             "overview": "No papers to organize.",
             "groups": [],
             "drops": [],
-            "stats": {"papers_grouped": 0, "num_groups": 0, "num_drops": 0, "num_projects": len(projects)},
+            "ungrouped": [],
+            "stats": {
+                "total_papers": 0,
+                "papers_grouped": 0,
+                "num_ungrouped": 0,
+                "num_groups": 0,
+                "num_drops": 0,
+                "num_projects": len(projects),
+            },
             "_mock": True,
         }
 
@@ -193,13 +220,6 @@ def heuristic_paper_groups(projects: list[dict]) -> dict:
                 ),
             })
             continue
-        assigned.add(row["paper_key"])
-        groups.append({
-            "name": f"{row['project_name']} — standalone",
-            "paper_keys": [row["paper_key"]],
-            "project_keys": [row["project_key"]],
-            "rationale": "Single paper with no strong cross-project cluster.",
-        })
 
     result = complete_paper_groups({"overview": "", "groups": groups, "drops": drops}, projects)
     result["_mock"] = True

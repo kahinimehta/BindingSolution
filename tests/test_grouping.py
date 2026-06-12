@@ -53,3 +53,19 @@ def test_complete_paper_groups_enriches_papers():
     }
     out = complete_paper_groups(raw, projects)
     assert out["groups"][0]["papers"][0]["title"] == "Counterfactual Fairness"
+    assert out["groups"][0]["num_papers"] == 2
+    assert out["stats"]["total_papers"] == 4
+
+
+def test_complete_paper_groups_lists_ungrouped():
+    projects = _projects()
+    raw = {
+        "overview": "",
+        "groups": [{"name": "Set", "paper_keys": ["P2"], "project_keys": ["A"], "rationale": "One cluster."}],
+        "drops": [],
+    }
+    out = complete_paper_groups(raw, projects)
+    ungrouped_keys = {p["paper_key"] for p in out["ungrouped"]}
+    assert "P4" in ungrouped_keys
+    assert out["stats"]["num_ungrouped"] == len(out["ungrouped"])
+    assert out["stats"]["papers_grouped"] + out["stats"]["num_ungrouped"] + out["stats"]["num_drops"] <= out["stats"]["total_papers"]
