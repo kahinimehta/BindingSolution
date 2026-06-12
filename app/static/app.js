@@ -731,7 +731,7 @@ function openStrategy(s) {
         type: "button",
         class: "btn btn-ghost btn-sm",
         onclick: () => { closeModal(); selectedSpecId = s.spec_id; specsTab = "suggestions"; location.hash = "#/specs"; },
-      }, s.spec_title || "View suggestions"))));
+      }, s.spec_title || "View suggestions")));
   }
   if (plan.schedule?.summary) {
     body.append(el("div", { class: "schedule-banner" },
