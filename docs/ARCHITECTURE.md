@@ -217,12 +217,13 @@ The **Chat** view calls `POST /api/chat` (`app/chat_context.py`, `app/analysis.p
    `messages[]`) until purge. `GET /api/chat/threads` lists saved conversations.
 
 The Chat view hides the KPI strip and shows a compact **can / cannot** overview
-(local store metadata only — no PDFs or full paper text). The compose box uses a
-tall scrollable transcript with green (user) and white (assistant) message
-bubbles; light markdown in replies (`**bold**`, `*italic*`, `` `code` ``); large
-binding-green circular **↑** send button (center-right of the input, clear of
-the resize handle); **Enter** sends,
-**Shift+Enter** inserts a newline. `GET /api/status` exposes `capabilities`
+(local store metadata only — no PDFs or full paper text). Wide green (user) and
+white (assistant) message bubbles carry bold **YOU** / **ASSISTANT** labels; the
+transcript scrolls as threads grow. Light markdown in replies (`**bold**`,
+`*italic*`, `` `code` ``). A large binding-green circular **↑** send button sits
+in the compose footer (same row as the hint, right-aligned under the textarea
+resize handle); **Enter** sends, **Shift+Enter** inserts a newline.
+`GET /api/status` exposes `capabilities`
 (`chat`, `jobs_cancel`, etc.) so the UI can detect a stale server missing new
 routes and prompt a restart after updates. The system prompt instructs Claude not to claim access to full
 text or abstracts unless an excerpt is in the assembled context.

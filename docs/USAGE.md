@@ -255,8 +255,8 @@ These are planning hints, not deadlines. Skim faster or read deeper and your rea
 Open **Chat** after syncing your library. A compact **overview** at the top
 shows collection counts and what the assistant **can** and **cannot** use from
 your local store (no KPI strip on this view). Type a question and press **Enter**
-or click the green **↑** send button (center-right of the compose box, clear of
-the resize handle).
+or click the large green **↑** send button in the footer row (same line as the
+hint text, aligned under the textarea resize handle).
 
 **Can use:** collection names and counts; categorizations (themes, summaries);
 saved connections, paper groups, reading plans, and spec screenings; titles and
@@ -267,10 +267,10 @@ most papers unless already present in a saved analysis; anything not in
 `./data/library.json`.
 
 - **Multi-turn** — replies stay in one thread until you click **New chat**.
-- **Message bubbles** — your messages appear in green bubbles on the right;
-  assistant replies in white bubbles on the left. The transcript area is tall
-  for longer threads. Replies render light markdown (`**bold**`, `*italic*`,
-  `` `code` ``).
+- **Message bubbles** — wide green bubbles on the right with a bold **YOU**
+  label; white assistant bubbles on the left with a bold **ASSISTANT** label.
+  The transcript scrolls as threads grow. Replies render light markdown
+  (`**bold**`, `*italic*`, `` `code` ``).
 - **Grounded answers** — Claude is instructed not to claim it read full text or
   abstracts unless an excerpt appears in context; it should suggest running
   categorize, connections, groups, or spec screening to fill gaps.
@@ -291,9 +291,9 @@ the Cortex paper group?* · *Which papers matched my spec?*
 ### Workflow
 
 - Every analysis runs as a **background job**. Progress opens in a centered
-  dialog; closing it (✕) keeps the job running. Cancel only from **✕** on the
-  job row in the **Running** dropdown (not the progress popup). Track jobs there
-  (badge shows active count).
+  dialog; **Continue in background** or the dialog **✕** dismisses it without
+  cancelling. Use **Cancel job** in the dialog or **✕** on the active row in
+  **Running** to stop work. Track jobs in the dropdown (badge shows active count).
 - **Find in library** saves results after the first run. **Re-screen library**
   only assesses **new** papers added since the last screen (e.g. after a Zotero
   sync) — already-screened papers are skipped (see [BILLING.md](BILLING.md)).

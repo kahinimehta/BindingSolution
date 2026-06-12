@@ -31,9 +31,9 @@ Six sidebar views (Library → Connections → Groups → Spec → Strategies �
 - **Groups** — cross-project paper sets (≥90% grouped, ≥10 papers per set, varied sizes), set summaries, drop suggestions
 - **Spec** — upload a brief, screen your library (incremental re-screen), discover papers on PubMed, build a plan from matches
 - **Strategies** — ordered reading plans with schedule estimates
-- **Chat** — ask about your synced shelf from local metadata only (no PDFs); compact can/cannot overview
+- **Chat** — ask about your synced shelf from local metadata only (no PDFs); wide YOU/ASSISTANT bubbles, compact can/cannot overview
 
-**Running** — sidebar dropdown tracks background jobs; close the progress popup to keep working; cancel from **✕** on an active row (not the popup). Indeterminate progress for single-shot Claude steps.
+**Running** — sidebar dropdown tracks background jobs; dismiss the progress popup to keep working; cancel with **Cancel job** in the dialog or **✕** on an active row. Indeterminate progress for single-shot Claude steps.
 
 ## Assumptions
 

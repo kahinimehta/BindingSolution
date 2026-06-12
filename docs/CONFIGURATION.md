@@ -90,9 +90,10 @@ To start fresh:
 Long-running work (sync, categorization, spec screening, etc.) runs as background
 jobs. Use the sidebar **Running** dropdown to monitor progress after closing the
 progress window or reloading the page. The dropdown opens upward with an opaque
-background so multiple jobs stay readable. Close the progress popup **✕** to keep
-working — that does not cancel the job. To cancel, open **Running** and click **✕**
-on the active job row (cooperative; may wait for the current API call to finish).
+background so multiple jobs stay readable. Close the progress popup **✕** or use
+**Continue in background** to keep working — that does not cancel the job. To
+cancel, use **Cancel job** in the progress window or **✕** on the active row in
+**Running** (cooperative; may wait for the current API call to finish).
 Stopping the server (Ctrl+C) aborts all jobs immediately. Progress bars are
 **indeterminate** when a step is one
 long operation that cannot be split (single Claude call or PubMed search):
@@ -109,9 +110,9 @@ varied set sizes — not uniform chunks or mega-sets).
 
 After pulling updates, **restart** the server (`Ctrl+C`, then `make run`) so new
 API routes and `GET /api/status` `capabilities` (`chat`, `jobs_cancel`, etc.)
-match the UI. **Chat** uses a large binding-green circular **↑** send button
-(center-right of the compose box)
-(bottom-right of the input). If chat endpoints 404, job cancel shows a restart toast, or
+match the UI. **Chat** uses wide YOU/ASSISTANT message bubbles and a large
+binding-green circular **↑** send button in the compose footer (under the
+textarea resize handle). If chat endpoints 404, job cancel shows a restart toast, or
 grouping shows *Streaming is required*, an old process is usually still bound to
 port 8765.
 
