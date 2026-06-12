@@ -61,6 +61,12 @@ def create_app() -> FastAPI:
             "using_mock_llm": s.mock_llm or not s.anthropic_api_key,
             "zotero_configured": s.zotero_configured,
             "zotero_mode": s.zotero_mode,
+            "capabilities": {
+                "chat": True,
+                "groups": True,
+                "jobs_list": True,
+                "spec_discover": True,
+            },
             "library": {
                 "source": meta.get("source"),
                 "last_synced": meta.get("last_synced"),

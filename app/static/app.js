@@ -392,6 +392,10 @@ const usableProjects = () => state.projects.filter(isUsable);
 const inactiveProjects = () => state.projects.filter((p) => !isUsable(p));
 
 /* ── status / sidebar ─────────────────────────────────────────── */
+function serverSupportsChat() {
+  return state.status?.capabilities?.chat === true;
+}
+
 async function refreshStatus() {
   try {
     state.status = await api.get("/status");
@@ -913,15 +917,37 @@ function renderChatMessages(messages) {
   host.scrollTop = host.scrollHeight;
 }
 
+async function postChatMessage(text, threadId) {
+  const body = { message: text };
+  if (threadId) body.thread_id = threadId;
+  return api.post("/chat", body);
+}
+
 async function sendChatMessage() {
   const input = $("#chat-input");
   const text = (input?.value || "").trim();
   if (!text || state.busy) return;
+  if (!serverSupportsChat()) {
+    toast("Chat API not available — stop the server (Ctrl+C) and run make run again after updating.", "err");
+    return;
+  }
   state.busy = true;
   const btn = $("#chat-send");
   if (btn) btn.disabled = true;
   try {
-    const data = await api.post("/chat", { message: text, thread_id: state.chatThreadId });
+    let data;
+    try {
+      data = await postChatMessage(text, state.chatThreadId);
+    } catch (e) {
+      const staleThread = state.chatThreadId
+        && /not found/i.test(e.message || "");
+      if (staleThread) {
+        state.chatThreadId = null;
+        data = await postChatMessage(text, null);
+      } else {
+        throw e;
+      }
+    }
     state.chatThreadId = data.thread_id;
     input.value = "";
     renderChatMessages(data.messages);
@@ -931,7 +957,10 @@ async function sendChatMessage() {
     }
     await renderKpiStrip("chat");
   } catch (e) {
-    toast(e.message, "err");
+    const msg = /not found/i.test(e.message || "")
+      ? "Chat API not available — stop the server (Ctrl+C) and run make run again after updating."
+      : e.message;
+    toast(msg, "err");
   } finally {
     state.busy = false;
     if (btn) btn.disabled = false;
@@ -945,12 +974,26 @@ function startNewChat() {
   $("#chat-input")?.focus();
 }
 
+function chatUnavailableView() {
+  return el("div", { class: "empty" },
+    el("div", { class: "emoji" }, "💬"),
+    el("h3", {}, "Restart the server"),
+    el("p", {}, "This page needs a newer server build with chat support. Stop the running process (Ctrl+C in the terminal), then start it again with make run."),
+    el("p", { class: "muted" }, "If you just pulled updates, the old server keeps running until you restart it."));
+}
+
 async function renderChat() {
+  await refreshStatus();
   await loadProjects();
-  setView("chat", [
-    el("button", { class: "btn btn-sm", onclick: startNewChat }, "New chat"),
-  ]);
+  setView("chat", serverSupportsChat()
+    ? [el("button", { class: "btn btn-sm", onclick: startNewChat }, "New chat")]
+    : []);
   await renderKpiStrip("chat");
+
+  if (!serverSupportsChat()) {
+    view().replaceChildren(chatUnavailableView());
+    return;
+  }
 
   if (!state.projects.length) {
     view().replaceChildren(el("div", { class: "empty" },

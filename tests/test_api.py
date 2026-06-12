@@ -11,6 +11,7 @@ def test_status_reports_mock_mode(client):
     body = client.get("/api/status").json()
     assert body["using_mock_llm"] is True
     assert body["anthropic_model"]  # a model id is always reported
+    assert body["capabilities"]["chat"] is True
 
 
 def test_purge_library(client):

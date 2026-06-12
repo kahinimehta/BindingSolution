@@ -20,7 +20,9 @@ Progress bars are **indeterminate** (animated) during steps that are one long
 operation — a single Claude call or PubMed search — and **step-based** when work
 can be counted (sync per collection, spec screening per paper, categorize-all
 per project). **Chat** is synchronous (one request per message) — it does not
-appear in **Running**.
+appear in **Running**. After pulling app updates, **restart the server**
+(Ctrl+C, then `make run`) so new API routes (e.g. chat) are loaded — the browser
+can show new UI while an old process is still answering on port 8765.
 
 > **No keys?** Click **Load demo library** on the Library screen. You get a
 > small synthetic library spanning overlapping research areas (including a
