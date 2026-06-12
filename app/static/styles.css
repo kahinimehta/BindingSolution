@@ -113,8 +113,9 @@ a { color: inherit; text-decoration: none; }
 
 .brand {
   display: flex; align-items: flex-start; gap: 30px;
-  padding: 12px 72px 54px 0;
-  margin-right: 36px;
+  padding: 12px 96px 54px 0;
+  margin-left: -18px;
+  margin-right: 54px;
   border-bottom: 3px solid rgba(255,255,255,.08);
   margin-bottom: 42px;
 }
