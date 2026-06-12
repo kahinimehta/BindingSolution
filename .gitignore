@@ -1,0 +1,26 @@
+# ── Secrets ───────────────────────────────────────────────────────────
+# .env holds API keys and must NEVER be committed. .env.example is the
+# tracked, key-free template.
+.env
+.env.*
+!.env.example
+
+# ── Local data (synced library, specs, analyses) ─────────────────────
+data/
+
+# ── Python ────────────────────────────────────────────────────────────
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# ── OS / editor noise ─────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp

@@ -1,0 +1,3 @@
+# Optional: live Zotero sync. Not needed for the demo library or any AI
+# feature. Install with:  pip install -r requirements-zotero.txt
+pyzotero>=1.5.5
