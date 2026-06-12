@@ -91,6 +91,21 @@ The **Spec** view is a two-tab SPA panel (`Upload & manage` · `Suggested papers
    before supporting). Saved strategies store `spec_id` / `spec_title` and the
    plan carries the same fields for round-trip navigation in the SPA.
 
+### Paper groups (cross-project shelf organization)
+
+The **Groups** view calls `POST /api/groups` (`app/grouping.py`):
+
+1. **Analyze** — Claude (or `heuristic_paper_groups` offline) returns a
+   `PaperGroupingMap`: `groups` (non-overlapping `paper_keys` across projects)
+   and `drops` (duplicate, redundant, weak_fit, outdated).
+2. **Validate** — `complete_paper_groups` drops invalid keys, ensures each paper
+   appears in at most one group, and enriches groups with `papers` display refs.
+3. **Persist** — saved in `paper_groups` on the store until purge.
+
+Offline heuristics: normalized-title duplicate detection across collections,
+tag/title clustering into cross-project sets, weak-fit papers with little shelf
+overlap suggested for archive.
+
 ### Reading schedule
 
 After a plan is finalized, `reading_schedule.attach_reading_schedule` estimates
