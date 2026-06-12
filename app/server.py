@@ -16,6 +16,7 @@ from . import __version__, jobs
 from .analysis import AnalysisError, get_analyzer
 from .config import STATIC_DIR, get_settings
 from .projects import is_usable_project, summary_fields, usable_projects
+from .spec_strategy import attach_spec_mapping, projects_from_spec
 from .specs import extract_text
 from .store import Store
 
@@ -182,22 +183,39 @@ def create_app() -> FastAPI:
         goal = (payload or {}).get("goal", "")
         mode = (payload or {}).get("mode", "manual")
         keys = (payload or {}).get("project_keys", [])
+        spec_id = (payload or {}).get("spec_id")
         all_projects = store.get_projects()
         usable = {k: p for k, p in all_projects.items() if is_usable_project(p)}
+        spec = None
 
-        if mode == "auto" or not keys:
-            # Let the agent decide: use the suggested combination if we have
-            # one, else everything usable.
-            conn = store.get_connections()
-            keys = (conn or {}).get("suggested_combination") or list(usable.keys())
+        if spec_id:
+            spec = store.get_spec(spec_id)
+            if spec is None:
+                raise HTTPException(404, "Spec not found")
+            if spec.get("status") != "analyzed" or not spec.get("analysis"):
+                raise HTTPException(400, "Find relevant papers for this spec before building a reading plan.")
+            projects = projects_from_spec(spec, all_projects)
+            if not projects:
+                raise HTTPException(400, "No relevant papers to include in a reading plan.")
+            mode = "spec"
+            if not goal.strip():
+                goal = f"Read the papers most relevant to: {spec['title']}"
+        else:
+            if mode == "auto" or not keys:
+                conn = store.get_connections()
+                keys = (conn or {}).get("suggested_combination") or list(usable.keys())
+            projects = [usable[k] for k in keys if k in usable]
+            if not projects:
+                raise HTTPException(
+                    400,
+                    "No valid projects selected (empty, single-paper, and unfiled collections cannot be used).",
+                )
 
-        projects = [usable[k] for k in keys if k in usable]
-        if not projects:
-            raise HTTPException(
-                400,
-                "No valid projects selected (empty, single-paper, and unfiled collections cannot be used).",
-            )
         analyzer = get_analyzer(get_settings())
+        spec_excerpt = (spec.get("text", "")[:2000] if spec else "")
+        plan_goal = goal
+        if spec and spec_excerpt:
+            plan_goal = f"{goal.strip()}\n\nProject specification:\n{spec_excerpt}"
 
         def work(job: jobs.Job) -> dict:
             total = max(1, len(projects))
@@ -205,11 +223,15 @@ def create_app() -> FastAPI:
             for i, proj in enumerate(projects):
                 label = proj.get("short_name") or proj["name"]
                 job.set_progress(i, total, f"Sequencing “{label}”…")
-            result = analyzer.reading_strategy(projects, goal)
+            result = analyzer.reading_strategy(projects, plan_goal)
+            if spec:
+                result = attach_spec_mapping(result, spec)
             saved = store.add_strategy({
                 "goal": goal,
                 "mode": mode,
                 "project_keys": [p["key"] for p in projects],
+                "spec_id": spec["id"] if spec else None,
+                "spec_title": spec["title"] if spec else None,
                 "plan": result,
             })
             job.set_progress(total, total, "Done")

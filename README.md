@@ -62,6 +62,7 @@ Use any view in any order — nothing is sequential.
 - **Project-spec paper suggestions** — two tabs on **Project specs**:
   - **Upload & manage** — drop a PDF, Word (`.doc`/`.docx`), Markdown, or text spec. Irrelevant uploads (shopping lists, published papers, admin docs) are rejected with guidance.
   - **Suggested papers** — **Find relevant papers** screens your active library and lists only **core** and **supporting** hits, each with a short **why it's relevant** note. Runtime scales with library size; you can keep using the app while it runs.
+- **Spec ↔ reading plan mapping** — from **Suggested papers**, **Build reading plan** turns only spec-relevant papers into an ordered path (core before supporting). Each step keeps its relevance note; opening the plan links back to the spec.
 - **Purge library** — start from scratch without touching Zotero (sidebar → **Purge library**)
 
 <p align="center">

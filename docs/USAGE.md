@@ -70,10 +70,12 @@ causal inference"*) and click **Generate strategy**. You get:
   each step explained
 - **synthesis prompts** to hold in mind as you read across the set
 
-Plans are saved; open or delete them from the same screen.
+Plans are saved; open or delete them from the same screen. Plans built from a
+project spec show **from spec** in the list and a link back to **Suggested
+papers** when you open them.
 
 <p align="center">
-  <img src="screenshots/strategies.svg" alt="Reading strategies compose form" width="920" />
+  <img src="screenshots/strategies.svg" alt="Reading strategies compose form and spec-mapped plan" width="920" />
 </p>
 
 ## 5. ✦ Paper suggestions — *Project specs*
@@ -107,8 +109,15 @@ You can also open this tab any time to review past results.
 Non-relevant papers are not shown. Results are ranked so the strongest matches
 appear first. Click **Refresh suggestions** to re-screen after syncing new papers.
 
+Click **↯ Build reading plan** to turn the suggested papers into an ordered
+reading path in **Strategies**. Only **core** and **supporting** hits are
+included — not your whole library. The plan is built with one strategy API call
+(see [BILLING.md](BILLING.md)). Each step keeps its **core / supporting** flag
+and the **why it's relevant** note from the spec assessment. Open the saved plan
+to see a banner linking back to the spec's **Suggested papers** tab.
+
 <p align="center">
-  <img src="screenshots/specs.svg" alt="Suggested papers tab with relevance explanations" width="720" />
+  <img src="screenshots/specs.svg" alt="Suggested papers tab with Build reading plan button" width="720" />
 </p>
 
 ---

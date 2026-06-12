@@ -18,6 +18,7 @@ human-readable JSON store, no build step) over scale.
 │   ├─ zotero_client.py   pyzotero (Web API / local Zotero 7) │
 │   ├─ demo_data.py       bundled sample library              │
 │   ├─ specs.py     PDF/Word/MD/text extraction               │
+│   ├─ spec_strategy.py spec → filtered projects + plan map   │
 │   └─ store.py     thread-safe JSON persistence (data/)      │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -75,6 +76,12 @@ The **Project specs** view is a two-tab SPA panel (`Upload & manage` ·
    active library but only persists **core** and **supporting** hits in
    `spec.analysis`. The UI lists those in the **Suggested papers** tab with
    `relevance_explanation` and optional `use_for` tags.
+3. **Map to reading plan** — `POST /api/strategies` with optional `spec_id`
+   filters projects to spec-relevant papers (`spec_strategy.projects_from_spec`),
+   generates one reading strategy, then merges relevance onto each step
+   (`attach_spec_mapping`: `spec_relevance`, `spec_score`, `spec_why`; core
+   before supporting). Saved strategies store `spec_id` / `spec_title` and the
+   plan carries the same fields for round-trip navigation in the SPA.
 
 ## Persistence
 
@@ -95,7 +102,7 @@ a corrupt file is set aside rather than crashing. No database to run.
 | `POST` | `/api/projects/categorize-all` | Categorize every project → job |
 | `POST` | `/api/connections` | Find cross-project connections → job |
 | `GET` | `/api/connections` | Latest connection map |
-| `POST` | `/api/strategies` | Generate a reading plan (`mode`, `goal`, `project_keys`) → job |
+| `POST` | `/api/strategies` | Generate a reading plan (`mode`, `goal`, `project_keys`, optional `spec_id`) → job |
 | `GET` / `DELETE` | `/api/strategies[/{id}]` | List / delete saved plans |
 | `POST` | `/api/specs` | Upload a spec (file or `text`) |
 | `GET` / `DELETE` | `/api/specs[/{id}]` | List / fetch / delete specs |
@@ -126,6 +133,7 @@ app/
   zotero_client.py Zotero ingest (optional pyzotero)
   demo_data.py     bundled sample library
   specs.py         spec text extraction
+  spec_strategy.py spec-relevant project filter + plan mapping
   static/          the single-page UI
 scripts/           setup.sh, run.sh
 tests/             API tests (offline)

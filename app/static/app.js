@@ -685,12 +685,18 @@ async function loadStrategies() {
     host.replaceChildren(...strategies.map(strategyRow));
   } catch { /* ignore */ }
 }
+function strategyModeLabel(s) {
+  if (s.mode === "spec") return `from spec · ${s.spec_title || "project"}`;
+  if (s.mode === "auto") return "agent-chosen";
+  return "you chose";
+}
+
 function strategyRow(s) {
   const plan = s.plan || {};
   return el("div", { class: "row-item linkish" },
     el("div", { onclick: () => openStrategy(s), style: "cursor:pointer;flex:1" },
       el("h4", {}, plan.title || "Reading plan"),
-      el("div", { class: "muted" }, `${plan.sequence?.length || 0} papers · ${s.mode === "auto" ? "agent-chosen" : "you chose"} · ${fmtTime(s.created_at)}`)),
+      el("div", { class: "muted" }, `${plan.sequence?.length || 0} papers · ${strategyModeLabel(s)} · ${fmtTime(s.created_at)}`)),
     el("div", { style: "display:flex;gap:8px" },
       el("button", { class: "btn btn-ghost btn-sm", onclick: () => openStrategy(s) }, "Open"),
       el("button", { class: "btn btn-ghost btn-sm btn-danger", onclick: () => deleteStrategy(s.id) }, "Delete")));
@@ -699,13 +705,27 @@ function openStrategy(s) {
   const plan = s.plan || {};
   const body = el("div", {});
   if (plan._mock) body.append(el("span", { class: "mock-note", style: "margin-bottom:10px" }, "demo AI"));
+  if (s.spec_id) {
+    body.append(el("div", { class: "spec-map-banner" },
+      el("span", {}, "Mapped from project spec: "),
+      el("button", {
+        type: "button",
+        class: "btn btn-ghost btn-sm",
+        onclick: () => { closeModal(); selectedSpecId = s.spec_id; specsTab = "suggestions"; location.hash = "#/specs"; },
+      }, s.spec_title || "View suggestions"))));
+  }
   body.append(el("p", { class: "lead" }, plan.approach || ""));
   if (plan.goal_restatement) body.append(el("p", { class: "rel-why", style: "margin:10px 0" }, "Goal: " + plan.goal_restatement));
   const seq = el("div", { class: "sequence" });
   (plan.sequence || []).forEach((step, i) => {
+    const head = el("div", { class: "spread", style: "align-items:flex-start;gap:10px" },
+      el("h4", { style: "margin:0;flex:1" }, step.title),
+      step.spec_relevance
+        ? el("span", { class: `rel-flag rel-${step.spec_relevance}` }, step.spec_relevance.replace("_", " "))
+        : null);
     seq.append(el("div", { class: "step" },
       el("div", { class: "step-n" }, `${i + 1} · ${projName(step.project_key)}`),
-      el("h4", {}, step.title),
+      head,
       el("div", { class: "step-reason" }, step.reason)));
   });
   body.append(seq);
@@ -899,6 +919,9 @@ async function loadSpecSuggestions() {
       wrap.append(el("p", { class: "muted" }, "No relevant papers found for this spec. Try refreshing after syncing more papers."));
       wrap.append(el("button", { type: "button", class: "btn btn-primary mt-2", onclick: () => confirmAnalyzeSpec(pick) }, "Refresh suggestions"));
     } else {
+      wrap.append(el("div", { class: "spread mt-2", style: "margin-bottom:14px;align-items:center" },
+        el("p", { class: "muted", style: "margin:0;font-size:.86rem" }, "Turn these into an ordered reading plan — each step keeps its spec relevance note."),
+        el("button", { type: "button", class: "btn btn-primary btn-sm", onclick: () => buildReadingPlanFromSpec(pick) }, "↯ Build reading plan")));
       for (const r of results) wrap.append(relevanceRow(r));
     }
     host.replaceChildren(wrap);
@@ -909,6 +932,27 @@ async function openSpec(specId) {
   selectedSpecId = specId;
   specsTab = "suggestions";
   await renderSpecs();
+}
+
+async function buildReadingPlanFromSpec(specId) {
+  let spec;
+  try { spec = await api.get(`/specs/${specId}`); }
+  catch (e) { toast(e.message, "err"); return; }
+  const box = showProgressModal("Generating reading plan", "Ordering spec-relevant papers into a reading path…");
+  try {
+    const start = await api.post("/strategies", {
+      spec_id: specId,
+      goal: `Read the papers most relevant to: ${spec.title}`,
+      mode: "spec",
+    });
+    const saved = await runJob(start, { onProgress: (p) => box._update(p) });
+    closeModal();
+    toast("Reading plan ready — mapped from your spec.", "ok");
+    openStrategy(saved);
+  } catch (e) {
+    closeModal();
+    toast(e.message, "err");
+  }
 }
 
 function relevanceRow(r) {

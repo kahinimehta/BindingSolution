@@ -95,6 +95,27 @@ def test_reading_strategy_manual(client):
     assert client.get("/api/strategies").json()["strategies"] == []
 
 
+def test_strategy_from_spec(client):
+    _load_demo(client)
+    spec = client.post(
+        "/api/specs",
+        data={
+            "text": "We study fairness and calibration in recommender systems using causal inference and graphs.",
+            "title": "Fairness aim",
+        },
+    ).json()
+    run_job(client, client.post(f"/api/specs/{spec['id']}/analyze", json={}).json())
+    start = client.post("/api/strategies", json={"spec_id": spec["id"], "goal": ""}).json()
+    saved = run_job(client, start)
+    assert saved["mode"] == "spec"
+    assert saved["spec_id"] == spec["id"]
+    assert saved["plan"]["spec_id"] == spec["id"]
+    assert saved["plan"]["sequence"]
+    for step in saved["plan"]["sequence"]:
+        assert step.get("spec_relevance") in {"core", "supporting"}
+        assert step.get("spec_why")
+
+
 def test_reading_strategy_auto_mode(client):
     _load_demo(client)
     start = client.post("/api/strategies", json={"goal": "", "mode": "auto"}).json()

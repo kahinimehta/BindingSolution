@@ -21,6 +21,7 @@ Pricing depends on the model you set in `ANTHROPIC_MODEL` — see
 | **Categorize all** | 1 per active project | Low–medium | Same as clicking every card. |
 | **Find connections** | 1 | Medium | One heavy cross-library call (adaptive thinking). |
 | **Reading strategy** | 1 per plan | Medium | One heavy call; grows with papers in chosen projects. |
+| **Build reading plan** (from spec) | 1 per plan | Medium | Same as a manual strategy, but only spec-relevant papers are included — not a per-paper screen. |
 | **Upload spec** (validation) | 1 per upload | Low | Checks the text is a real project brief. |
 | **Find relevant papers** | **1 per paper screened** | **High at scale** | Scales linearly with active-library size. |
 
@@ -79,6 +80,7 @@ many papers will be screened — use it.
 | --- | --- |
 | Connections | You added/merged projects or want a fresh cross-library read |
 | Reading strategy | Your goal or project set changed |
+| Build reading plan (spec) | You refreshed spec suggestions or want a new ordering |
 | Spec suggestions | You synced new papers or changed the spec text |
 | Categorize | Papers in that collection changed materially |
 
