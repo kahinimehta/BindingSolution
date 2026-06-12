@@ -109,8 +109,8 @@ varied set sizes — not uniform chunks or mega-sets).
 
 After pulling updates, **restart** the server (`Ctrl+C`, then `make run`) so new
 API routes and `GET /api/status` `capabilities` (`chat`, `jobs_cancel`, etc.)
-match the UI. **Chat** uses a compact circular **↑** send button (bottom-right
-of the input). If chat endpoints 404, job cancel shows a restart toast, or
+match the UI. **Chat** uses a large binding-green circular **↑** send button
+(bottom-right of the input). If chat endpoints 404, job cancel shows a restart toast, or
 grouping shows *Streaming is required*, an old process is usually still bound to
 port 8765.
 

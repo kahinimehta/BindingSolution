@@ -99,8 +99,9 @@ Closing a progress modal, navigating between views, or reloading the page does
 cancel is `POST /api/jobs/{id}/cancel`, triggered from **✕** on an active row in
 the sidebar **Running** dropdown (not from the popup). `Job.check_cancelled()`
 is polled between steps in sync loops, spec screening, and before/after long
-Claude calls; mid-request API calls cannot be interrupted. Cancelled jobs get
-status `cancelled`. **✕** on a finished row only hides it from the UI. Stopping
+Claude calls; streaming structured responses also poll cancel between stream
+events. Cancelled jobs get status `cancelled` and drop from the **Running** rail
+immediately. **✕** on a finished row only hides it from the UI. Stopping
 the Python process (Ctrl+C) still aborts all threads immediately. Spec
 screening persists relevant hits incrementally, so partial progress survives an
 interruption or cancel.
@@ -214,7 +215,7 @@ The **Chat** view calls `POST /api/chat` (`app/chat_context.py`, `app/analysis.p
 
 The Chat view hides the KPI strip and shows a compact **can / cannot** overview
 (local store metadata only — no PDFs or full paper text). The compose box uses a
-compact circular **↑** send control (thin arrow, bottom-right of the input); **Enter** sends,
+large binding-green circular **↑** send button (bottom-right of the input); **Enter** sends,
 **Shift+Enter** inserts a newline. `GET /api/status` exposes `capabilities`
 (`chat`, `jobs_cancel`, etc.) so the UI can detect a stale server missing new
 routes and prompt a restart after updates. The system prompt instructs Claude not to claim access to full

@@ -19,8 +19,9 @@ refresh the page — work continues until it finishes. The progress popup **✕*
 only closes the dialog; it does **not** cancel the job. Open **Running** to see
 live progress; click a row to reopen the progress window. To **cancel** a
 running job, open **Running** and click **✕** on that row (cooperative cancel —
-stops at the next safe step; a long Claude call may finish its current request
-first). **✕** on a finished row removes it from the list. Stopping the server
+stops at the next safe step; long Claude steps poll cancel during streaming).
+Cancelled jobs disappear from **Running** automatically. **✕** on a finished row
+removes it from the list. Stopping the server
 (Ctrl+C on `make run`) still cancels everything immediately.
 Progress bars are **indeterminate** (animated) during steps that are one long
 operation — a single Claude call or PubMed search — and **step-based** when work
@@ -252,7 +253,7 @@ These are planning hints, not deadlines. Skim faster or read deeper and your rea
 Open **Chat** after syncing your library. A compact **overview** at the top
 shows collection counts and what the assistant **can** and **cannot** use from
 your local store (no KPI strip on this view). Type a question and press **Enter**
-or click the **↑** send button (bottom-right of the compose box).
+or click the green **↑** send button (bottom-right of the compose box).
 
 **Can use:** collection names and counts; categorizations (themes, summaries);
 saved connections, paper groups, reading plans, and spec screenings; titles and
@@ -273,7 +274,7 @@ Example questions: *Which collections share drift-diffusion themes?* · *What is
 the Cortex paper group?* · *Which papers matched my spec?*
 
 <p align="center">
-  <img src="screenshots/chat.svg" alt="Chat view with compact can/cannot overview, up-arrow send button, and no KPI strip" width="1000" />
+  <img src="screenshots/chat.svg" alt="Chat view with can/cannot overview, binding-green send button, and no KPI strip" width="1000" />
 </p>
 
 ---
