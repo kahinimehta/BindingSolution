@@ -348,8 +348,19 @@ function updateProgressModal(entry) {
   _progressModalUpdater(entry.progress);
 }
 
-function showProgressModal(title, message, jobId) {
-  const bar = progressBlock(message);
+function jobBootstrapProgress(kind, message) {
+  const singleShot = new Set(["strategy", "connections", "categorize", "discover-spec"]);
+  if (singleShot.has(kind)) {
+    return { current: 0, total: 1, message, indeterminate: true };
+  }
+  if (kind === "paper-groups") {
+    return { current: 0, total: 3, message, indeterminate: false };
+  }
+  return null;
+}
+
+function showProgressModal(title, message, jobId, { kind } = {}) {
+  const bar = progressBlock(message, jobBootstrapProgress(kind, message));
   const box = el("div", { class: "modal-progress" }, bar.node);
   box._update = bar.update;
   _progressModalJobId = jobId || null;
@@ -852,7 +863,7 @@ async function renderConnections() {
 async function findConnections() {
   try {
     const start = await api.post("/connections");
-    const box = showProgressModal("Finding connections", "Finding connections across projects", start.job_id);
+    const box = showProgressModal("Finding connections", "Finding connections across projects", start.job_id, { kind: start.kind });
     await runJob(start, { label: "Find connections", onProgress: (p) => box._update(p) });
     closeModal();
     toast("Connections mapped.", "ok");
@@ -1084,7 +1095,7 @@ async function renderGroups() {
 async function findPaperGroups() {
   try {
     const start = await api.post("/groups");
-    const box = showProgressModal("Grouping papers", "Preparing shelf for grouping", start.job_id);
+    const box = showProgressModal("Grouping papers", "Preparing shelf for grouping", start.job_id, { kind: start.kind });
     await runJob(start, { label: "Group papers", onProgress: (p) => box._update(p) });
     closeModal();
     toast("Paper groups ready.", "ok");
@@ -1279,7 +1290,7 @@ async function submitStrategy(e) {
   btn.disabled = true;
   try {
     const start = await api.post("/strategies", { goal, mode: strategyMode, project_keys: keys });
-    const box = showProgressModal("Generating reading plan", "Designing reading strategy", start.job_id);
+    const box = showProgressModal("Generating reading plan", "Designing reading strategy", start.job_id, { kind: start.kind });
     await runJob(start, { label: "Reading plan", onProgress: (p) => box._update(p) });
     closeModal();
     toast("Reading plan ready.", "ok");
@@ -1652,7 +1663,7 @@ function discoveryRow(r) {
 async function runDiscoverSpec(specId) {
   try {
     const start = await api.post(`/specs/${specId}/discover`, {});
-    const box = showProgressModal("Searching PubMed", "Searching PubMed for new papers", start.job_id);
+    const box = showProgressModal("Searching PubMed", "Searching PubMed for new papers", start.job_id, { kind: start.kind });
     const result = await runJob(start, { label: "PubMed discovery", onProgress: (p) => box._update(p) });
     closeModal();
     const n = result?.discovered ?? 0;
@@ -1679,7 +1690,7 @@ async function buildReadingPlanFromSpec(specId) {
       goal: `Read the papers most relevant to: ${spec.title}`,
       mode: "spec",
     });
-    const box = showProgressModal("Generating reading plan", "Designing reading strategy", start.job_id);
+    const box = showProgressModal("Generating reading plan", "Designing reading strategy", start.job_id, { kind: start.kind });
     const saved = await runJob(start, { label: "Reading plan", onProgress: (p) => box._update(p) });
     closeModal();
     toast("Reading plan ready — mapped from your spec.", "ok");
@@ -1713,9 +1724,12 @@ async function deleteSpec(id) {
 /* ── shared: progress block ───────────────────────────────────── */
 function progressFraction(cur, total, indeterminate) {
   if (!total || total === 1) return "";
+  if (indeterminate) {
+    if (total <= 5) return `Step ${Math.min(cur + 1, total)} of ${total}`;
+    return `${Math.min(cur, total)}/${total}`;
+  }
   if (total <= 5) {
-    const step = indeterminate ? Math.min(cur + 1, total) : Math.min(cur, total);
-    return `Step ${step} of ${total}`;
+    return `Step ${Math.min(Math.max(cur, 1), total)} of ${total}`;
   }
   return `${cur}/${total}`;
 }
@@ -1729,14 +1743,14 @@ function applyProgressFill(fill, cur, total, indeterminate) {
   }
 }
 
-function progressBlock(initial) {
+function progressBlock(initial, bootstrap) {
   const fill = el("div", { class: "progress-fill" });
   const msg = el("span", {}, initial);
   const pct = el("span", { class: "muted" }, "");
   const node = el("div", { class: "progress card", style: "padding:48px" },
     el("div", { class: "progress-bar" }, fill),
     el("div", { class: "progress-msg" }, msg, pct));
-  return {
+  const api = {
     node,
     update(p) {
       if (!p) return;
@@ -1747,6 +1761,8 @@ function progressBlock(initial) {
       pct.textContent = progressFraction(cur, total, p.indeterminate);
     },
   };
+  if (bootstrap) api.update(bootstrap);
+  return api;
 }
 
 /* ── router ───────────────────────────────────────────────────── */

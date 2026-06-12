@@ -172,7 +172,9 @@ Open **Strategies**. Either:
   library)
 
 Add a one-line **goal** (e.g. *"a related-work section linking fairness and
-causal inference"*) and click **Generate strategy**. You get:
+causal inference"*) and click **Generate strategy**. Progress is a single
+**indeterminate** bar while Claude designs the plan (one API call, not per-project
+steps). You get:
 
 - an ordered **reading sequence** (foundational/methodological papers first),
   each step explained

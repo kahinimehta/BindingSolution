@@ -86,6 +86,30 @@ def test_grouping_analyze_step_is_indeterminate(client, monkeypatch):
     assert saw_analyze
 
 
+def test_reading_plan_job_uses_indeterminate_progress(client, monkeypatch):
+    _load_demo(client)
+    import app.analysis as analysis_mod
+
+    orig = analysis_mod.Analyzer.reading_strategy
+
+    def slow_strategy(self, projects, goal):
+        time.sleep(0.12)
+        return orig(self, projects, goal)
+
+    monkeypatch.setattr(analysis_mod.Analyzer, "reading_strategy", slow_strategy)
+
+    projects = client.get("/api/projects").json()["projects"]
+    keys = [p["key"] for p in projects if p.get("usable")][:2]
+    start = client.post("/api/strategies", json={"goal": "read", "mode": "manual", "project_keys": keys}).json()
+    flags: list[bool] = []
+    _poll_until_done(
+        client,
+        start["job_id"],
+        on_progress=lambda j: _check_indeterminate(j, flags),
+    )
+    assert flags
+
+
 def test_strategy_uses_indeterminate_progress(client, monkeypatch):
     _load_demo(client)
     import app.analysis as analysis_mod
