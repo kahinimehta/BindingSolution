@@ -65,6 +65,7 @@ def create_app() -> FastAPI:
                 "chat": True,
                 "groups": True,
                 "jobs_list": True,
+                "jobs_cancel": True,
                 "spec_discover": True,
             },
             "library": {

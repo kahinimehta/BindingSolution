@@ -60,9 +60,13 @@ function jobLabel(kind, custom) {
   return custom || JOB_LABELS[kind] || kind;
 }
 
+function jobIsActive(status) {
+  return status === "queued" || status === "running" || status === "cancelling";
+}
+
 function persistJobStore() {
   const active = [...jobStore.byId.values()]
-    .filter((e) => e.status === "queued" || e.status === "running")
+    .filter((e) => jobIsActive(e.status))
     .map((e) => ({ id: e.id, kind: e.kind, label: e.label }));
   sessionStorage.setItem(JOB_STORAGE_KEY, JSON.stringify(active));
 }
@@ -113,9 +117,7 @@ function ensureJobPoller() {
 }
 
 async function pollActiveJobs() {
-  const active = [...jobStore.byId.values()].filter(
-    (e) => e.status === "queued" || e.status === "running",
-  );
+  const active = [...jobStore.byId.values()].filter((e) => jobIsActive(e.status));
   if (!active.length) {
     clearInterval(jobStore.poller);
     jobStore.poller = null;
@@ -214,10 +216,29 @@ function notifyJobFailure(err, { close = false } = {}) {
   return false;
 }
 
+function serverSupportsJobCancel() {
+  return state.status?.capabilities?.jobs_cancel === true;
+}
+
 async function dismissOrCancelJobEntry(entry) {
-  if (entry.status === "queued" || entry.status === "running") {
+  if (jobIsActive(entry.status)) {
+    if (entry.status === "cancelling") return;
+    if (!serverSupportsJobCancel()) {
+      toast("Cancel needs a server restart after updating (Ctrl+C, then make run).", "err");
+      return;
+    }
     try {
       await api.post(`/jobs/${entry.id}/cancel`);
+      entry.status = "cancelling";
+      entry.progress = {
+        ...(entry.progress || {}),
+        message: "Cancelling…",
+        indeterminate: false,
+      };
+      renderJobRail();
+      updateProgressModal(entry);
+      toast(`Cancelling ${entry.label}…`, "ok");
+      ensureJobPoller();
     } catch (e) {
       toast(e.message, "err");
     }
@@ -251,7 +272,7 @@ async function resumeTrackedJobs() {
       }
     }
   } catch { /* server not up */ }
-  if ([...jobStore.byId.values()].some((e) => e.status === "queued" || e.status === "running")) {
+  if ([...jobStore.byId.values()].some((e) => jobIsActive(e.status))) {
     jobStore.panelOpen = true;
   }
   ensureJobPoller();
@@ -266,7 +287,7 @@ function renderJobRail() {
   if (!rail || !panel) return;
 
   const visible = [...jobStore.byId.values()].filter((e) => !e.hidden);
-  const running = visible.filter((e) => e.status === "queued" || e.status === "running");
+  const running = visible.filter((e) => jobIsActive(e.status));
   const recent = visible.filter((e) => e.status === "done" || e.status === "error" || e.status === "cancelled");
 
   if (badge) {
@@ -291,8 +312,8 @@ function renderJobRail() {
     const done = entry.status === "done";
     const indeterminate = !done && !!entry.progress?.indeterminate;
     const ratio = done ? 1 : indeterminate ? 0.4 : total ? cur / total : 0.08;
-    const active = entry.status === "queued" || entry.status === "running";
-    const cls = `job-rail-item${entry.status === "done" ? " done" : ""}${entry.status === "error" ? " error" : ""}${entry.status === "cancelled" ? " cancelled" : ""}`;
+    const active = jobIsActive(entry.status);
+    const cls = `job-rail-item${entry.status === "done" ? " done" : ""}${entry.status === "error" ? " error" : ""}${entry.status === "cancelled" ? " cancelled" : ""}${entry.status === "cancelling" ? " cancelling" : ""}`;
     const reopen = () => {
       if (active) {
         showProgressModal(entry.label, entry.progress?.message || "Working", entry.id, { kind: entry.kind });
@@ -307,8 +328,9 @@ function renderJobRail() {
         el("button", {
           type: "button",
           class: `job-rail-dismiss${active ? " job-rail-cancel" : ""}`,
-          title: active ? "Cancel job" : "Remove from list",
-          "aria-label": active ? "Cancel job" : "Remove from list",
+          title: entry.status === "cancelling" ? "Cancelling…" : active ? "Cancel job" : "Remove from list",
+          "aria-label": entry.status === "cancelling" ? "Cancelling" : active ? "Cancel job" : "Remove from list",
+          disabled: entry.status === "cancelling",
           onclick: (e) => { e.stopPropagation(); dismissOrCancelJobEntry(entry); },
         }, "✕")),
       el("div", { class: "job-rail-item-bar" },

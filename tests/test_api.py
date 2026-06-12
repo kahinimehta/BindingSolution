@@ -12,6 +12,7 @@ def test_status_reports_mock_mode(client):
     assert body["using_mock_llm"] is True
     assert body["anthropic_model"]  # a model id is always reported
     assert body["capabilities"]["chat"] is True
+    assert body["capabilities"]["jobs_cancel"] is True
 
 
 def test_purge_library(client):

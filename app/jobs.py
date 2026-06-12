@@ -25,7 +25,7 @@ class Job:
     def __init__(self, kind: str) -> None:
         self.id = uuid.uuid4().hex[:12]
         self.kind = kind
-        self.status = "queued"  # queued | running | done | error | cancelled
+        self.status = "queued"  # queued | running | cancelling | done | error | cancelled
         self.progress: dict[str, Any] = {
             "current": 0, "total": 0, "message": "", "indeterminate": False,
         }
@@ -39,7 +39,16 @@ class Job:
         """Request cooperative cancellation. Returns False if already finished."""
         if self.status in ("done", "error", "cancelled"):
             return False
+        if self.status == "cancelling":
+            return True
         self._cancel.set()
+        self.progress = {
+            **self.progress,
+            "message": "Cancelling…",
+            "indeterminate": False,
+        }
+        if self.status in ("queued", "running"):
+            self.status = "cancelling"
         return True
 
     def check_cancelled(self) -> None:
@@ -102,9 +111,12 @@ def start(kind: str, fn: Callable[[Job], Any]) -> Job:
         _prune()
 
     def _runner() -> None:
-        job.status = "running"
         try:
+            job.check_cancelled()
+            if job.status == "queued":
+                job.status = "running"
             job.result = fn(job)
+            job.check_cancelled()
             _finalize_done_progress(job)
             job.status = "done"
         except JobCancelled:
@@ -151,5 +163,5 @@ def list_jobs(*, active_only: bool = False) -> list[Job]:
         jobs = list(_registry.values())
     jobs.sort(key=lambda j: j.created_at, reverse=True)
     if active_only:
-        jobs = [j for j in jobs if j.status in ("queued", "running")]
+        jobs = [j for j in jobs if j.status in ("queued", "running", "cancelling")]
     return jobs

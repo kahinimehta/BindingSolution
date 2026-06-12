@@ -86,6 +86,36 @@ def test_cancel_job_endpoint(client, monkeypatch):
     assert status == "cancelled"
 
 
+def test_cancel_sets_cancelling_status_immediately(client):
+    import threading
+    import app.jobs as jobs_mod
+
+    jobs_mod.reset_registry()
+    started = threading.Event()
+    release = threading.Event()
+
+    def work(job: jobs.Job) -> str:
+        started.set()
+        release.wait(timeout=2)
+        job.check_cancelled()
+        return "done"
+
+    job = jobs.start("test", work)
+    assert started.wait(timeout=2)
+    resp = client.post(f"/api/jobs/{job.id}/cancel")
+    assert resp.status_code == 200
+    body = client.get(f"/api/jobs/{job.id}").json()
+    assert body["status"] == "cancelling"
+    assert body["progress"]["message"] == "Cancelling…"
+    release.set()
+    deadline = __import__("time").time() + 3
+    while __import__("time").time() < deadline:
+        if client.get(f"/api/jobs/{job.id}").json()["status"] == "cancelled":
+            break
+        __import__("time").sleep(0.02)
+    assert client.get(f"/api/jobs/{job.id}").json()["status"] == "cancelled"
+
+
 def test_cancel_finished_job_returns_409(client):
     start = client.post("/api/library/sync", json={"source": "demo"}).json()
     from tests.conftest import run_job
