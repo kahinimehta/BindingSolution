@@ -58,11 +58,11 @@ Live AI features bill **your** Anthropic account per token. Zotero sync, PubMed 
 Try demo mode first; tidy thin Zotero folders; read the spec-screening confirmation before a large run; set a [spend limit](https://console.anthropic.com/settings/billing). Full detail: [docs/BILLING.md](docs/BILLING.md).
 
 <p align="center">
-  <img src="docs/screenshots/library.svg" alt="Library view with project cards, hero toolbar, and Running dropdown" width="1000" />
+  <img src="docs/screenshots/library.svg" alt="Library view with project cards and Running cancel rows" width="1000" />
 </p>
 
 <p align="center">
-  <img src="docs/screenshots/connections.svg" alt="Connections view with shared threads and Running dropdown" width="1000" />
+  <img src="docs/screenshots/connections.svg" alt="Connections view with shared threads and Running row cancel" width="1000" />
 </p>
 
 <p align="center">
@@ -76,7 +76,7 @@ Try demo mode first; tidy thin Zotero folders; read the spec-screening confirmat
 </p>
 
 <p align="center">
-  <img src="docs/screenshots/strategies.svg" alt="Reading strategies with plan generation progress" width="1000" />
+  <img src="docs/screenshots/strategies.svg" alt="Reading strategies with progress dialog and Cancel job" width="1000" />
 </p>
 
 <p align="center">

@@ -72,7 +72,7 @@ anything in Zotero. With no Zotero credentials, use **Load demo library** on the
 empty state instead (same sync endpoint, bundled sample data).
 
 <p align="center">
-  <img src="screenshots/library.svg" alt="Library view with six sidebar tabs, full-height project cards, hero toolbar, and Running dropdown (categorize-all 3/13)" width="1000" />
+  <img src="screenshots/library.svg" alt="Library view with project cards, hero toolbar, and Running dropdown with cancel on active rows" width="1000" />
 </p>
 
 ## 2. 📂 Categorize projects — *Library*
@@ -107,7 +107,7 @@ collection. Claude reads across all projects and surfaces:
 Connections need at least two projects.
 
 <p align="center">
-  <img src="screenshots/connections.svg" alt="Connections view with shared threads, suggested groupings, and Running dropdown showing Step 2 of 3 indeterminate analyze" width="1000" />
+  <img src="screenshots/connections.svg" alt="Connections view with shared threads and Running row cancel during Step 2 of 3 analyze" width="1000" />
 </p>
 
 ## 4. ◎ Group papers — *Groups*
@@ -154,7 +154,7 @@ tag clustering, and coverage balancing); with a Claude key the same schema is
 filled by the model.
 
 <p align="center">
-  <img src="screenshots/groups.svg" alt="Groups view with 90% grouped coverage, varied set sizes, set summaries, and Running dropdown at Step 2 of 3 indeterminate analyze" width="1000" />
+  <img src="screenshots/groups.svg" alt="Groups view with 90% grouped coverage and Running row cancel during analyze" width="1000" />
 </p>
 
 ## 5. ✦ Spec — upload, screen library, discover on PubMed
@@ -185,7 +185,7 @@ Open **Spec** in the sidebar. The view has two tabs with different jobs:
    plan** to turn them into an ordered path in **Strategies**.
 
 <p align="center">
-  <img src="screenshots/specs-upload.svg" alt="Spec upload with screen-library confirm dialog, library matches, and incremental re-screen" width="1000" />
+  <img src="screenshots/specs-upload.svg" alt="Spec upload with screen-library confirm and Cancel job in progress dialog" width="1000" />
 </p>
 
 ### Suggested papers (PubMed)
@@ -247,7 +247,7 @@ Estimates assume a **medium academic reading pace**:
 These are planning hints, not deadlines. Skim faster or read deeper and your real time will differ. The schedule banner on each plan states the assumptions used.
 
 <p align="center">
-  <img src="screenshots/strategies.svg" alt="Reading strategies compose form, saved plans with schedule estimates, and Running dropdown with indeterminate plan generation" width="1000" />
+  <img src="screenshots/strategies.svg" alt="Reading strategies with progress dialog (Cancel job / Continue in background) and Running cancel" width="1000" />
 </p>
 
 ## 7. 💬 Chat — *Chat*
@@ -281,7 +281,7 @@ Example questions: *Which collections share drift-diffusion themes?* · *What is
 the Cortex paper group?* · *Which papers matched my spec?*
 
 <p align="center">
-  <img src="screenshots/chat.svg" alt="Chat view with can/cannot overview, binding-green send button, and no KPI strip" width="1000" />
+  <img src="screenshots/chat.svg" alt="Chat view with message bubbles, tall transcript, markdown bold, and send button" width="1000" />
 </p>
 
 ---

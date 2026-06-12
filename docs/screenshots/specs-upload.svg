@@ -80,8 +80,8 @@
     <text x="846" y="103" fill="#8a8478" font-size="12" text-anchor="middle" font-family="system-ui, sans-serif">&#x2715;</text>
     <text x="476" y="156" fill="#5a564c" font-family="system-ui, sans-serif" font-size="11.5">Re-screen screens only new papers (118 papers not screened yet).</text>
     <text x="476" y="174" fill="#5a564c" font-family="system-ui, sans-serif" font-size="11.5">Saved matches are kept.</text>
-    <text x="476" y="210" fill="#8a8478" font-family="system-ui, sans-serif" font-size="10.5">Depending on how many papers you have, this can take a while. Close the</text>
-    <text x="476" y="226" fill="#8a8478" font-family="system-ui, sans-serif" font-size="10.5">progress window or track it under <tspan font-weight="600" fill="#5a564c">Running</tspan> at the bottom of the sidebar.</text>
+    <text x="476" y="210" fill="#8a8478" font-family="system-ui, sans-serif" font-size="10.5">Depending on how many papers you have, this can take a while. The progress</text>
+    <text x="476" y="226" fill="#8a8478" font-family="system-ui, sans-serif" font-size="10.5">dialog has <tspan font-weight="600" fill="#5a564c">Cancel job</tspan> or track under <tspan font-weight="600" fill="#5a564c">Running</tspan> (&#x2715; on each row).</text>
     <rect x="448" y="324" width="424" height="84" rx="0" fill="#faf6ec"/>
     <line x1="448" y1="324" x2="872" y2="324" stroke="#e2d9c6" stroke-width="2"/>
     <rect x="652" y="348" width="72" height="30" rx="9" fill="#fff" stroke="#d3c8b0"/>
