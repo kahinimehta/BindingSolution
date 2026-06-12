@@ -92,8 +92,8 @@ jobs. Use the sidebar **Running** panel to monitor progress after closing the
 progress window or reloading the page. Only stopping the server (e.g. Ctrl+C)
 cancels in-flight jobs. Progress bars are **indeterminate** when a step is one
 long operation that cannot be split (single Claude call or PubMed search):
-categorize one project, find connections, design a reading plan, discover on
-PubMed, load demo library, and the **analyze** step of **Group papers**
+categorize one project, design a reading plan, discover on PubMed, load demo
+library, and the **analyze** step of **Find connections** and **Group papers**
 (prepare → analyze → apply). **Linear** jobs show `current/total` or *Step N of
 M*: Zotero sync per collection, **Categorize all** per project (indeterminate
 while each project is categorized), and spec screening per paper. After a run,

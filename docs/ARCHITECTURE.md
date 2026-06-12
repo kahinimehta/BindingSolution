@@ -128,6 +128,12 @@ The **Spec** view is a two-tab SPA panel (`Upload & manage` · `Suggested papers
    before supporting). Saved strategies store `spec_id` / `spec_title` and the
    plan carries the same fields for round-trip navigation in the SPA.
 
+### Connections (cross-project map)
+
+`POST /api/connections` uses **phase-based** job progress (prepare → analyze →
+apply). The analyze step is **indeterminate** because finding connections is one
+Claude call across active projects, not one call per collection.
+
 ### Paper groups (cross-project shelf organization)
 
 The **Groups** view calls `POST /api/groups` (`app/grouping.py`):

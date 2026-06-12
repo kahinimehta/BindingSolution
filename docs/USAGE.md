@@ -83,8 +83,10 @@ count more than once; the subtitle then shows how many **unique** items that is.
 
 ## 3. ⁂ Find connections — *Connections*
 
-Open **Connections** and click **Find connections**. Claude reads across all
-projects and surfaces:
+Open **Connections** and click **Find connections**. Progress is **phase-based**
+(prepare → analyze → apply) with an **indeterminate** bar during the analyze step
+because connections are one Claude pass across your projects, not one call per
+collection. Claude reads across all projects and surfaces:
 
 - **Shared threads** — a concept, method, dataset, or author that links two or
   more projects, each with a strength (strong / moderate / weak)

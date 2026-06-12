@@ -349,11 +349,11 @@ function updateProgressModal(entry) {
 }
 
 function jobBootstrapProgress(kind, message) {
-  const singleShot = new Set(["strategy", "connections", "categorize", "discover-spec"]);
+  const singleShot = new Set(["strategy", "categorize", "discover-spec"]);
   if (singleShot.has(kind)) {
     return { current: 0, total: 1, message, indeterminate: true };
   }
-  if (kind === "paper-groups") {
+  if (kind === "connections" || kind === "paper-groups") {
     return { current: 0, total: 3, message, indeterminate: false };
   }
   return null;
@@ -863,7 +863,7 @@ async function renderConnections() {
 async function findConnections() {
   try {
     const start = await api.post("/connections");
-    const box = showProgressModal("Finding connections", "Finding connections across projects", start.job_id, { kind: start.kind });
+    const box = showProgressModal("Finding connections", "Preparing active projects", start.job_id, { kind: start.kind });
     await runJob(start, { label: "Find connections", onProgress: (p) => box._update(p) });
     closeModal();
     toast("Connections mapped.", "ok");

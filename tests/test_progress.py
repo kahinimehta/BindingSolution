@@ -34,7 +34,7 @@ def _check_indeterminate(job, bucket: list) -> None:
         bucket.append(True)
 
 
-def test_connections_progress_flags(client, monkeypatch):
+def test_connections_analyze_step_is_indeterminate(client, monkeypatch):
     _load_demo(client)
     import app.analysis as analysis_mod
 
@@ -47,13 +47,21 @@ def test_connections_progress_flags(client, monkeypatch):
     monkeypatch.setattr(analysis_mod.Analyzer, "find_connections", slow_find)
 
     start = client.post("/api/connections").json()
-    flags: list[bool] = []
-    _poll_until_done(
-        client,
-        start["job_id"],
-        on_progress=lambda j: _check_indeterminate(j, flags),
-    )
-    assert flags, "expected indeterminate progress during connections"
+    saw_analyze = False
+
+    def on_progress(job):
+        nonlocal saw_analyze
+        p = job["progress"]
+        msg = p.get("message", "")
+        assert "…" not in msg
+        if msg.startswith("Preparing "):
+            assert not p.get("indeterminate")
+        if msg.startswith("Analyzing connections"):
+            saw_analyze = True
+            assert p.get("indeterminate")
+
+    _poll_until_done(client, start["job_id"], on_progress=on_progress)
+    assert saw_analyze
 
 
 def test_grouping_analyze_step_is_indeterminate(client, monkeypatch):

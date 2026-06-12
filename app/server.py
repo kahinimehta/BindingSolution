@@ -185,10 +185,14 @@ def create_app() -> FastAPI:
         analyzer = get_analyzer(get_settings())
 
         def work(job: jobs.Job) -> dict:
-            job.set_progress(0, 1, "Finding connections across projects", indeterminate=True)
+            steps = 3
+            scope = f"{len(projects)} active projects"
+            job.set_progress(0, steps, f"Preparing {scope}")
+            job.set_progress(1, steps, f"Analyzing connections across {scope}", indeterminate=True)
             result = analyzer.find_connections(projects)
+            job.set_progress(2, steps, "Applying connections")
             store.set_connections({**result, "generated_at": _now()})
-            job.set_progress(1, 1, "Done")
+            job.set_progress(steps, steps, "Done")
             return result
 
         return _start("connections", work)
