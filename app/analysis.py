@@ -10,6 +10,7 @@ deterministic heuristic so the whole app stays usable offline.
 """
 from __future__ import annotations
 
+import concurrent.futures
 import textwrap
 from typing import Any, Callable
 
@@ -93,6 +94,42 @@ class Analyzer:
             return True
         return max_tokens > _NONSTREAMING_TIME_TOKEN_LIMIT
 
+    def _call_with_cancel_polling(
+        self,
+        fn: Callable[[], Any],
+        cancel_check: Callable[[], None],
+    ) -> Any:
+        """Run a blocking Claude call while polling cancel on the caller thread.
+
+        Adaptive-thinking streams can go silent for long stretches; cancel must
+        not wait for the next stream event (connections + reading plans).
+        """
+        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as pool:
+            future = pool.submit(fn)
+            while True:
+                cancel_check()
+                try:
+                    return future.result(timeout=0.25)
+                except concurrent.futures.TimeoutError:
+                    continue
+
+    def _consume_message_stream(
+        self,
+        kwargs: dict[str, Any],
+        *,
+        cancel_check: Callable[[], None] | None = None,
+    ) -> Any:
+        def _consume() -> Any:
+            with self._client.messages.stream(**kwargs) as stream:
+                for _ in stream:
+                    if cancel_check:
+                        cancel_check()
+                return stream.get_final_message()
+
+        if cancel_check:
+            return self._call_with_cancel_polling(_consume, cancel_check)
+        return _consume()
+
     def _structured_response(
         self,
         kwargs: dict[str, Any],
@@ -102,18 +139,11 @@ class Analyzer:
         """Call Claude with structured output; stream when the SDK requires it."""
         import anthropic
 
-        def _poll_cancel() -> None:
-            if cancel_check:
-                cancel_check()
-
         max_tokens = kwargs["max_tokens"]
         use_stream = self._needs_streaming(max_tokens) or cancel_check is not None
         try:
             if use_stream:
-                with self._client.messages.stream(**kwargs) as stream:
-                    for _ in stream:
-                        _poll_cancel()
-                    return stream.get_final_message()
+                return self._consume_message_stream(kwargs, cancel_check=cancel_check)
             return self._client.messages.parse(**kwargs)
         except ValidationError as exc:
             raise AnalysisError(
@@ -122,10 +152,7 @@ class Analyzer:
         except ValueError as exc:
             if "Streaming is required" not in str(exc):
                 raise
-            with self._client.messages.stream(**kwargs) as stream:
-                for _ in stream:
-                    _poll_cancel()
-                return stream.get_final_message()
+            return self._consume_message_stream(kwargs, cancel_check=cancel_check)
         except anthropic.APIStatusError as exc:
             raise AnalysisError(f"Claude API error ({exc.status_code}): {exc.message}") from exc
         except anthropic.APIConnectionError as exc:

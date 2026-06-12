@@ -1,4 +1,5 @@
 """Analyzer error handling and grouping retries."""
+import pytest
 from pydantic import ValidationError
 
 from app.analysis import AnalysisError, Analyzer
@@ -109,8 +110,59 @@ def test_structured_response_polls_cancel_check_during_stream(monkeypatch):
         "output_format": ConnectionMap,
     }, cancel_check=lambda: cancel_checks.append(1))
     assert result.parsed_output.overview == "ok"
-    assert cancel_checks == [1, 1, 1]
+    assert len(cancel_checks) >= 3
     assert not parse_calls
+
+
+def test_structured_response_polls_cancel_during_stream_gaps(monkeypatch):
+    """Adaptive-thinking streams can be silent; cancel must not wait for events."""
+    import time
+
+    from app.jobs import JobCancelled
+    from app.schemas import ConnectionMap
+
+    analyzer = _analyzer(monkeypatch)
+
+    class FakeParsed:
+        stop_reason = "end_turn"
+        parsed_output = ConnectionMap(
+            overview="ok",
+            shared_threads=[],
+            clusters=[],
+            suggested_combination=[],
+        )
+
+    class SlowStream:
+        def __iter__(self):
+            time.sleep(0.6)
+            yield 0
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args):
+            return False
+
+        def get_final_message(self):
+            return FakeParsed()
+
+    cancelled = {"n": 0}
+
+    def cancel_check() -> None:
+        cancelled["n"] += 1
+        if cancelled["n"] >= 2:
+            raise JobCancelled("Cancelled")
+
+    monkeypatch.setattr(analyzer._client.messages, "stream", lambda **_kwargs: SlowStream())
+
+    with pytest.raises(JobCancelled):
+        analyzer._structured_response({
+            "model": analyzer.model,
+            "max_tokens": 4000,
+            "system": "sys",
+            "messages": [{"role": "user", "content": "hi"}],
+            "output_format": ConnectionMap,
+        }, cancel_check=cancel_check)
 
 
 def test_parse_wraps_validation_error(monkeypatch):
