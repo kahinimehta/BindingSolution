@@ -153,76 +153,7 @@ filled by the model.
   <img src="screenshots/groups.svg" alt="Groups view with 90% grouped coverage, varied set sizes, set summaries, and Running dropdown at Step 2 of 3 indeterminate analyze" width="1000" />
 </p>
 
-## 5. 💬 Chat — *Chat*
-
-Open **Chat** after syncing your library. A compact **overview** at the top
-shows collection counts and what the assistant **can** and **cannot** use from
-your local store (no KPI strip on this view). Type a question and press **Enter**
-or click the **↑** send button (bottom-right of the compose box).
-
-**Can use:** collection names and counts; categorizations (themes, summaries);
-saved connections, paper groups, reading plans, and spec screenings; titles and
-tags for papers explicitly named in those analyses.
-
-**Cannot access:** full paper text or PDFs; abstracts, authors, or findings for
-most papers unless already present in a saved analysis; anything not in
-`./data/library.json`.
-
-- **Multi-turn** — replies stay in one thread until you click **New chat**.
-- **Grounded answers** — Claude is instructed not to claim it read full text or
-  abstracts unless an excerpt appears in context; it should suggest running
-  categorize, connections, groups, or spec screening to fill gaps.
-- **Cost** — one Claude call per message (lightweight compared to per-paper
-  spec screening). Demo mode uses heuristic replies when no API key is set.
-
-Example questions: *Which collections share drift-diffusion themes?* · *What is in
-the Cortex paper group?* · *Which papers matched my spec?*
-
-<p align="center">
-  <img src="screenshots/chat.svg" alt="Chat view with compact can/cannot overview, up-arrow send button, and no KPI strip" width="1000" />
-</p>
-
-## 6. ↯ Plan your reading — *Strategies*
-
-Open **Strategies**. Either:
-
-- **I choose projects** — tick the projects to combine, or
-- **Let the agent decide** — it uses the suggested combination (or your whole
-  library)
-
-Add a one-line **goal** (e.g. *"a related-work section linking fairness and
-causal inference"*) and click **Generate strategy**. Progress is a single
-**indeterminate** bar while Claude designs the plan (one API call, not per-project
-steps). You get:
-
-- an ordered **reading sequence** (foundational/methodological papers first),
-  each step explained
-- a **reading schedule** — estimated time per paper, total hours, and a
-  day-by-day layout
-- **synthesis prompts** to hold in mind as you read across the set
-
-Plans are saved; open or delete them from the same screen. Plans built from a
-spec show **from spec** in the list and a link back to the spec's **Library
-matches** when you open them.
-
-### Reading time assumptions
-
-Estimates assume a **medium academic reading pace**:
-
-| Assumption | Value |
-| --- | --- |
-| Reading speed | **~12 pages/hour** (~5 min/page) — careful read of dense PDFs |
-| Default paper length | **9 pages** when Zotero has no page count (typical conference/journal article) |
-| Longer papers | Surveys/reviews ~18 pages; theses/books ~35 pages; inferred from tags and abstract length when needed |
-| Daily budget | **2 hours/day** of focused reading to spread steps across **Day 1**, **Day 2**, … |
-
-These are planning hints, not deadlines. Skim faster or read deeper and your real time will differ. The schedule banner on each plan states the assumptions used.
-
-<p align="center">
-  <img src="screenshots/strategies.svg" alt="Reading strategies compose form, saved plans with schedule estimates, and Running dropdown with indeterminate plan generation" width="1000" />
-</p>
-
-## 7. ✦ Spec — upload, screen library, discover on PubMed
+## 5. ✦ Spec — upload, screen library, discover on PubMed
 
 Open **Spec** in the sidebar. The view has two tabs with different jobs:
 
@@ -273,6 +204,75 @@ the flow offline.
 
 <p align="center">
   <img src="screenshots/specs.svg" alt="Suggested papers with large-type layout, PubMed discovery tab" width="1000" />
+</p>
+
+## 6. ↯ Plan your reading — *Strategies*
+
+Open **Strategies**. Either:
+
+- **I choose projects** — tick the projects to combine, or
+- **Let the agent decide** — it uses the suggested combination (or your whole
+  library)
+
+Add a one-line **goal** (e.g. *"a related-work section linking fairness and
+causal inference"*) and click **Generate strategy**. Progress is a single
+**indeterminate** bar while Claude designs the plan (one API call, not per-project
+steps). You get:
+
+- an ordered **reading sequence** (foundational/methodological papers first),
+  each step explained
+- a **reading schedule** — estimated time per paper, total hours, and a
+  day-by-day layout
+- **synthesis prompts** to hold in mind as you read across the set
+
+Plans are saved; open or delete them from the same screen. Plans built from a
+spec show **from spec** in the list and a link back to the spec's **Library
+matches** when you open them.
+
+### Reading time assumptions
+
+Estimates assume a **medium academic reading pace**:
+
+| Assumption | Value |
+| --- | --- |
+| Reading speed | **~12 pages/hour** (~5 min/page) — careful read of dense PDFs |
+| Default paper length | **9 pages** when Zotero has no page count (typical conference/journal article) |
+| Longer papers | Surveys/reviews ~18 pages; theses/books ~35 pages; inferred from tags and abstract length when needed |
+| Daily budget | **2 hours/day** of focused reading to spread steps across **Day 1**, **Day 2**, … |
+
+These are planning hints, not deadlines. Skim faster or read deeper and your real time will differ. The schedule banner on each plan states the assumptions used.
+
+<p align="center">
+  <img src="screenshots/strategies.svg" alt="Reading strategies compose form, saved plans with schedule estimates, and Running dropdown with indeterminate plan generation" width="1000" />
+</p>
+
+## 7. 💬 Chat — *Chat*
+
+Open **Chat** after syncing your library. A compact **overview** at the top
+shows collection counts and what the assistant **can** and **cannot** use from
+your local store (no KPI strip on this view). Type a question and press **Enter**
+or click the **↑** send button (bottom-right of the compose box).
+
+**Can use:** collection names and counts; categorizations (themes, summaries);
+saved connections, paper groups, reading plans, and spec screenings; titles and
+tags for papers explicitly named in those analyses.
+
+**Cannot access:** full paper text or PDFs; abstracts, authors, or findings for
+most papers unless already present in a saved analysis; anything not in
+`./data/library.json`.
+
+- **Multi-turn** — replies stay in one thread until you click **New chat**.
+- **Grounded answers** — Claude is instructed not to claim it read full text or
+  abstracts unless an excerpt appears in context; it should suggest running
+  categorize, connections, groups, or spec screening to fill gaps.
+- **Cost** — one Claude call per message (lightweight compared to per-paper
+  spec screening). Demo mode uses heuristic replies when no API key is set.
+
+Example questions: *Which collections share drift-diffusion themes?* · *What is in
+the Cortex paper group?* · *Which papers matched my spec?*
+
+<p align="center">
+  <img src="screenshots/chat.svg" alt="Chat view with compact can/cannot overview, up-arrow send button, and no KPI strip" width="1000" />
 </p>
 
 ---

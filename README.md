@@ -29,9 +29,9 @@ Six sidebar views — use in any order:
 - **Library** — sync Zotero (web API or local Zotero 7) or load demo data; categorize collections; **Sync** / **Purge** in the hero toolbar
 - **Connections** — shared threads and suggested project groupings across active collections
 - **Groups** — cross-project paper sets (≥90% grouped, ≥10 papers per set, varied sizes), set summaries, drop suggestions
-- **Chat** — ask about your synced shelf from local metadata only (no PDFs); compact can/cannot overview
-- **Strategies** — ordered reading plans with schedule estimates
 - **Spec** — upload a brief, screen your library (incremental re-screen), discover papers on PubMed, build a plan from matches
+- **Strategies** — ordered reading plans with schedule estimates
+- **Chat** — ask about your synced shelf from local metadata only (no PDFs); compact can/cannot overview
 
 **Running** — sidebar dropdown tracks background jobs; close the progress popup to keep working; cancel from **✕** on an active row (not the popup). Indeterminate progress for single-shot Claude steps.
 
@@ -70,7 +70,9 @@ Try demo mode first; tidy thin Zotero folders; read the spec-screening confirmat
 </p>
 
 <p align="center">
-  <img src="docs/screenshots/chat.svg" alt="Chat view with can/cannot overview and send button" width="1000" />
+  <img src="docs/screenshots/specs-upload.svg" alt="Spec upload, library matches, and re-screen" width="1000" />
+  <br /><br />
+  <img src="docs/screenshots/specs.svg" alt="Suggested papers from PubMed discovery" width="1000" />
 </p>
 
 <p align="center">
@@ -78,9 +80,7 @@ Try demo mode first; tidy thin Zotero folders; read the spec-screening confirmat
 </p>
 
 <p align="center">
-  <img src="docs/screenshots/specs-upload.svg" alt="Spec upload, library matches, and re-screen" width="1000" />
-  <br /><br />
-  <img src="docs/screenshots/specs.svg" alt="Suggested papers from PubMed discovery" width="1000" />
+  <img src="docs/screenshots/chat.svg" alt="Chat view with can/cannot overview and send button" width="1000" />
 </p>
 
 ## Docs

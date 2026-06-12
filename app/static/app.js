@@ -1,5 +1,5 @@
 /* BindingSolution frontend — vanilla JS SPA, no build step.
-   Views: Library · Connections · Groups · Chat · Strategies · Spec.
+   Views: Library · Connections · Groups · Spec · Strategies · Chat.
    Long tasks run as server jobs; we poll /api/jobs/{id} for live progress. */
 
 const $ = (sel, root = document) => root.querySelector(sel);
