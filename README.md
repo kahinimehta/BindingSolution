@@ -47,7 +47,7 @@ Data lives in `./data/library.json` (gitignored). `make run` picks up where you 
 - **Project categorization** — discipline, themes, methods, summary per collection
 - **Cross-project connections** — shared threads and suggested groupings
 - **Reading strategies** — ordered paths with synthesis prompts
-- **Project-spec matching** — drop a PDF, Word (`.doc`/`.docx`), or text spec; score every paper against your aim
+- **Project-spec matching** — drop a PDF, Word (`.doc`/`.docx`), or text spec; score every paper against your aim. Analysis runs paper-by-paper, so a confirmation appears before it starts — runtime scales with how many papers are in your active library (small libraries finish in under a minute; large ones can take several minutes). You can keep using the app while it runs.
 - **Zotero sync** — Web API or local Zotero 7; demo library included
 
 <p align="center">

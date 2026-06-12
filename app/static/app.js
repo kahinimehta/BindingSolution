@@ -689,16 +689,30 @@ function specRow(s) {
         el("span", { class: `pill ${status}` }, s.status === "analyzed" ? `${s.num_assessed} assessed` : s.status)),
       el("div", { class: "muted", style: "margin-top:3px" }, esc(s.preview).slice(0, 120) + "…")),
     el("div", { style: "display:flex;gap:8px" },
-      el("button", { class: "btn btn-primary btn-sm", onclick: () => analyzeSpec(s.id) }, s.status === "analyzed" ? "Re-analyze" : "Analyze"),
+      el("button", { class: "btn btn-primary btn-sm", onclick: () => confirmAnalyzeSpec(s.id) }, s.status === "analyzed" ? "Re-analyze" : "Analyze"),
       el("button", { class: "btn btn-ghost btn-sm btn-danger", onclick: () => deleteSpec(s.id) }, "Delete")));
 }
 function offerAnalyze(spec) {
   if (!usableProjects().length) { toast("Saved — sync a library with categorized collections to analyze.", ""); return; }
-  analyzeSpec(spec.id);
+  confirmAnalyzeSpec(spec.id);
 }
 
-async function analyzeSpec(specId) {
+function confirmAnalyzeSpec(specId) {
   if (!usableProjects().length) { toast("Sync a library with papers in collections first.", "err"); return; }
+  const papers = totalPapers(true);
+  const paperLabel = papers === 1 ? "paper" : "papers";
+  const body = el("div", {},
+    el("p", { class: "lead" },
+      `This will assess every paper in your active library (${papers} ${paperLabel}) against your project spec.`),
+    el("p", { class: "muted", style: "margin-top:12px;font-size:.9rem" },
+      "Depending on how many papers you have, this can take a while — from under a minute for a small library to several minutes for a large one. You can keep using the app while it runs."),
+    el("div", { class: "spread mt-3", style: "justify-content:flex-end;gap:10px" },
+      el("button", { class: "btn btn-ghost", onclick: closeModal }, "Cancel"),
+      el("button", { class: "btn btn-primary", onclick: () => { closeModal(); runAnalyzeSpec(specId); } }, "Start analysis")));
+  openModal("Start spec analysis?", body);
+}
+
+async function runAnalyzeSpec(specId) {
   openModal("Analyzing spec", (() => {
     const bar = progressBlock("Assessing each paper against your project…");
     const box = el("div", {}, bar.node);
@@ -723,7 +737,7 @@ async function openSpec(specId) {
     const body = el("div", {});
     body.append(el("p", { class: "lead", style: "white-space:pre-wrap;max-height:140px;overflow:auto;background:var(--surface-2);padding:12px;border-radius:9px;font-size:.86rem" }, spec.text.slice(0, 1200) + (spec.text.length > 1200 ? "…" : "")));
     if (!results.length) {
-      body.append(el("div", { class: "mt-2" }, el("button", { class: "btn btn-primary", onclick: () => { closeModal(); analyzeSpec(specId); } }, "✦ Analyze against library")));
+      body.append(el("div", { class: "mt-2" }, el("button", { class: "btn btn-primary", onclick: () => { closeModal(); confirmAnalyzeSpec(specId); } }, "✦ Analyze against library")));
     } else {
       const core = results.filter((r) => r.relevance === "core" || r.relevance === "supporting").length;
       body.append(el("p", { class: "muted mt-2", style: "font-size:.86rem" }, `${results.length} papers assessed · ${core} relevant`));
