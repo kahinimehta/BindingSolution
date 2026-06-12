@@ -12,6 +12,8 @@
   <a href="docs/demo.mp4">
     <img src="docs/demo.gif" alt="BindingSolution demo walkthrough — click for full video with audio" width="1000" />
   </a>
+  <br />
+  <em><a href="docs/demo.mp4">▶ Watch full demo</a></em>
 </p>
 
 ---
