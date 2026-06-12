@@ -725,29 +725,33 @@ select.input, .input {
 /* ── modal ──────────────────────────────────────────────────── */
 .modal-host {
   position: fixed; inset: 0; z-index: 60;
-  display: flex; align-items: center; justify-content: center;
-  padding: max(24px, env(safe-area-inset-top, 0px)) 24px max(24px, env(safe-area-inset-bottom, 0px));
-  overflow-y: auto; overscroll-behavior: contain;
+  overflow: hidden; overscroll-behavior: contain;
+  pointer-events: auto;
 }
 .modal-host[hidden] { display: none !important; }
 .modal-host::before {
-  content: ""; position: fixed; inset: 0;
+  content: ""; position: absolute; inset: 0;
   background: rgba(20,17,10,.48); backdrop-filter: blur(4px);
   pointer-events: none;
 }
 .modal {
-  position: relative; z-index: 1;
-  flex-shrink: 0; margin: auto;
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  z-index: 1;
+  transform: translate(-50%, -50%);
   background: var(--surface); border-radius: var(--radius);
   box-shadow: var(--shadow-lg);
   border: 1px solid var(--line);
   animation: modal-in .2s ease;
   display: flex; flex-direction: column;
   overflow: hidden;
+  max-height: calc(100vh - 48px);
+  max-height: calc(100dvh - 48px);
 }
 @keyframes modal-in {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translate(-50%, calc(-50% + 10px)); }
+  to { opacity: 1; transform: translate(-50%, -50%); }
 }
 .modal-dialog {
   width: min(520px, calc(100vw - 48px));

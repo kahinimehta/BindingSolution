@@ -85,7 +85,7 @@ function unlockScroll() {
 }
 
 function buildModalNode(title, bodyNode, size = "dialog") {
-  return el("div", { class: `modal modal-${size}` },
+  return el("div", { class: `modal modal-${size}`, tabindex: "-1" },
     el("div", { class: "modal-head" },
       el("h2", {}, title),
       el("button", { type: "button", class: "modal-x", onclick: closeModal, "aria-label": "Close" }, "✕")),
@@ -97,6 +97,7 @@ function openModal(title, bodyNode, size = "dialog") {
   host.hidden = false;
   host.replaceChildren(buildModalNode(title, bodyNode, size));
   host.onclick = (e) => { if (e.target === host) closeModal(); };
+  host.scrollTop = 0;
   lockScroll();
 }
 
@@ -775,12 +776,15 @@ async function deleteStrategy(id) {
 let specsTab = "upload";
 let selectedSpecId = null;
 
-async function renderSpecs() {
-  await loadProjects();
-  const specActions = specsTab === "upload"
+function specsToolbarActions() {
+  return specsTab === "upload"
     ? [el("button", { type: "button", class: "btn btn-primary btn-sm", onclick: () => switchSpecsTab("suggestions") }, "View suggestions")]
     : [el("button", { type: "button", class: "btn btn-primary btn-sm", onclick: () => switchSpecsTab("upload") }, "Upload spec")];
-  setView("specs", specActions);
+}
+
+async function renderSpecs() {
+  await loadProjects();
+  setView("specs", specsToolbarActions());
   await renderKpiStrip("specs");
   const wrap = el("div", {});
   wrap.append(el("div", { class: "sub-tabs" },
@@ -795,6 +799,7 @@ async function switchSpecsTab(tab) {
   if (specsTab === tab) return;
   specsTab = tab;
   $$(".sub-tabs button").forEach((b, i) => b.classList.toggle("on", (tab === "upload") === (i === 0)));
+  $("#view-actions")?.replaceChildren(...specsToolbarActions());
   await renderSpecsPanel();
 }
 
