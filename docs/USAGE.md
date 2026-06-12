@@ -61,7 +61,7 @@ anything in Zotero. With no Zotero credentials, use **Load demo library** on the
 empty state instead (same sync endpoint, bundled sample data).
 
 <p align="center">
-  <img src="screenshots/library.svg" alt="Library view with six sidebar tabs, large-type layout, full-height project cards, Running panel, and hero toolbar" width="1000" />
+  <img src="screenshots/library.svg" alt="Library view with six sidebar tabs, full-height project cards, hero toolbar, and Running panel (categorize-all 3/13)" width="1000" />
 </p>
 
 ## 2. 📂 Categorize projects — *Library*
@@ -94,6 +94,10 @@ collection. Claude reads across all projects and surfaces:
   with a *Build a reading plan* shortcut
 
 Connections need at least two projects.
+
+<p align="center">
+  <img src="screenshots/connections.svg" alt="Connections view with shared threads, suggested groupings, and Running panel showing Step 2 of 3 indeterminate analyze" width="1000" />
+</p>
 
 ## 4. ◎ Group papers — *Groups*
 
@@ -138,7 +142,7 @@ tag clustering, and coverage balancing); with a Claude key the same schema is
 filled by the model.
 
 <p align="center">
-  <img src="screenshots/groups.svg" alt="Groups view with large-type layout, 90% grouped coverage, varied set sizes, Papers KPI matching Library, set summaries, standalone papers, and drop suggestions" width="1000" />
+  <img src="screenshots/groups.svg" alt="Groups view with 90% grouped coverage, varied set sizes, set summaries, and Running panel at Step 2 of 3 indeterminate analyze" width="1000" />
 </p>
 
 ## 5. 💬 Chat — *Chat*
@@ -202,7 +206,7 @@ Estimates assume a **medium academic reading pace**:
 These are planning hints, not deadlines. Skim faster or read deeper and your real time will differ. The schedule banner on each plan states the assumptions used.
 
 <p align="center">
-  <img src="screenshots/strategies.svg" alt="Reading strategies with large-type layout, compose form, and schedule estimates" width="1000" />
+  <img src="screenshots/strategies.svg" alt="Reading strategies compose form, saved plans with schedule estimates, and Running panel with indeterminate plan generation" width="1000" />
 </p>
 
 ## 7. ✦ Spec — upload, screen library, discover on PubMed

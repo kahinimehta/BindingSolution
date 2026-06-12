@@ -41,23 +41,27 @@ Use any view in any order.
 
 - **Large-type layout** — 3× scaled typography and spacing for ultrawide / high-DPI displays; project cards show full summaries (no inner scroll)
 - **Zotero sync** — Web API or local Zotero 7; bundled demo library; **Sync library** / **Purge library** in the hero toolbar
-- **Running** — sidebar panel tracks background jobs (indeterminate bars for single-shot Claude steps); close the progress window or switch views without stopping work
+- **Running** — sidebar panel tracks background jobs; **indeterminate** bars for single-shot Claude steps (reading plans, categorize) and the **analyze** phase of connections/groups; close the progress window or switch views without stopping work
 - **Active vs excluded** — only folders with 2+ papers are analyzed; empty, single-paper, and unfiled collections are reference-only
 - **Categorize** — discipline, themes, methods, keywords, summary per collection
-- **Connections** — shared threads and suggested groupings across projects
+- **Connections** — shared threads and suggested groupings across projects; phase-based progress (prepare → analyze → apply)
 - **Groups** — thematic paper sets (**≥90% of papers grouped**, min 10 per set, varied sizes), **2–3 sentence summaries** per set, drop suggestions; **Papers** KPI matches Library *(including standalone papers)*; summary line shows unique-item split
 - **Chat** — ask Claude about your synced shelf (papers, connections, groups, plans, specs) using the **local store** — no re-upload; **↑** send button or Enter
-- **Reading strategies** — ordered path + synthesis prompts; **schedule with estimated hours/days** (medium pace, ~12 pages/h at 2 h/day — see [docs/USAGE.md](docs/USAGE.md#reading-time-assumptions))
+- **Reading strategies** — ordered path + synthesis prompts; **indeterminate** progress during plan generation; **schedule with estimated hours/days** (medium pace, ~12 pages/h at 2 h/day — see [docs/USAGE.md](docs/USAGE.md#reading-time-assumptions))
 - **Spec** — upload a brief (PDF/Word/MD/text); **Find in library** screens your Zotero shelf (core/supporting only); **Re-screen library** is incremental (new papers only after sync); **Suggested papers** returns up to five ranked PubMed hits *not* in your library, with summaries and relevance notes
 - **Spec → reading plan** — **Build reading plan** from library matches; steps keep relevance notes; plan links back to the spec
 - **Purge library** — wipe local data without touching Zotero (hero toolbar)
 
 <p align="center">
-  <img src="docs/screenshots/library.svg" alt="Library view with six sidebar tabs, large-type layout, full-height project cards, Running panel, and hero toolbar" width="1000" />
+  <img src="docs/screenshots/library.svg" alt="Library view with six sidebar tabs, full-height project cards, hero toolbar, and Running panel (categorize-all 3/13)" width="1000" />
 </p>
 
 <p align="center">
-  <img src="docs/screenshots/groups.svg" alt="Groups view with large-type layout, 90% grouped coverage, varied set sizes, Papers KPI matching Library, set summaries, standalone papers, and drop suggestions" width="1000" />
+  <img src="docs/screenshots/connections.svg" alt="Connections view with shared threads, suggested groupings, and Running panel at Step 2 of 3 indeterminate analyze" width="1000" />
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/groups.svg" alt="Groups view with 90% grouped coverage, varied set sizes, set summaries, and Running panel at Step 2 of 3 indeterminate analyze" width="1000" />
 </p>
 
 <p align="center">
@@ -65,7 +69,7 @@ Use any view in any order.
 </p>
 
 <p align="center">
-  <img src="docs/screenshots/strategies.svg" alt="Reading strategies with large-type layout, compose form, and schedule estimates" width="1000" />
+  <img src="docs/screenshots/strategies.svg" alt="Reading strategies compose form, saved plans with schedule estimates, and Running panel with indeterminate plan generation" width="1000" />
 </p>
 
 <p align="center">

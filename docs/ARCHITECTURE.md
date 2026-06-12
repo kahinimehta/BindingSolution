@@ -132,7 +132,13 @@ The **Spec** view is a two-tab SPA panel (`Upload & manage` · `Suggested papers
 
 `POST /api/connections` uses **phase-based** job progress (prepare → analyze →
 apply). The analyze step is **indeterminate** because finding connections is one
-Claude call across active projects, not one call per collection.
+Claude call across active projects, not one call per collection. See
+`docs/screenshots/connections.svg`.
+
+### Reading strategies
+
+`POST /api/strategies` uses a single **indeterminate** progress step while
+Claude designs the ordered plan (one API call, not per-project sequencing).
 
 ### Paper groups (cross-project shelf organization)
 
