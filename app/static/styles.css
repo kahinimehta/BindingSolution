@@ -37,15 +37,16 @@
   --shadow-card: 0 2px 8px rgba(31,70,54,.06), 0 8px 24px -8px rgba(31,70,54,.12);
   --font-display: "Fraunces", Georgia, "Times New Roman", serif;
   --font-body: "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --shell-max: 1120px;
-  --content-x: 1.15rem;
+  --shell-max: min(2200px, calc((100vw - var(--rail-w)) * 0.97));
+  --content-x: clamp(1.15rem, 1.2vw, 2.25rem);
   --rail-w: 276px;
 }
 
 * { box-sizing: border-box; }
 
 html {
-  font-size: 18px;
+  /* Scale type with viewport so large / high-DPI screens do not feel zoomed out. */
+  font-size: clamp(18px, 14px + 0.38vw, 22px);
 }
 
 html, body {
@@ -59,8 +60,12 @@ html, body {
   line-height: 1.5;
 }
 
-@media (min-width: 1440px) {
-  html { font-size: 19px; }
+@media (min-width: 1600px) {
+  html { font-size: clamp(19px, 15px + 0.34vw, 24px); }
+}
+
+@media (min-width: 2400px) {
+  html { font-size: clamp(20px, 16px + 0.28vw, 26px); }
 }
 
 /* layered paper texture */
@@ -193,7 +198,7 @@ a { color: inherit; text-decoration: none; }
 }
 .hero-inner {
   max-width: var(--shell-max);
-  margin: 0;
+  margin: 0 auto;
   width: 100%;
   display: flex;
   align-items: flex-start;
@@ -204,12 +209,13 @@ a { color: inherit; text-decoration: none; }
 .hero-text { min-width: 0; flex: 1; }
 .hero-title {
   font-family: var(--font-display);
-  font-size: 1.72rem; font-weight: 600;
+  font-size: clamp(1.72rem, 1.35rem + 0.55vw, 2.15rem);
+  font-weight: 600;
   margin: 0; letter-spacing: .2px; line-height: 1.12;
 }
 .hero-sub {
   margin: 5px 0 0;
-  font-size: .9rem;
+  font-size: clamp(0.9rem, 0.82rem + 0.18vw, 1.05rem);
   color: #b8cfc4;
   max-width: 48ch;
   line-height: 1.45;
@@ -227,7 +233,7 @@ a { color: inherit; text-decoration: none; }
 .content-column {
   width: 100%;
   max-width: var(--shell-max);
-  margin: 0;
+  margin: 0 auto;
 }
 
 .kpi-strip {
@@ -241,8 +247,8 @@ a { color: inherit; text-decoration: none; }
   width: 100%;
   margin: 0;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(128px, 1fr));
-  gap: 0.55rem;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: clamp(0.55rem, 0.8vw, 0.85rem);
 }
 .kpi-item {
   text-align: center;
@@ -346,7 +352,10 @@ a { color: inherit; text-decoration: none; }
 
 /* ── cards / grid ───────────────────────────────────────────── */
 .grid { display: grid; gap: 18px; }
-.grid-projects { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
+.grid-projects {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
+  gap: clamp(14px, 1.2vw, 20px);
+}
 
 .card {
   background: var(--surface);
