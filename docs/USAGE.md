@@ -1,8 +1,8 @@
 # Usage
 
 Start the app with `make run` and open <http://127.0.0.1:8765>. The sidebar
-has four views; the status chips (bottom-left) show whether Claude and Zotero
-are connected.
+has four views — use them in any order; the status chips (bottom-left) show
+whether Claude and Zotero are connected.
 
 > **No keys?** Click **Load demo library** on the Library screen. You get a
 > small synthetic library spanning four overlapping research areas so every
@@ -65,9 +65,13 @@ causal inference"*) and click **Generate strategy**. You get:
 
 Plans are saved; open or delete them from the same screen.
 
+<p align="center">
+  <img src="screenshots/strategies.svg" alt="Reading strategies compose form" width="920" />
+</p>
+
 ## 5. ✦ Paper suggestions — *Project specs*
 
-Open **Project specs** in the sidebar (Step 4). The view has two tabs:
+Open **Project specs** in the sidebar. The view has two tabs:
 
 ### Upload & manage
 

@@ -35,7 +35,7 @@ After sync, collections split into **active** (2+ papers) and **excluded** (refe
 Excluded items appear in a separate section at the bottom of **Library**. Add papers or merge collections in Zotero, then re-sync.
 
 <p align="center">
-  <img src="docs/screenshots/library.svg" alt="Library view with KPI bar above active and excluded collections" width="820" />
+  <img src="docs/screenshots/library.svg" alt="Library view with KPI bar above active and excluded collections" width="920" />
 </p>
 
 ## Persistence
@@ -53,9 +53,9 @@ Data lives in `./data/library.json` (gitignored). `make run` picks up where you 
 - **Zotero sync** — Web API or local Zotero 7; demo library included
 
 <p align="center">
-  <img src="docs/screenshots/specs-upload.svg" alt="Project specs Upload and manage tab" width="720" />
+  <img src="docs/screenshots/specs-upload.svg" alt="Project specs Upload and manage tab" width="920" />
   <br /><br />
-  <img src="docs/screenshots/specs.svg" alt="Project specs Suggested papers tab" width="720" />
+  <img src="docs/screenshots/specs.svg" alt="Project specs Suggested papers tab" width="920" />
 </p>
 
 ## Docs

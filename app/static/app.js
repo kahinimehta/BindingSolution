@@ -150,22 +150,18 @@ const view = () => $("#view");
 
 const viewMeta = {
   library: {
-    step: "Step 1",
     title: "Library",
     subtitle: "Your Zotero collections, categorized and ready to explore.",
   },
   connections: {
-    step: "Step 2",
     title: "Connections",
     subtitle: "Where your projects overlap — shared themes, methods, and authors.",
   },
   strategies: {
-    step: "Step 3",
     title: "Reading strategies",
     subtitle: "Compose ordered reading paths across projects for a specific goal.",
   },
   specs: {
-    step: "Step 4",
     title: "Project specs",
     subtitle: "Upload a project description and see which library papers are relevant, with why.",
   },
@@ -173,7 +169,6 @@ const viewMeta = {
 
 function setView(route, actions = []) {
   const meta = viewMeta[route] || viewMeta.library;
-  $("#view-eyebrow").textContent = meta.step;
   $("#view-title").textContent = meta.title;
   $("#view-subtitle").textContent = meta.subtitle;
   $("#view-actions").replaceChildren(...actions);
@@ -521,9 +516,9 @@ function buildStrategyForm() {
   const goal = el("textarea", { id: "strat-goal", rows: "3", placeholder: "e.g. I'm writing a related-work section connecting fairness and causal inference — what should I read and in what order?" });
 
   card.append(
-    el("div", { class: "spread", style: "margin-bottom:16px" },
-      el("div", {}, el("h2", { style: "font-family:var(--font-display);margin:0 0 4px;font-size:1.2rem" }, "Compose a reading plan"),
-        el("p", { class: "muted", style: "margin:0;font-size:.88rem" }, "Pick the projects to combine and state your goal. You get an ordered path through the papers.")),
+    el("div", { class: "strat-head" },
+      el("h2", {}, "Compose a reading plan"),
+      el("p", { class: "muted" }, "Pick the projects to combine and state your goal. You get an ordered path through the papers."),
       modeToggle),
     el("div", { class: "field", id: "strat-choose-field" }, el("label", {}, "Projects"), chooser),
     el("div", { class: "field mt-2" }, el("label", {}, "Your goal (optional)"), goal),
@@ -613,7 +608,7 @@ function openStrategy(s) {
   const seq = el("div", { class: "sequence" });
   (plan.sequence || []).forEach((step, i) => {
     seq.append(el("div", { class: "step" },
-      el("div", { class: "step-n" }, `Step ${i + 1} · ${projName(step.project_key)}`),
+      el("div", { class: "step-n" }, `${i + 1} · ${projName(step.project_key)}`),
       el("h4", {}, step.title),
       el("div", { class: "step-reason" }, step.reason)));
   });

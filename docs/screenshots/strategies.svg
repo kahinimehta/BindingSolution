@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 560" width="920" height="560" role="img" aria-label="Reading strategies view">
+  <defs>
+    <linearGradient id="green" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1f4636"/>
+      <stop offset="1" stop-color="#2c5d49"/>
+    </linearGradient>
+    <linearGradient id="hero" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1f4636"/>
+      <stop offset="1" stop-color="#254f3f"/>
+    </linearGradient>
+    <filter id="shadow" x="-8%" y="-8%" width="116%" height="116%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#1f4636" flood-opacity="0.1"/>
+    </filter>
+  </defs>
+
+  <rect width="920" height="560" fill="#f4efe4"/>
+  <rect x="0" y="0" width="228" height="560" fill="url(#green)"/>
+  <line x1="228" y1="0" x2="228" y2="560" stroke="#caa14a" stroke-width="2" stroke-opacity="0.42"/>
+
+  <text x="20" y="40" fill="#eef3ee" font-family="Georgia, serif" font-size="17" font-weight="700">BindingSolution</text>
+
+  <rect x="16" y="194" width="196" height="50" rx="11" fill="rgba(255,255,255,0.14)" stroke="#caa14a" stroke-width="1.5"/>
+  <text x="28" y="216" fill="#fff" font-family="system-ui, sans-serif" font-size="12" font-weight="600">Strategies</text>
+  <text x="28" y="232" fill="#b8cfc4" font-family="system-ui, sans-serif" font-size="8.5">Reading plans</text>
+
+  <rect x="228" y="0" width="692" height="84" fill="url(#hero)"/>
+  <text x="248" y="48" fill="#fff" font-family="Georgia, serif" font-size="28" font-weight="600">Reading strategies</text>
+  <text x="248" y="68" fill="#b8cfc4" font-family="system-ui, sans-serif" font-size="11">Compose ordered reading paths across projects for a specific goal.</text>
+
+  <g transform="translate(248, 100)">
+    <rect x="0" y="0" width="652" height="420" rx="12" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
+    <text x="20" y="34" fill="#1f4636" font-family="Georgia, serif" font-size="16" font-weight="600">Compose a reading plan</text>
+    <text x="20" y="52" fill="#8a8478" font-family="system-ui, sans-serif" font-size="10">Pick the projects to combine and state your goal.</text>
+
+    <rect x="20" y="64" width="248" height="30" rx="8" fill="#faf6ec" stroke="#d3c8b0"/>
+    <rect x="22" y="66" width="120" height="26" rx="7" fill="#1f4636"/>
+    <text x="82" y="83" fill="#fff" font-family="system-ui, sans-serif" font-size="9" font-weight="600" text-anchor="middle">I choose projects</text>
+    <text x="196" y="83" fill="#5a564c" font-family="system-ui, sans-serif" font-size="9" font-weight="600" text-anchor="middle">Let the agent decide</text>
+
+    <line x1="20" y1="106" x2="632" y2="106" stroke="#e2d9c6"/>
+
+    <text x="20" y="128" fill="#5a564c" font-family="system-ui, sans-serif" font-size="10" font-weight="600">Projects</text>
+    <rect x="20" y="136" width="148" height="54" rx="8" fill="#eef4f0" stroke="#1f4636"/>
+    <text x="34" y="158" fill="#211f1a" font-family="system-ui, sans-serif" font-size="10" font-weight="600">Fairness in ML</text>
+    <text x="34" y="174" fill="#8a8478" font-family="system-ui, sans-serif" font-size="8.5">3 papers</text>
+
+    <rect x="176" y="136" width="148" height="54" rx="8" fill="#fff" stroke="#d3c8b0"/>
+    <text x="190" y="158" fill="#211f1a" font-family="system-ui, sans-serif" font-size="10" font-weight="600">Causal Inference</text>
+    <text x="190" y="174" fill="#8a8478" font-family="system-ui, sans-serif" font-size="8.5">3 papers</text>
+
+    <rect x="332" y="136" width="148" height="54" rx="8" fill="#fff" stroke="#d3c8b0"/>
+    <text x="346" y="158" fill="#211f1a" font-family="system-ui, sans-serif" font-size="10" font-weight="600">Graph Neural Networks</text>
+    <text x="346" y="174" fill="#8a8478" font-family="system-ui, sans-serif" font-size="8.5">4 papers</text>
+
+    <rect x="488" y="136" width="148" height="54" rx="8" fill="#fff" stroke="#d3c8b0"/>
+    <text x="502" y="158" fill="#211f1a" font-family="system-ui, sans-serif" font-size="10" font-weight="600">LLM Evaluation</text>
+    <text x="502" y="174" fill="#8a8478" font-family="system-ui, sans-serif" font-size="8.5">3 papers</text>
+
+    <text x="20" y="220" fill="#5a564c" font-family="system-ui, sans-serif" font-size="10" font-weight="600">Your goal (optional)</text>
+    <rect x="20" y="228" width="612" height="72" rx="8" fill="#fff" stroke="#d3c8b0"/>
+    <text x="32" y="252" fill="#8a8478" font-family="system-ui, sans-serif" font-size="9.5">Related-work section linking fairness and causal inference&</text>
+
+    <rect x="20" y="318" width="148" height="34" rx="9" fill="#1f4636"/>
+    <text x="94" y="339" fill="#f2f7f3" font-family="system-ui, sans-serif" font-size="10" font-weight="600" text-anchor="middle">Generate strategy</text>
+  </g>
+
+  <text x="248" y="542" fill="#8a8478" font-family="system-ui, sans-serif" font-size="9">Illustrative UI mock  Reading strategies.</text>
+</svg>
