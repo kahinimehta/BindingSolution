@@ -2,10 +2,12 @@
 
 Start the app with `make run` and open <http://127.0.0.1:8765>. The **sidebar**
 has five views — use them in any order. On wide screens the whole interface
-(sidebar + content) is **centered** as one panel. **Sync library** and
-**Purge library** live in the **hero toolbar** (top right). At the bottom of the
-sidebar, **Running** lists background tasks (sync, categorization, spec screening,
-and similar). Status chips below that show whether Claude and Zotero are connected.
+(sidebar + content) is **centered** as one panel with **large-type** typography
+and spacing tuned for ultrawide and high-DPI displays (see
+[CONFIGURATION.md](CONFIGURATION.md#display)). **Sync library** and **Purge
+library** live in the **hero toolbar** (top right). At the bottom of the sidebar,
+**Running** lists background tasks (sync, categorization, spec screening, and
+similar). Status chips below that show whether Claude and Zotero are connected.
 
 **Background jobs:** long tasks (sync, categorize, connections, groups, reading
 plans, spec screening, PubMed discovery) start a server-side job and return
@@ -64,7 +66,8 @@ Open the **Library** view. Click **✦ Categorize** on an active card (or
 - recurring **themes** and common **methods**
 - **keywords** used to match it against other projects
 
-Click any card to see its full paper list and categorization.
+Click any card to see its full paper list and categorization. Project cards grow
+to show the full summary — no inner scroll box.
 
 The **Papers** KPI counts papers in **active** collections (same number you will
 see on **Groups**). If the same Zotero item is filed in multiple folders, it can

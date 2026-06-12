@@ -33,6 +33,12 @@ navigation and status chips; **Sync library** / **Purge library** and per-view
 actions sit in the hero toolbar. Main content fills the remaining width without
 a separate max-width offset (no sidebar/content gap on large displays).
 
+Typography and layout spacing are scaled **3×** from a conventional baseline:
+`html` root font-size clamps to roughly **54–66px** (viewport-responsive), and
+structural `px` values (padding, grid min widths, modal sizes) scale with it so
+text does not clip inside cards or the sidebar. Project cards expand to full
+height instead of using an inner scroll region.
+
 ## How AI analysis works
 
 `app/analysis.py` wraps the Anthropic Python SDK. Every analysis uses

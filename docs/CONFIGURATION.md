@@ -101,5 +101,14 @@ only reachable from your own machine.
 
 On wide monitors the UI is a **centered panel** (max width about 19200px, or
 viewport minus 0.5rem) with cream margins on the sides. Base typography and
-layout spacing are scaled for large / high-DPI displays (`html` root font-size and
-`--app-max`, `--rail-w` in `app/static/styles.css`), not in `.env`.
+layout spacing are scaled **3×** for large / high-DPI displays — not browser
+zoom. Key values in `app/static/styles.css` (not `.env`):
+
+| Token | Approx. value | Role |
+| --- | --- | --- |
+| `html` `font-size` | `clamp(54px … 66px)` | Root type scale (all `rem` text) |
+| `--app-max` | `min(19200px, 100vw − 0.5rem)` | Centered shell width |
+| `--rail-w` | `864px` | Green sidebar width |
+
+Project cards and nav labels wrap to their full height instead of clipping with
+an inner scroll box.

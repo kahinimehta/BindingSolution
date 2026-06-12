@@ -49,7 +49,7 @@ Use any view in any order.
 - **Purge library** — wipe local data without touching Zotero (hero toolbar)
 
 <p align="center">
-  <img src="docs/screenshots/library.svg" alt="Library view with Running panel and hero toolbar" width="1000" />
+  <img src="docs/screenshots/library.svg" alt="Library view with large-type layout, full-height project cards, Running panel, and hero toolbar" width="1000" />
 </p>
 
 <p align="center">
