@@ -108,10 +108,11 @@ the server enforces **≥90% grouped** (minimum 10 papers per set, no maximum,
 varied set sizes — not uniform chunks or mega-sets).
 
 After pulling updates, **restart** the server (`Ctrl+C`, then `make run`) so new
-API routes and `GET /api/status` `capabilities` match the UI. **Chat** uses a
-compact circular **↑** send button (bottom-right of the input); if chat
-endpoints 404 or grouping shows *Streaming is required*, an old process is
-usually still bound to port 8765.
+API routes and `GET /api/status` `capabilities` (`chat`, `jobs_cancel`, etc.)
+match the UI. **Chat** uses a compact circular **↑** send button (bottom-right
+of the input). If chat endpoints 404, job cancel shows a restart toast, or
+grouping shows *Streaming is required*, an old process is usually still bound to
+port 8765.
 
 Nothing is sent anywhere except the Anthropic API (for analysis) and Zotero
 (to read your library). The server binds to `127.0.0.1` by default, so it's

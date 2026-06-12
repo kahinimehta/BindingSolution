@@ -24,7 +24,7 @@ Add `ANTHROPIC_API_KEY`, `ZOTERO_LIBRARY_ID`, and `ZOTERO_API_KEY` to the gitign
 
 ## Features
 
-Six sidebar views — use in any order:
+Six sidebar views (Library → Connections → Groups → Spec → Strategies → Chat):
 
 - **Library** — sync Zotero (web API or local Zotero 7) or load demo data; categorize collections; **Sync** / **Purge** in the hero toolbar
 - **Connections** — shared threads and suggested project groupings across active collections

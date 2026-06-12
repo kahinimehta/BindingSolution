@@ -28,8 +28,9 @@ can be counted (sync per collection, spec screening per paper, categorize-all
 per project). When an indeterminate step finishes, the bar fills and shows
 **Done**. **Chat** is synchronous (one request per message) — it does not
 appear in **Running**. After pulling app updates, **restart the server**
-(Ctrl+C, then `make run`) so new API routes (e.g. chat) are loaded — the browser
-can show new UI while an old process is still answering on port 8765.
+(Ctrl+C, then `make run`) so new API routes and `capabilities` (e.g. chat, job
+cancel) match the UI — the browser can show new controls while an old process is
+still answering on port 8765.
 
 > **No keys?** Click **Load demo library** on the Library screen. You get a
 > small synthetic library spanning overlapping research areas (including a

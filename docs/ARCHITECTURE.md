@@ -7,7 +7,7 @@ human-readable JSON store, no build step) over scale.
 ```
 ┌────────────────────────────────────────────────────────────┐
 │ Browser SPA  (app/static: index.html · styles.css · app.js) │
-│   Library · Connections · Groups · Chat · Strategies · Spec │
+│   Library · Connections · Groups · Spec · Strategies · Chat │
 └───────────────┬────────────────────────────────────────────┘
                 │  fetch /api/*   +   poll /api/jobs/{id}
 ┌───────────────▼────────────────────────────────────────────┐
@@ -27,7 +27,7 @@ human-readable JSON store, no build step) over scale.
 ## Frontend layout
 
 The SPA (`app/static/`) is a hash router with **six views** (Library, Connections,
-Groups, Chat, Strategies, Spec). CSS centers the whole shell (`max-width: 19200px`
+Groups, Spec, Strategies, Chat). CSS centers the whole shell (`max-width: 19200px`
 via `--app-max`, `margin: 0 auto`) so the green sidebar and main pane move
 together on ultrawide monitors. The sidebar (`--rail-w: 864px`) holds navigation
 and status chips; the **BindingSolution** brand is inset from the divider
@@ -215,9 +215,9 @@ The **Chat** view calls `POST /api/chat` (`app/chat_context.py`, `app/analysis.p
 The Chat view hides the KPI strip and shows a compact **can / cannot** overview
 (local store metadata only — no PDFs or full paper text). The compose box uses a
 compact circular **↑** send control (thin arrow, bottom-right of the input); **Enter** sends,
-**Shift+Enter** inserts a newline. `GET /api/status` exposes `capabilities.chat`
-so the UI can detect a stale server missing chat routes and prompt a restart
-after updates. The system prompt instructs Claude not to claim access to full
+**Shift+Enter** inserts a newline. `GET /api/status` exposes `capabilities`
+(`chat`, `jobs_cancel`, etc.) so the UI can detect a stale server missing new
+routes and prompt a restart after updates. The system prompt instructs Claude not to claim access to full
 text or abstracts unless an excerpt is in the assembled context.
 
 No file re-upload: everything comes from `library.json` already on disk.
@@ -240,7 +240,7 @@ a corrupt file is set aside rather than crashing. No database to run.
 
 | Method | Path | Purpose |
 |---|---|---|
-| `GET` | `/api/status` | Config, `capabilities` (chat/groups/jobs_list/spec_discover), library summary |
+| `GET` | `/api/status` | Config, `capabilities` (chat/groups/jobs_list/jobs_cancel/spec_discover), library summary |
 | `POST` | `/api/library/sync` | Sync Zotero (`{"source":"zotero"}`) or load demo (`{"source":"demo"}`) → job |
 | `DELETE` | `/api/library` | Purge all local data (projects, analyses, plans, specs, chats) |
 | `GET` | `/api/projects` | List projects (summaries) |
