@@ -97,7 +97,7 @@ only reachable from your own machine.
 
 ## Display
 
-On wide monitors the UI is a **centered panel** (max width about 1680px) with
-cream margins on the sides — not browser zoom. Use the browser’s zoom
-(Cmd/Ctrl + / −) if you want everything larger; the app does not expose a
-separate zoom setting in `.env`.
+On wide monitors the UI is a **centered panel** (max width about 2200px, or
+viewport minus 2rem) with cream margins on the sides — not browser zoom. Use the
+browser’s zoom (Cmd/Ctrl + / −) if you want everything larger; the shell width
+is set in `app/static/styles.css` (`--app-max`), not in `.env`.
