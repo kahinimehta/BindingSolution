@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 560" width="920" height="560" role="img" aria-label="Reading strategies view">
   <defs>
     <linearGradient id="green" x1="0" y1="0" x2="0" y2="1">
@@ -58,17 +59,17 @@
 
     <text x="20" y="220" fill="#5a564c" font-family="system-ui, sans-serif" font-size="10" font-weight="600">Your goal (optional)</text>
     <rect x="20" y="228" width="612" height="72" rx="8" fill="#fff" stroke="#d3c8b0"/>
-    <text x="32" y="252" fill="#8a8478" font-family="system-ui, sans-serif" font-size="9.5">Related-work section linking fairness and causal inference&</text>
+    <text x="32" y="252" fill="#8a8478" font-family="system-ui, sans-serif" font-size="9.5">Related-work section linking fairness and causal inference&#x2026;</text>
 
     <rect x="20" y="318" width="148" height="34" rx="9" fill="#1f4636"/>
     <text x="94" y="339" fill="#f2f7f3" font-family="system-ui, sans-serif" font-size="10" font-weight="600" text-anchor="middle">Generate strategy</text>
 
     <text x="20" y="378" fill="#5a564c" font-family="system-ui, sans-serif" font-size="10" font-weight="600">Saved plans</text>
     <rect x="20" y="388" width="612" height="52" rx="9" fill="#fff" stroke="#d3c8b0"/>
-    <text x="34" y="410" fill="#1f4636" font-family="system-ui, sans-serif" font-size="10.5" font-weight="600">Fairness grant aim — reading path</text>
+    <text x="34" y="410" fill="#1f4636" font-family="system-ui, sans-serif" font-size="10.5" font-weight="600">Fairness grant aim â€” reading path</text>
     <text x="34" y="426" fill="#8a8478" font-family="system-ui, sans-serif" font-size="8.5">4 papers &#xB7; 3 h &#xB7; 2 days &#xB7; from spec &#xB7; Fairness grant aim</text>
     <text x="520" y="418" fill="#1f4636" font-family="system-ui, sans-serif" font-size="9" font-weight="600">Open</text>
   </g>
 
-  <text x="248" y="542" fill="#8a8478" font-family="system-ui, sans-serif" font-size="9">Illustrative UI mock — Reading strategies with schedule estimates on saved plans.</text>
+  <text x="248" y="542" fill="#8a8478" font-family="system-ui, sans-serif" font-size="9">Illustrative UI mock â€” Reading strategies with schedule estimates on saved plans.</text>
 </svg>

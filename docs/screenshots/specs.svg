@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 540" width="920" height="540" role="img" aria-label="Project specs Suggested papers tab">
   <defs>
     <linearGradient id="green" x1="0" y1="0" x2="0" y2="1">
@@ -37,7 +38,7 @@
     <text x="12" y="81" fill="#211f1a" font-family="system-ui, sans-serif" font-size="9.5">Fairness grant aim</text>
     <text x="316" y="81" fill="#8a8478" font-family="system-ui, sans-serif" font-size="9.5">4 relevant of 13 screened</text>
 
-    <text x="0" y="104" fill="#8a8478" font-family="system-ui, sans-serif" font-size="8.5">Turn these into an ordered reading plan — each step keeps its spec relevance note.</text>
+    <text x="0" y="104" fill="#8a8478" font-family="system-ui, sans-serif" font-size="8.5">Turn these into an ordered reading plan &#x2014; each step keeps its spec relevance note.</text>
     <rect x="518" y="88" width="134" height="26" rx="7" fill="#1f4636"/>
     <text x="585" y="105" fill="#f2f7f3" font-family="system-ui, sans-serif" font-size="8.5" font-weight="600" text-anchor="middle">&#x21AF; Build reading plan</text>
 
@@ -66,5 +67,5 @@
     <text x="606" y="329" fill="#fff" font-family="system-ui, sans-serif" font-size="7.5" font-weight="700" text-anchor="middle">SUPPORTING</text>
   </g>
 
-  <text x="248" y="524" fill="#8a8478" font-family="system-ui, sans-serif" font-size="9">Illustrative UI mock — Suggested papers tab with Build reading plan.</text>
+  <text x="248" y="524" fill="#8a8478" font-family="system-ui, sans-serif" font-size="9">Illustrative UI mock &#x2014; Suggested papers tab with Build reading plan.</text>
 </svg>
