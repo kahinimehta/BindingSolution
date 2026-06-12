@@ -15,8 +15,10 @@ def client(tmp_path):
     os.environ["BINDING_DATA_DIR"] = str(tmp_path)
     from fastapi.testclient import TestClient
 
+    import app.jobs as job_mod
     import app.server as server
 
+    job_mod.reset_registry()
     server._store = None
     return TestClient(server.create_app())
 

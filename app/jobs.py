@@ -78,3 +78,19 @@ def start(kind: str, fn: Callable[[Job], Any]) -> Job:
 def get(job_id: str) -> Job | None:
     with _lock:
         return _registry.get(job_id)
+
+
+def reset_registry() -> None:
+    """Clear in-memory jobs (tests only)."""
+    with _lock:
+        _registry.clear()
+
+
+def list_jobs(*, active_only: bool = False) -> list[Job]:
+    """Return jobs newest-first. With active_only, only queued/running."""
+    with _lock:
+        jobs = list(_registry.values())
+    jobs.sort(key=lambda j: j.created_at, reverse=True)
+    if active_only:
+        jobs = [j for j in jobs if j.status in ("queued", "running")]
+    return jobs

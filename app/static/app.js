@@ -42,20 +42,221 @@ const api = {
   },
 };
 
-/* ── job polling ──────────────────────────────────────────────── */
-function runJob(startResponse, { onProgress } = {}) {
-  const jobId = startResponse.job_id;
-  return new Promise((resolve, reject) => {
-    const tick = async () => {
-      try {
-        const job = await api.get(`/jobs/${jobId}`);
-        if (onProgress) onProgress(job.progress, job);
-        if (job.status === "done") return resolve(job.result);
-        if (job.status === "error") return reject(new Error(job.error || "Job failed"));
-        setTimeout(tick, 650);
-      } catch (e) { reject(e); }
+/* ── background jobs (server threads; UI tracks + polls) ──────── */
+const JOB_STORAGE_KEY = "binding.activeJobs";
+const JOB_LABELS = {
+  sync: "Sync library",
+  categorize: "Categorize project",
+  "categorize-all": "Categorize all",
+  connections: "Find connections",
+  "paper-groups": "Group papers",
+  strategy: "Reading plan",
+  "analyze-spec": "Screen library",
+  "discover-spec": "PubMed discovery",
+};
+const jobStore = { byId: new Map(), poller: null, panelOpen: false };
+
+function jobLabel(kind, custom) {
+  return custom || JOB_LABELS[kind] || kind;
+}
+
+function persistJobStore() {
+  const active = [...jobStore.byId.values()]
+    .filter((e) => e.status === "queued" || e.status === "running")
+    .map((e) => ({ id: e.id, kind: e.kind, label: e.label }));
+  sessionStorage.setItem(JOB_STORAGE_KEY, JSON.stringify(active));
+}
+
+function registerJob(startResponse, { label } = {}) {
+  const id = startResponse.job_id;
+  const kind = startResponse.kind || "task";
+  let entry = jobStore.byId.get(id);
+  if (!entry) {
+    entry = {
+      id,
+      kind,
+      label: jobLabel(kind, label),
+      status: "queued",
+      progress: { current: 0, total: 0, message: "" },
+      handlers: [],
+      hidden: false,
     };
-    tick();
+    jobStore.byId.set(id, entry);
+  } else if (label) {
+    entry.label = jobLabel(kind, label);
+  }
+  persistJobStore();
+  renderJobRail();
+  ensureJobPoller();
+  return id;
+}
+
+function runJob(startResponse, { label, onProgress } = {}) {
+  registerJob(startResponse, { label });
+  const id = startResponse.job_id;
+  return new Promise((resolve, reject) => {
+    jobStore.byId.get(id).handlers.push({ resolve, reject, onProgress });
+    ensureJobPoller();
+  });
+}
+
+function ensureJobPoller() {
+  if (jobStore.poller) return;
+  jobStore.poller = setInterval(pollActiveJobs, 650);
+}
+
+async function pollActiveJobs() {
+  const active = [...jobStore.byId.values()].filter(
+    (e) => e.status === "queued" || e.status === "running",
+  );
+  if (!active.length) {
+    clearInterval(jobStore.poller);
+    jobStore.poller = null;
+    return;
+  }
+  for (const entry of active) {
+    try {
+      const job = await api.get(`/jobs/${entry.id}`);
+      entry.status = job.status;
+      entry.progress = job.progress || entry.progress;
+      for (const h of entry.handlers) {
+        if (h.onProgress) h.onProgress(job.progress, job);
+      }
+      updateProgressModal(entry);
+      renderJobRail();
+      if (job.status === "done") finishJobEntry(entry, job.result);
+      else if (job.status === "error") failJobEntry(entry, job.error || "Job failed");
+    } catch (e) {
+      if (entry.handlers.length) failJobEntry(entry, e.message);
+    }
+  }
+}
+
+function finishJobEntry(entry, result) {
+  const handlers = entry.handlers.splice(0);
+  entry.status = "done";
+  entry.progress = { ...entry.progress, message: "Done" };
+  renderJobRail();
+  dismissProgressModalIfJob(entry.id);
+  handlers.forEach((h) => h.resolve(result));
+  if (!handlers.length) {
+    toast(`${entry.label} finished.`, "ok");
+    refreshStatus().catch(() => {});
+    softRefreshView();
+  }
+  setTimeout(() => {
+    jobStore.byId.delete(entry.id);
+    persistJobStore();
+    renderJobRail();
+  }, 8000);
+}
+
+function failJobEntry(entry, message) {
+  const handlers = entry.handlers.splice(0);
+  entry.status = "error";
+  entry.error = message;
+  renderJobRail();
+  dismissProgressModalIfJob(entry.id);
+  const err = new Error(message);
+  handlers.forEach((h) => h.reject(err));
+  if (!handlers.length) toast(message, "err");
+  setTimeout(() => {
+    jobStore.byId.delete(entry.id);
+    persistJobStore();
+    renderJobRail();
+  }, 12000);
+}
+
+function softRefreshView() {
+  const name = location.hash.replace("#/", "") || "library";
+  const fn = routes[name];
+  if (fn) fn().catch(() => {});
+}
+
+async function resumeTrackedJobs() {
+  try {
+    const stored = JSON.parse(sessionStorage.getItem(JOB_STORAGE_KEY) || "[]");
+    for (const row of stored) {
+      registerJob({ job_id: row.id, kind: row.kind }, { label: row.label });
+    }
+  } catch { /* ignore */ }
+  try {
+    const { jobs } = await api.get("/jobs?active=true");
+    for (const j of jobs || []) {
+      registerJob({ job_id: j.id, kind: j.kind });
+      const entry = jobStore.byId.get(j.id);
+      if (entry) {
+        entry.status = j.status;
+        entry.progress = j.progress || entry.progress;
+      }
+    }
+  } catch { /* server not up */ }
+  if ([...jobStore.byId.values()].some((e) => e.status === "queued" || e.status === "running")) {
+    jobStore.panelOpen = true;
+  }
+  ensureJobPoller();
+  renderJobRail();
+}
+
+function renderJobRail() {
+  const rail = $("#job-rail");
+  const badge = $("#job-rail-badge");
+  const panel = $("#job-rail-panel");
+  const tab = $("#job-rail-tab");
+  if (!rail || !panel) return;
+
+  const visible = [...jobStore.byId.values()].filter((e) => !e.hidden);
+  const running = visible.filter((e) => e.status === "queued" || e.status === "running");
+  const recent = visible.filter((e) => e.status === "done" || e.status === "error");
+
+  if (badge) {
+    badge.hidden = !running.length;
+    badge.textContent = running.length ? String(running.length) : "";
+  }
+  tab?.setAttribute("aria-expanded", jobStore.panelOpen ? "true" : "false");
+  panel.hidden = !jobStore.panelOpen;
+
+  if (!jobStore.panelOpen) return;
+
+  if (!visible.length) {
+    panel.replaceChildren(el("p", { class: "job-rail-empty" },
+      "No background tasks. Long jobs keep running after you close the progress window, refresh, or switch views."));
+    return;
+  }
+
+  const rows = [...running, ...recent].map((entry) => {
+    const total = entry.progress?.total || 0;
+    const cur = entry.progress?.current || 0;
+    const ratio = total ? cur / total : entry.status === "done" ? 1 : 0.08;
+    const cls = `job-rail-item${entry.status === "done" ? " done" : ""}${entry.status === "error" ? " error" : ""}`;
+    const reopen = () => {
+      if (entry.status === "queued" || entry.status === "running") {
+        showProgressModal(entry.label, entry.progress?.message || "Working…", entry.id);
+      }
+    };
+    return el("div", { class: cls, style: "cursor:pointer", onclick: reopen },
+      el("div", { class: "job-rail-item-head" },
+        el("div", { style: "min-width:0;flex:1" },
+          el("div", { class: "job-rail-item-label" }, entry.label),
+          el("div", { class: "job-rail-item-msg" },
+            entry.error || entry.progress?.message || (entry.status === "done" ? "Finished" : "Working…"))),
+        el("button", {
+          type: "button",
+          class: "job-rail-dismiss",
+          title: "Remove from list (job keeps running)",
+          "aria-label": "Dismiss",
+          onclick: (e) => { e.stopPropagation(); entry.hidden = true; renderJobRail(); },
+        }, "✕")),
+      el("div", { class: "job-rail-item-bar" },
+        el("div", { class: "job-rail-item-fill", style: `width:${Math.max(6, ratio * 100)}%` })));
+  });
+  panel.replaceChildren(...rows);
+}
+
+function bindJobRail() {
+  $("#job-rail-tab")?.addEventListener("click", () => {
+    jobStore.panelOpen = !jobStore.panelOpen;
+    renderJobRail();
   });
 }
 
@@ -84,11 +285,12 @@ function unlockScroll() {
   }
 }
 
-function buildModalNode(title, bodyNode, size = "dialog") {
+function buildModalNode(title, bodyNode, size = "dialog", { onClose } = {}) {
+  const closeFn = onClose || closeModal;
   return el("div", { class: `modal modal-${size}`, tabindex: "-1" },
     el("div", { class: "modal-head" },
       el("h2", {}, title),
-      el("button", { type: "button", class: "modal-x", onclick: closeModal, "aria-label": "Close" }, "✕")),
+      el("button", { type: "button", class: "modal-x", onclick: closeFn, "aria-label": "Close" }, "✕")),
     el("div", { class: "modal-body" }, bodyNode));
 }
 
@@ -124,15 +326,48 @@ function closeModal() {
   unlockScroll();
 }
 
-function showProgressModal(title, message) {
+let _progressModalJobId = null;
+let _progressModalUpdater = null;
+
+function dismissProgressModal() {
+  _progressModalJobId = null;
+  _progressModalUpdater = null;
+  closeModal();
+}
+
+function dismissProgressModalIfJob(jobId) {
+  if (_progressModalJobId === jobId) dismissProgressModal();
+}
+
+function updateProgressModal(entry) {
+  if (_progressModalJobId !== entry.id || !_progressModalUpdater) return;
+  _progressModalUpdater(entry.progress);
+}
+
+function showProgressModal(title, message, jobId) {
   const bar = progressBlock(message);
   const box = el("div", { class: "modal-progress" }, bar.node);
   box._update = bar.update;
-  setModal(title, box, "dialog");
+  _progressModalJobId = jobId || null;
+  _progressModalUpdater = bar.update;
+  const host = $("#modal-host");
+  const modalNode = buildModalNode(title, box, "dialog", { onClose: dismissProgressModal });
+  host.hidden = false;
+  host.replaceChildren(modalNode);
+  host.onclick = (e) => { if (e.target === host) dismissProgressModal(); };
+  host.scrollTop = 0;
+  lockScroll();
+  if (jobId) jobStore.panelOpen = true;
+  renderJobRail();
   return box;
 }
 
-document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    if (_progressModalJobId) dismissProgressModal();
+    else closeModal();
+  }
+});
 
 /* ── global state ─────────────────────────────────────────────── */
 const state = { status: null, projects: [], busy: false };
@@ -193,6 +428,7 @@ async function doSync(source) {
   try {
     const start = await api.post("/library/sync", { source });
     const result = await runJob(start, {
+      label: source === "demo" ? "Load demo library" : "Sync library",
       onProgress: (p) => { if (p.message) $(".sync-label", btn).textContent = p.message.slice(0, 18); },
     });
     toast(`Loaded ${result.num_projects} projects from ${result.source}.`, "ok");
@@ -476,7 +712,7 @@ async function categorizeOne(key, btn) {
   if (btn) { btn.disabled = true; btn.textContent = "Categorizing…"; }
   try {
     const start = await api.post(`/projects/${key}/categorize`);
-    await runJob(start);
+    await runJob(start, { label: "Categorize project" });
     toast("Categorized.", "ok");
     await renderLibrary();
   } catch (e) { toast(e.message, "err"); if (btn) { btn.disabled = false; btn.textContent = "✦ Categorize"; } }
@@ -485,10 +721,10 @@ async function categorizeOne(key, btn) {
 async function categorizeAll(e) {
   const btn = e?.currentTarget;
   if (btn) btn.disabled = true;
-  const box = showProgressModal("Categorizing projects", "Categorizing every project…");
   try {
     const start = await api.post("/projects/categorize-all");
-    await runJob(start, { onProgress: (p) => box._update(p) });
+    const box = showProgressModal("Categorizing projects", "Categorizing every project…", start.job_id);
+    await runJob(start, { label: "Categorize all", onProgress: (p) => box._update(p) });
     closeModal();
     toast("All projects categorized.", "ok");
     await renderLibrary();
@@ -574,10 +810,10 @@ async function renderConnections() {
 }
 
 async function findConnections() {
-  const box = showProgressModal("Finding connections", "Reading across your projects…");
   try {
     const start = await api.post("/connections");
-    await runJob(start, { onProgress: (p) => box._update(p) });
+    const box = showProgressModal("Finding connections", "Reading across your projects…", start.job_id);
+    await runJob(start, { label: "Find connections", onProgress: (p) => box._update(p) });
     closeModal();
     toast("Connections mapped.", "ok");
     const { connections } = await api.get("/connections");
@@ -655,10 +891,10 @@ async function renderGroups() {
 }
 
 async function findPaperGroups() {
-  const box = showProgressModal("Grouping papers", "Organizing your shelf across projects…");
   try {
     const start = await api.post("/groups");
-    await runJob(start, { onProgress: (p) => box._update(p) });
+    const box = showProgressModal("Grouping papers", "Organizing your shelf across projects…", start.job_id);
+    await runJob(start, { label: "Group papers", onProgress: (p) => box._update(p) });
     closeModal();
     toast("Paper groups ready.", "ok");
     const { paper_groups: g } = await api.get("/groups");
@@ -805,10 +1041,10 @@ async function submitStrategy(e) {
   const keys = [...strategySelection];
   if (strategyMode === "manual" && keys.length === 0) { toast("Pick at least one project, or switch to “Let the agent decide”.", "err"); return; }
   btn.disabled = true;
-  const box = showProgressModal("Generating reading plan", "Designing your reading path…");
   try {
     const start = await api.post("/strategies", { goal, mode: strategyMode, project_keys: keys });
-    await runJob(start, { onProgress: (p) => box._update(p) });
+    const box = showProgressModal("Generating reading plan", "Designing your reading path…", start.job_id);
+    await runJob(start, { label: "Reading plan", onProgress: (p) => box._update(p) });
     closeModal();
     toast("Reading plan ready.", "ok");
     strategySelection.clear();
@@ -1029,7 +1265,9 @@ function confirmAnalyzeSpec(specId) {
     el("p", { class: "lead" },
       `This will screen your active library (${papers} ${paperLabel}) and list only the papers that look relevant to your project spec.`),
     el("p", { class: "muted", style: "margin-top:12px;font-size:.9rem" },
-      "Depending on how many papers you have, this can take a while — from under a minute for a small library to several minutes for a large one. You can keep using the app while it runs."),
+      "Depending on how many papers you have, this can take a while — from under a minute for a small library to several minutes for a large one. Close the progress window, switch views, or refresh — the job keeps running. Track it under ",
+      el("strong", {}, "Running"),
+      " at the bottom of the sidebar."),
     el("div", { class: "spread mt-3", style: "justify-content:flex-end;gap:10px" },
       el("button", { type: "button", class: "btn btn-ghost", onclick: closeModal }, "Cancel"),
       el("button", { type: "button", class: "btn btn-primary", onclick: () => runAnalyzeSpec(specId) }, "Find in library")));
@@ -1037,10 +1275,10 @@ function confirmAnalyzeSpec(specId) {
 }
 
 async function runAnalyzeSpec(specId) {
-  const box = showProgressModal("Screening library", "Checking which synced papers match your spec…");
   try {
     const start = await api.post(`/specs/${specId}/analyze`, {});
-    const result = await runJob(start, { onProgress: (p) => box._update(p) });
+    const box = showProgressModal("Screening library", "Checking which synced papers match your spec…", start.job_id);
+    const result = await runJob(start, { label: "Screen library", onProgress: (p) => box._update(p) });
     closeModal();
     const n = result?.relevant ?? 0;
     toast(n ? `Found ${n} library match${n === 1 ? "" : "es"}.` : "No library matches found.", n ? "ok" : "");
@@ -1157,10 +1395,10 @@ function discoveryRow(r) {
 }
 
 async function runDiscoverSpec(specId) {
-  const box = showProgressModal("Searching PubMed", "Looking for papers not already in your library…");
   try {
     const start = await api.post(`/specs/${specId}/discover`, {});
-    const result = await runJob(start, { onProgress: (p) => box._update(p) });
+    const box = showProgressModal("Searching PubMed", "Looking for papers not already in your library…", start.job_id);
+    const result = await runJob(start, { label: "PubMed discovery", onProgress: (p) => box._update(p) });
     closeModal();
     const n = result?.discovered ?? 0;
     toast(n ? `Found ${n} new paper${n === 1 ? "" : "s"} on PubMed.` : "No new papers found.", n ? "ok" : "");
@@ -1180,14 +1418,14 @@ async function buildReadingPlanFromSpec(specId) {
   let spec;
   try { spec = await api.get(`/specs/${specId}`); }
   catch (e) { toast(e.message, "err"); return; }
-  const box = showProgressModal("Generating reading plan", "Ordering spec-relevant papers into a reading path…");
   try {
     const start = await api.post("/strategies", {
       spec_id: specId,
       goal: `Read the papers most relevant to: ${spec.title}`,
       mode: "spec",
     });
-    const saved = await runJob(start, { onProgress: (p) => box._update(p) });
+    const box = showProgressModal("Generating reading plan", "Ordering spec-relevant papers into a reading path…", start.job_id);
+    const saved = await runJob(start, { label: "Reading plan", onProgress: (p) => box._update(p) });
     closeModal();
     toast("Reading plan ready — mapped from your spec.", "ok");
     openStrategy(saved);
@@ -1247,6 +1485,7 @@ const routes = {
   specs: renderSpecs,
 };
 async function route() {
+  dismissProgressModal();
   const name = (location.hash.replace("#/", "") || "library");
   $$(".nav-item").forEach((n) => n.classList.toggle("active", n.dataset.route === name));
   const fn = routes[name] || renderLibrary;
@@ -1268,7 +1507,9 @@ function bindChrome() {
 window.addEventListener("hashchange", route);
 window.addEventListener("DOMContentLoaded", async () => {
   bindChrome();
+  bindJobRail();
   await refreshStatus();
+  await resumeTrackedJobs();
   if (!location.hash) location.hash = "#/library";
   else route();
 });

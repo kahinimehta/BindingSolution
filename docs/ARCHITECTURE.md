@@ -72,8 +72,16 @@ one call per job or per project. See [BILLING.md](BILLING.md).
 
 Analyses and syncs can take a while, so write endpoints return a `job_id`
 immediately (`app/jobs.py` runs the work in a daemon thread) and the frontend
-polls `GET /api/jobs/{id}` for live progress. Spec screening persists relevant
-hits incrementally, so partial progress survives an interruption.
+polls `GET /api/jobs/{id}` for live progress. `GET /api/jobs` lists in-flight
+and recent jobs (optional `?active=true`). The sidebar **Running** panel tracks
+active job ids in `sessionStorage` so a refresh reconnects to server threads
+still in the registry.
+
+Closing a progress modal, navigating between views, or reloading the page does
+**not** cancel a job — only stopping the Python process (e.g. Ctrl+C in the
+terminal running `make run`) does. Dismissing a row in **Running** hides it from
+the UI only. Spec screening persists relevant hits incrementally, so partial
+progress survives an interruption.
 
 ### Spec (library screen + PubMed discovery)
 
@@ -150,6 +158,7 @@ a corrupt file is set aside rather than crashing. No database to run.
 | `GET` / `DELETE` | `/api/specs[/{id}]` | List / fetch / delete specs |
 | `POST` | `/api/specs/{id}/analyze` | Screen library; store only relevant papers → job |
 | `POST` | `/api/specs/{id}/discover` | PubMed discovery; papers not in library → job |
+| `GET` | `/api/jobs` | List jobs (`?active=true` for queued/running only) |
 | `GET` | `/api/jobs/{id}` | Poll a background job |
 
 Endpoints that return `{"job_id": ...}` are asynchronous — poll `/api/jobs/{id}`

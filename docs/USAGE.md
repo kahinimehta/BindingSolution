@@ -3,8 +3,17 @@
 Start the app with `make run` and open <http://127.0.0.1:8765>. The **sidebar**
 has five views — use them in any order. On wide screens the whole interface
 (sidebar + content) is **centered** as one panel. **Sync library** and
-**Purge library** live in the **hero toolbar** (top right); status chips at the
-bottom of the sidebar show whether Claude and Zotero are connected.
+**Purge library** live in the **hero toolbar** (top right). At the bottom of the
+sidebar, **Running** lists background tasks (sync, categorization, spec screening,
+and similar). Status chips below that show whether Claude and Zotero are connected.
+
+**Background jobs:** long tasks (sync, categorize, connections, groups, reading
+plans, spec screening, PubMed discovery) start a server-side job and return
+immediately. You can close the progress window (✕), switch sidebar views, or
+refresh the page — work continues until it finishes. Open **Running** to see
+live progress; click a row to reopen the progress window. Dismissing a row only
+hides it from the list — it does not stop the job. The only way to stop work is
+to interrupt the server process in your terminal (e.g. Ctrl+C on `make run`).
 
 > **No keys?** Click **Load demo library** on the Library screen. You get a
 > small synthetic library spanning four overlapping research areas so every

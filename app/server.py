@@ -415,6 +415,10 @@ def create_app() -> FastAPI:
         return _start("discover-spec", work)
 
     # ── jobs ─────────────────────────────────────────────────────────
+    @app.get("/api/jobs")
+    def list_jobs(active: bool = False) -> dict:
+        return {"jobs": [j.to_dict() for j in jobs.list_jobs(active_only=active)]}
+
     @app.get("/api/jobs/{job_id}")
     def job_status(job_id: str) -> dict:
         job = jobs.get(job_id)
