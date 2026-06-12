@@ -53,6 +53,10 @@ a larger token budget; high-volume per-paper summarization keeps outputs tight.
 the real input (tags, titles). The whole app — and the test suite — runs with
 no key and no network.
 
+**Billing note:** live mode bills your Anthropic key per API call. Spec
+screening issues one call per paper in the active library; other features use
+one call per job or per project. See [BILLING.md](BILLING.md).
+
 ## Background jobs
 
 Analyses and syncs can take a while, so write endpoints return a `job_id`

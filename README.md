@@ -23,6 +23,8 @@ Add keys to the gitignored `.env` created by setup (`ANTHROPIC_API_KEY`, `ZOTERO
 
 **No keys?** `make run` → **Load demo library**. Everything works on bundled sample data.
 
+**API billing:** Claude usage is billed to your Anthropic account (pay per token). Zotero sync and saved results are free to revisit. Spec screening calls Claude once per paper — see [docs/BILLING.md](docs/BILLING.md) for cost drivers and tips.
+
 ## Library layout
 
 After sync, collections split into **active** (2+ papers) and **excluded** (reference only):
@@ -74,7 +76,7 @@ Use any view in any order — nothing is sequential.
 
 ## Docs
 
-- [docs/USAGE.md](docs/USAGE.md) · [docs/CONFIGURATION.md](docs/CONFIGURATION.md) · [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+- [docs/USAGE.md](docs/USAGE.md) · [docs/CONFIGURATION.md](docs/CONFIGURATION.md) · [docs/BILLING.md](docs/BILLING.md) · [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
 - `make setup` · `make run` · `make dev` · `make test`
 
 ## License

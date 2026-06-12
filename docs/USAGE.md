@@ -115,11 +115,31 @@ appear first. Click **Refresh suggestions** to re-screen after syncing new paper
 
 ## Tips
 
+### Workflow
+
 - Every analysis runs as a background job with a **live progress bar** — you
   can keep working while it runs. Confirmations and progress (spec screening,
   reading plans, connections, bulk categorization) open in the same centered
   dialog so the page does not jump or rescroll behind you.
-- Switching to a different `ANTHROPIC_MODEL` in `.env` (e.g. a faster model for
-  paper screening) only needs a server restart.
 - Refreshing suggestions re-screens against the current library, so it's worth
-  re-running after you sync new papers.
+  re-running after you sync new papers — but each re-run calls Claude again for
+  every active paper (see [BILLING.md](BILLING.md)).
+- Saved categorizations, connections, plans, and spec results are **free to
+  re-open**; you only pay when you trigger a new analysis.
+
+### Using the Claude API wisely
+
+Full detail: **[docs/BILLING.md](BILLING.md)**. Short version:
+
+1. **Try demo mode first** — no key, or `MOCK_LLM=true`, to learn the UI.
+2. **Categorize what you need** — avoid **Categorize all** on a huge shelf until
+   you know the output is useful.
+3. **Spec screening is the big one** — cost scales with paper count; read the
+   confirmation dialog before you start.
+4. **Do not repeat heavy jobs** — re-run connections, strategies, or spec
+   screening only when your library or goals actually changed.
+5. **Tidy Zotero** — active collections need 2+ papers; merge thin folders so
+   you are not screening noise.
+6. **Pick your model** — default `claude-opus-4-8` is strongest; a faster model
+   in `ANTHROPIC_MODEL` can reduce cost for large libraries (restart required).
+7. **Set a spend limit** in the [Anthropic Console](https://console.anthropic.com/settings/billing).

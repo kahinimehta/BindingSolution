@@ -19,9 +19,16 @@ After changing `.env`, restart the server (`Ctrl-C`, then `make run`).
 Powers every AI feature (categorization, connections, strategies, paper
 suggestions). Without it the app runs in a deterministic demo mode.
 
+**Billing:** usage is charged to **your Anthropic account** (input + output
+tokens per API call). BindingSolution itself is free. Spec screening is the
+main cost driver — it calls Claude once per paper in your active library. See
+[BILLING.md](BILLING.md) for what costs money and how to use the API wisely.
+
 1. Go to <https://console.anthropic.com/settings/keys>
 2. Create a key, copy it (starts with `sk-ant-`)
 3. Put it in `.env`: `ANTHROPIC_API_KEY=sk-ant-...`
+4. Optional: set a monthly spend limit at
+   <https://console.anthropic.com/settings/billing>
 
 ### Zotero — two ways
 
@@ -53,7 +60,7 @@ suggestions). Without it the app runs in a deterministic demo mode.
 | Variable | Default | What it does |
 |---|---|---|
 | `ANTHROPIC_API_KEY` | — | Claude API key. Unset → demo AI mode. |
-| `ANTHROPIC_MODEL` | `claude-opus-4-8` | Model used for all analysis. |
+| `ANTHROPIC_MODEL` | `claude-opus-4-8` | Model used for all analysis. Faster/cheaper models can lower cost — see [BILLING.md](BILLING.md). |
 | `ZOTERO_LIBRARY_ID` | — | Your Zotero userID (or group ID). |
 | `ZOTERO_API_KEY` | — | Read-only Zotero API key. |
 | `ZOTERO_LIBRARY_TYPE` | `user` | `user` or `group`. |
