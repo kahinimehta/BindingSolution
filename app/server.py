@@ -197,11 +197,16 @@ def create_app() -> FastAPI:
 
         def work(job: jobs.Job) -> dict:
             n_papers = total_papers(projects)
-            job.set_progress(0, n_papers, f"Grouping {n_papers} papers across projects…")
+            n_projects = len(projects)
+            steps = 3
+            scope = f"{n_papers} papers across {n_projects} projects"
+            job.set_progress(0, steps, f"Preparing {scope}…")
+            job.set_progress(1, steps, f"Analyzing {scope}…", indeterminate=True)
             result = analyzer.find_paper_groups(projects)
+            job.set_progress(2, steps, "Applying groups…")
             result = append_single_paper_collections(result, store.get_projects())
             store.set_paper_groups({**result, "generated_at": _now()})
-            job.set_progress(n_papers, n_papers, "Done")
+            job.set_progress(steps, steps, "Done")
             return result
 
         return _start("paper-groups", work)

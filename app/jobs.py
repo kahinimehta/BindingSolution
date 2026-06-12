@@ -22,14 +22,28 @@ class Job:
         self.id = uuid.uuid4().hex[:12]
         self.kind = kind
         self.status = "queued"  # queued | running | done | error
-        self.progress: dict[str, Any] = {"current": 0, "total": 0, "message": ""}
+        self.progress: dict[str, Any] = {
+            "current": 0, "total": 0, "message": "", "indeterminate": False,
+        }
         self.result: Any = None
         self.error: str | None = None
         self.created_at = time.time()
         self.finished_at: float | None = None
 
-    def set_progress(self, current: int, total: int, message: str = "") -> None:
-        self.progress = {"current": current, "total": total, "message": message}
+    def set_progress(
+        self,
+        current: int,
+        total: int,
+        message: str = "",
+        *,
+        indeterminate: bool = False,
+    ) -> None:
+        self.progress = {
+            "current": current,
+            "total": total,
+            "message": message,
+            "indeterminate": indeterminate,
+        }
 
     def to_dict(self) -> dict:
         return {

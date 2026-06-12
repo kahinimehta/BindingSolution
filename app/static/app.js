@@ -227,7 +227,8 @@ function renderJobRail() {
   const rows = [...running, ...recent].map((entry) => {
     const total = entry.progress?.total || 0;
     const cur = entry.progress?.current || 0;
-    const ratio = total ? cur / total : entry.status === "done" ? 1 : 0.08;
+    const indeterminate = !!entry.progress?.indeterminate;
+    const ratio = indeterminate ? 0.4 : total ? cur / total : entry.status === "done" ? 1 : 0.08;
     const cls = `job-rail-item${entry.status === "done" ? " done" : ""}${entry.status === "error" ? " error" : ""}`;
     const reopen = () => {
       if (entry.status === "queued" || entry.status === "running") {
@@ -248,7 +249,10 @@ function renderJobRail() {
           onclick: (e) => { e.stopPropagation(); entry.hidden = true; renderJobRail(); },
         }, "✕")),
       el("div", { class: "job-rail-item-bar" },
-        el("div", { class: "job-rail-item-fill", style: `width:${Math.max(6, ratio * 100)}%` })));
+        el("div", {
+          class: `job-rail-item-fill${indeterminate ? " progress-indeterminate" : ""}`,
+          style: indeterminate ? "" : `width:${Math.max(6, ratio * 100)}%`,
+        })));
   });
   panel.replaceChildren(...rows);
 }
@@ -1503,6 +1507,24 @@ async function deleteSpec(id) {
 }
 
 /* ── shared: progress block ───────────────────────────────────── */
+function progressFraction(cur, total, indeterminate) {
+  if (!total || total === 1) return "";
+  if (total <= 5) {
+    const step = indeterminate ? Math.min(cur + 1, total) : Math.min(cur, total);
+    return `Step ${step} of ${total}`;
+  }
+  return `${cur}/${total}`;
+}
+
+function applyProgressFill(fill, cur, total, indeterminate) {
+  fill.classList.toggle("progress-indeterminate", !!indeterminate);
+  if (indeterminate) fill.style.width = "";
+  else {
+    const ratio = total ? cur / total : 0.05;
+    fill.style.width = `${Math.max(5, ratio * 100)}%`;
+  }
+}
+
 function progressBlock(initial) {
   const fill = el("div", { class: "progress-fill" });
   const msg = el("span", {}, initial);
@@ -1514,11 +1536,11 @@ function progressBlock(initial) {
     node,
     update(p) {
       if (!p) return;
-      const total = p.total || 0; const cur = p.current || 0;
-      const ratio = total ? cur / total : 0.05;
-      fill.style.width = `${Math.max(5, ratio * 100)}%`;
+      const total = p.total || 0;
+      const cur = p.current || 0;
+      applyProgressFill(fill, cur, total, p.indeterminate);
       if (p.message) msg.textContent = p.message;
-      pct.textContent = total ? `${cur}/${total}` : "";
+      pct.textContent = progressFraction(cur, total, p.indeterminate);
     },
   };
 }

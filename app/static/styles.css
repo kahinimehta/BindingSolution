@@ -775,6 +775,14 @@ select.input, .input {
   transition: width .35s ease;
   border-radius: 20px;
 }
+.progress-indeterminate {
+  width: 40% !important;
+  animation: progress-indeterminate 1.4s ease-in-out infinite;
+}
+@keyframes progress-indeterminate {
+  0% { transform: translateX(-120%); }
+  100% { transform: translateX(320%); }
+}
 .progress-msg { font-size: .82rem; color: var(--ink-2); margin-top: 7px; display: flex; justify-content: space-between; }
 
 /* ── list rows ──────────────────────────────────────────────── */
