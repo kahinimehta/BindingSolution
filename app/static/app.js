@@ -67,6 +67,13 @@ function persistJobStore() {
   sessionStorage.setItem(JOB_STORAGE_KEY, JSON.stringify(active));
 }
 
+function finalizeDoneProgress(progress) {
+  if (!progress) return { current: 1, total: 1, message: "Done", indeterminate: false };
+  const total = Math.max(progress.total || 0, progress.current || 0, 1);
+  const message = progress.message === "Up to date" ? "Up to date" : "Done";
+  return { ...progress, current: total, total, message, indeterminate: false };
+}
+
 function registerJob(startResponse, { label } = {}) {
   const id = startResponse.job_id;
   const kind = startResponse.kind || "task";
@@ -118,9 +125,11 @@ async function pollActiveJobs() {
     try {
       const job = await api.get(`/jobs/${entry.id}`);
       entry.status = job.status;
-      entry.progress = job.progress || entry.progress;
+      entry.progress = job.status === "done"
+        ? finalizeDoneProgress(job.progress || entry.progress)
+        : (job.progress || entry.progress);
       for (const h of entry.handlers) {
-        if (h.onProgress) h.onProgress(job.progress, job);
+        if (h.onProgress) h.onProgress(entry.progress, job);
       }
       updateProgressModal(entry);
       renderJobRail();
@@ -135,7 +144,7 @@ async function pollActiveJobs() {
 function finishJobEntry(entry, result) {
   const handlers = entry.handlers.splice(0);
   entry.status = "done";
-  entry.progress = { ...entry.progress, message: "Done" };
+  entry.progress = finalizeDoneProgress(entry.progress);
   renderJobRail();
   dismissProgressModalIfJob(entry.id);
   handlers.forEach((h) => h.resolve(result));
@@ -227,8 +236,9 @@ function renderJobRail() {
   const rows = [...running, ...recent].map((entry) => {
     const total = entry.progress?.total || 0;
     const cur = entry.progress?.current || 0;
-    const indeterminate = !!entry.progress?.indeterminate;
-    const ratio = indeterminate ? 0.4 : total ? cur / total : entry.status === "done" ? 1 : 0.08;
+    const done = entry.status === "done";
+    const indeterminate = !done && !!entry.progress?.indeterminate;
+    const ratio = done ? 1 : indeterminate ? 0.4 : total ? cur / total : 0.08;
     const cls = `job-rail-item${entry.status === "done" ? " done" : ""}${entry.status === "error" ? " error" : ""}`;
     const reopen = () => {
       if (entry.status === "queued" || entry.status === "running") {
@@ -1775,11 +1785,12 @@ function progressFraction(cur, total, indeterminate) {
   return `${cur}/${total}`;
 }
 
-function applyProgressFill(fill, cur, total, indeterminate) {
-  fill.classList.toggle("progress-indeterminate", !!indeterminate);
-  if (indeterminate) fill.style.width = "";
+function applyProgressFill(fill, cur, total, indeterminate, { done = false } = {}) {
+  const pulse = !!indeterminate && !done;
+  fill.classList.toggle("progress-indeterminate", pulse);
+  if (pulse) fill.style.width = "";
   else {
-    const ratio = total ? cur / total : 0.05;
+    const ratio = done ? 1 : total ? cur / total : 0.05;
     fill.style.width = `${Math.max(5, ratio * 100)}%`;
   }
 }
@@ -1795,11 +1806,12 @@ function progressBlock(initial, bootstrap) {
     node,
     update(p) {
       if (!p) return;
+      const done = p.message === "Done" || p.message === "Up to date";
       const total = p.total || 0;
       const cur = p.current || 0;
-      applyProgressFill(fill, cur, total, p.indeterminate);
+      applyProgressFill(fill, cur, total, p.indeterminate, { done });
       if (p.message) msg.textContent = p.message;
-      pct.textContent = progressFraction(cur, total, p.indeterminate);
+      pct.textContent = done ? "" : progressFraction(cur, total, p.indeterminate);
     },
   };
   if (bootstrap) api.update(bootstrap);

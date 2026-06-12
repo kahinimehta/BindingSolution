@@ -118,6 +118,47 @@ def test_reading_plan_job_uses_indeterminate_progress(client, monkeypatch):
     assert flags
 
 
+def test_finished_jobs_clear_indeterminate_and_say_done(client, monkeypatch):
+    _load_demo(client)
+    import app.analysis as analysis_mod
+
+    orig = analysis_mod.Analyzer.reading_strategy
+
+    def slow_strategy(self, projects, goal):
+        time.sleep(0.12)
+        return orig(self, projects, goal)
+
+    monkeypatch.setattr(analysis_mod.Analyzer, "reading_strategy", slow_strategy)
+
+    start = client.post("/api/strategies", json={"goal": "read", "mode": "auto"}).json()
+    job = _poll_until_done(client, start["job_id"])
+    p = job["progress"]
+    assert job["status"] == "done"
+    assert p["message"] == "Done"
+    assert not p.get("indeterminate")
+    assert p["current"] == p["total"]
+
+
+def test_connections_finish_with_done_not_indeterminate(client, monkeypatch):
+    _load_demo(client)
+    import app.analysis as analysis_mod
+
+    orig = analysis_mod.Analyzer.find_connections
+
+    def slow_find(self, projects):
+        time.sleep(0.12)
+        return orig(self, projects)
+
+    monkeypatch.setattr(analysis_mod.Analyzer, "find_connections", slow_find)
+
+    start = client.post("/api/connections").json()
+    job = _poll_until_done(client, start["job_id"])
+    p = job["progress"]
+    assert p["message"] == "Done"
+    assert not p.get("indeterminate")
+    assert p["current"] == p["total"] == 3
+
+
 def test_strategy_uses_indeterminate_progress(client, monkeypatch):
     _load_demo(client)
     import app.analysis as analysis_mod

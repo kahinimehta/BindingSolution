@@ -58,6 +58,16 @@ class Job:
         }
 
 
+def _finalize_done_progress(job: Job) -> None:
+    """Ensure finished jobs never leave an indeterminate bar as the last state."""
+    p = job.progress
+    total = max(int(p.get("total") or 0), int(p.get("current") or 0), 1)
+    message = (p.get("message") or "").strip() or "Done"
+    if message not in ("Done", "Up to date"):
+        message = "Done"
+    job.set_progress(total, total, message, indeterminate=False)
+
+
 def _prune() -> None:
     finished = [j for j in _registry.values() if j.finished_at is not None]
     if len(finished) <= _MAX_FINISHED:
@@ -78,6 +88,7 @@ def start(kind: str, fn: Callable[[Job], Any]) -> Job:
         job.status = "running"
         try:
             job.result = fn(job)
+            _finalize_done_progress(job)
             job.status = "done"
         except Exception as exc:  # surfaced to the UI via job.error
             job.error = str(exc) or exc.__class__.__name__
