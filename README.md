@@ -37,6 +37,7 @@ Claude usage bills to **your** Anthropic account (per token). Zotero sync and re
 
 Use any view in any order.
 
+- **Large-type layout** — 3× scaled typography and spacing for ultrawide / high-DPI displays; project cards show full summaries (no inner scroll)
 - **Zotero sync** — Web API or local Zotero 7; bundled demo library; **Sync library** / **Purge library** in the hero toolbar
 - **Running** — sidebar panel tracks background jobs; close the progress window or switch views without stopping work
 - **Active vs excluded** — only folders with 2+ papers are analyzed; empty, single-paper, and unfiled collections are reference-only
@@ -53,17 +54,17 @@ Use any view in any order.
 </p>
 
 <p align="center">
-  <img src="docs/screenshots/groups.svg" alt="Groups view with Papers KPI matching Library, paper sets, standalone papers, and drop suggestions" width="1000" />
+  <img src="docs/screenshots/groups.svg" alt="Groups view with large-type layout, Papers KPI matching Library, set summaries, standalone papers, and drop suggestions" width="1000" />
 </p>
 
 <p align="center">
-  <img src="docs/screenshots/strategies.svg" alt="Reading strategies with schedule" width="1000" />
+  <img src="docs/screenshots/strategies.svg" alt="Reading strategies with large-type layout, compose form, and schedule estimates" width="1000" />
 </p>
 
 <p align="center">
-  <img src="docs/screenshots/specs-upload.svg" alt="Spec upload and library matches" width="1000" />
+  <img src="docs/screenshots/specs-upload.svg" alt="Spec upload with large-type layout, library matches, and incremental re-screen" width="1000" />
   <br /><br />
-  <img src="docs/screenshots/specs.svg" alt="Suggested papers PubMed discovery" width="1000" />
+  <img src="docs/screenshots/specs.svg" alt="Suggested papers with large-type layout, PubMed discovery tab" width="1000" />
 </p>
 
 ## Persistence

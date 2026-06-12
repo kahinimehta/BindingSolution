@@ -53,7 +53,7 @@ anything in Zotero. With no Zotero credentials, use **Load demo library** on the
 empty state instead (same sync endpoint, bundled sample data).
 
 <p align="center">
-  <img src="screenshots/library.svg" alt="Library view with Running panel and hero toolbar" width="1000" />
+  <img src="screenshots/library.svg" alt="Library view with large-type layout, full-height project cards, Running panel, and hero toolbar" width="1000" />
 </p>
 
 ## 2. 📂 Categorize projects — *Library*
@@ -118,7 +118,7 @@ Demo mode uses deterministic heuristics (title deduping and tag clustering); wit
 a Claude key the same schema is filled by the model.
 
 <p align="center">
-  <img src="screenshots/groups.svg" alt="Groups view with Papers KPI matching Library, paper sets, standalone papers, and drop suggestions" width="1000" />
+  <img src="screenshots/groups.svg" alt="Groups view with large-type layout, Papers KPI matching Library, set summaries, standalone papers, and drop suggestions" width="1000" />
 </p>
 
 ## 5. ↯ Plan your reading — *Strategies*
@@ -156,7 +156,7 @@ Estimates assume a **medium academic reading pace**:
 These are planning hints, not deadlines. Skim faster or read deeper and your real time will differ. The schedule banner on each plan states the assumptions used.
 
 <p align="center">
-  <img src="screenshots/strategies.svg" alt="Reading strategies compose form and spec-mapped plan" width="1000" />
+  <img src="screenshots/strategies.svg" alt="Reading strategies with large-type layout, compose form, and schedule estimates" width="1000" />
 </p>
 
 ## 6. ✦ Spec — upload, screen library, discover on PubMed
@@ -185,7 +185,7 @@ Open **Spec** in the sidebar. The view has two tabs with different jobs:
    plan** to turn them into an ordered path in **Strategies**.
 
 <p align="center">
-  <img src="screenshots/specs-upload.svg" alt="Spec upload tab with library matches" width="1000" />
+  <img src="screenshots/specs-upload.svg" alt="Spec upload with large-type layout, library matches, and incremental re-screen" width="1000" />
 </p>
 
 ### Suggested papers (PubMed)
@@ -207,7 +207,7 @@ Demo mode (`MOCK_LLM=true`) uses deterministic mock PubMed hits so you can try
 the flow offline.
 
 <p align="center">
-  <img src="screenshots/specs.svg" alt="Suggested papers PubMed discovery tab" width="1000" />
+  <img src="screenshots/specs.svg" alt="Suggested papers with large-type layout, PubMed discovery tab" width="1000" />
 </p>
 
 ---
