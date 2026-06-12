@@ -27,7 +27,7 @@ human-readable JSON store, no build step) over scale.
 ## Frontend layout
 
 The SPA (`app/static/`) is a hash router with five views. CSS centers the whole
-shell (`max-width: 4200px` via `--app-max`, `margin: 0 auto`) so the green sidebar and main pane
+shell (`max-width: 6400px` via `--app-max`, `margin: 0 auto`) so the green sidebar and main pane
 move together on ultrawide monitors. The sidebar (`--rail-w: 288px`) holds
 navigation and status chips; **Sync library** / **Purge library** and per-view
 actions sit in the hero toolbar. Main content fills the remaining width without
