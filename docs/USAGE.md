@@ -128,8 +128,11 @@ not already have in Zotero.
 - Click **✦ Discover new papers**. BindingSolution builds a PubMed query from your
   spec text and categorized project keywords, searches NCBI eutils, and filters
   out titles already in your synced library.
-- Each row shows title, authors, journal/year, a short relevance note, and a link
-  to PubMed. Re-run discovery after you update the spec or categorize more projects.
+- You get **up to five** hits, ranked by keyword overlap with your spec. Each row
+  links to PubMed, shows a **one-sentence summary** (from the abstract when
+  available), and a short **why it's relevant** note. Papers below a relevance
+  cutoff are dropped, so you may see fewer than five if the tail is weak.
+- Re-run discovery after you update the spec or categorize more projects.
 
 Demo mode (`MOCK_LLM=true`) uses deterministic mock PubMed hits so you can try
 the flow offline.

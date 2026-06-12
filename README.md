@@ -42,7 +42,7 @@ Use any view in any order.
 - **Categorize** — discipline, themes, methods, keywords, summary per collection
 - **Connections** — shared threads and suggested groupings across projects
 - **Reading strategies** — ordered path + synthesis prompts; **schedule with estimated hours/days** (medium pace, ~12 pages/h at 2 h/day — see [docs/USAGE.md](docs/USAGE.md#reading-time-assumptions))
-- **Spec** — upload a brief (PDF/Word/MD/text); **Find in library** screens your Zotero shelf (core/supporting only); **Suggested papers** scrapes PubMed for hits *not* in your library
+- **Spec** — upload a brief (PDF/Word/MD/text); **Find in library** screens your Zotero shelf (core/supporting only); **Suggested papers** returns up to five ranked PubMed hits *not* in your library, with summaries and relevance notes
 - **Spec → reading plan** — **Build reading plan** from library matches; steps keep relevance notes; plan links back to the spec
 - **Purge library** — wipe local data without touching Zotero (sidebar)
 

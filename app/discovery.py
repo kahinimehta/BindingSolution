@@ -6,6 +6,10 @@ import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
 
+MAX_DISCOVERIES = 5
+MIN_RELEVANCE_SCORE = 55
+PUBMED_FETCH_BUFFER = 14
+
 _STOP = {
     "a", "an", "the", "and", "or", "for", "to", "of", "in", "on", "with", "we", "our",
     "this", "that", "will", "are", "is", "be", "by", "from", "as", "at", "it", "their",
@@ -45,7 +49,7 @@ def build_pubmed_query(spec_text: str, projects: list[dict] | None = None) -> st
     return " AND ".join(ranked[:5])
 
 
-def _pubmed_fetch(query: str, max_results: int = 12) -> list[dict]:
+def _pubmed_fetch(query: str, max_results: int = PUBMED_FETCH_BUFFER) -> list[dict]:
     params = urllib.parse.urlencode({
         "db": "pubmed",
         "term": query,
@@ -104,21 +108,110 @@ def _pubmed_fetch(query: str, max_results: int = 12) -> list[dict]:
     return out
 
 
+def _matched_terms(hit: dict, terms: list[str]) -> list[str]:
+    blob = f"{hit.get('title', '')} {hit.get('abstract', '')}".lower()
+    return [t for t in terms if t in blob]
+
+
+def _score_hit(hit: dict, query_terms: list[str]) -> int:
+    matched = _matched_terms(hit, query_terms)
+    if not matched:
+        return 30
+    score = 36 + len(matched) * 14
+    title = (hit.get("title") or "").lower()
+    score += sum(8 for t in matched if t in title)
+    return min(98, score)
+
+
+def _first_sentence(text: str, max_len: int = 160) -> str:
+    text = " ".join((text or "").split())
+    if not text:
+        return ""
+    parts = re.split(r"(?<=[.!?])\s+", text, maxsplit=1)
+    sent = parts[0]
+    if len(sent) > max_len:
+        sent = sent[:max_len].rsplit(" ", 1)[0] + "…"
+    return sent
+
+
+def _brief_summary(hit: dict) -> str:
+    sent = _first_sentence(hit.get("abstract") or "")
+    if sent:
+        return sent
+    journal = hit.get("journal") or "the literature"
+    year = hit.get("year") or ""
+    yr = f" ({year})" if year else ""
+    return f"Article in {journal}{yr}."
+
+
+def _relevance_explanation(hit: dict, terms: list[str]) -> str:
+    matched = _matched_terms(hit, terms)
+    if len(matched) >= 2:
+        return (
+            f"Strong match on {', '.join(matched[:3])} from your spec — "
+            "not already in your library."
+        )
+    if len(matched) == 1:
+        return (
+            f"Touches {matched[0]} from your spec — worth reviewing; "
+            "not already in your library."
+        )
+    return "Surfaced by your PubMed query — skim the summary to confirm fit."
+
+
+def _enrich_hit(hit: dict, terms: list[str]) -> dict:
+    row = dict(hit)
+    row["score"] = row.get("score") or _score_hit(row, terms)
+    row["summary"] = row.get("summary") or _brief_summary(row)
+    row["relevance_explanation"] = row.get("relevance_explanation") or _relevance_explanation(row, terms)
+    return row
+
+
+def _select_relevant(hits: list[dict], terms: list[str], exclude: set[str]) -> list[dict]:
+    """Keep up to MAX_DISCOVERIES hits above MIN_RELEVANCE_SCORE, ranked by fit."""
+    candidates: list[dict] = []
+    for hit in hits:
+        if _norm_title(hit.get("title", "")) in exclude:
+            continue
+        row = _enrich_hit(hit, terms)
+        if row["score"] < MIN_RELEVANCE_SCORE:
+            continue
+        candidates.append(row)
+
+    candidates.sort(key=lambda r: -(r.get("score") or 0))
+
+    selected: list[dict] = []
+    for i, row in enumerate(candidates):
+        if i >= MAX_DISCOVERIES:
+            break
+        if i > 0:
+            prev = candidates[i - 1]["score"]
+            if row["score"] < MIN_RELEVANCE_SCORE + 8 or row["score"] < prev - 18:
+                break
+        selected.append(row)
+    return selected
+
+
 def _mock_discoveries(spec_text: str, projects: list[dict], exclude: set[str]) -> list[dict]:
     seeds = build_pubmed_query(spec_text, projects).replace(" AND ", " ").split()[:4]
     topic = " ".join(seeds) or "computational neuroscience"
     templates = [
-        ("Novel {t} framework for cross-species comparison", "Neuron", 2024),
-        ("Benchmarking {t} methods on open neurophysiology data", "Nature Communications", 2023),
-        ("A survey of {t} in systems neuroscience", "Trends in Cognitive Sciences", 2022),
-        ("Scalable pipelines for {t} with multimodal recordings", "eLife", 2024),
-        ("Causal inference meets {t}: open problems", "PNAS", 2023),
+        ("Novel {t} framework for cross-species comparison", "Neuron", 2024, 92),
+        ("Benchmarking {t} methods on open neurophysiology data", "Nature Communications", 2023, 84),
+        ("A survey of {t} in systems neuroscience", "Trends in Cognitive Sciences", 2022, 76),
+        ("Scalable pipelines for {t} with multimodal recordings", "eLife", 2024, 68),
+        ("Causal inference meets {t}: open problems", "PNAS", 2023, 60),
+        ("Peripheral notes on unrelated clinical trials", "Lancet", 2021, 42),
     ]
     out: list[dict] = []
-    for i, (title_t, journal, year) in enumerate(templates):
+    for i, (title_t, journal, year, score) in enumerate(templates):
         title = title_t.format(t=topic)
         if _norm_title(title) in exclude:
             continue
+        abstract = (
+            f"We propose a new angle on {topic}, motivated by recent grant aims "
+            f"in this area. Results highlight {topic} as a central theme."
+        )
         out.append({
             "id": f"mock:{i}",
             "pmid": "",
@@ -126,23 +219,13 @@ def _mock_discoveries(spec_text: str, projects: list[dict], exclude: set[str]) -
             "authors": "Demo Author et al.",
             "year": str(year),
             "journal": journal,
-            "abstract": f"We propose a new angle on {topic}, motivated by recent grant aims in this area.",
+            "abstract": abstract,
             "url": "https://pubmed.ncbi.nlm.nih.gov/",
             "source": "pubmed",
-            "relevance_explanation": f"Touches {topic} themes from your spec but is not in your Zotero library.",
-            "score": 92 - i * 7,
+            "score": score,
             "_mock": True,
         })
     return out
-
-
-def _score_hit(hit: dict, query_terms: list[str]) -> int:
-    blob = f"{hit.get('title', '')} {hit.get('abstract', '')}".lower()
-    score = 40
-    for term in query_terms:
-        if term in blob:
-            score += 12
-    return min(98, score)
 
 
 def discover_for_spec(
@@ -150,9 +233,9 @@ def discover_for_spec(
     projects: list[dict],
     *,
     use_mock: bool = False,
-    max_results: int = 10,
+    max_results: int = MAX_DISCOVERIES,
 ) -> list[dict]:
-    """Return ranked external paper suggestions not already in the library."""
+    """Return up to max_results ranked external suggestions not already in the library."""
     exclude = library_titles({p["key"]: p for p in projects})
     query = build_pubmed_query(spec.get("text", ""), projects)
     terms = [t for t in re.split(r"\W+", query.lower()) if t and t not in _STOP]
@@ -161,24 +244,11 @@ def discover_for_spec(
         hits = _mock_discoveries(spec.get("text", ""), projects, exclude)
     else:
         try:
-            hits = _pubmed_fetch(query, max_results=max_results + 8)
+            hits = _pubmed_fetch(query, max_results=PUBMED_FETCH_BUFFER)
         except Exception:
             hits = _mock_discoveries(spec.get("text", ""), projects, exclude)
             for h in hits:
                 h["_fallback"] = True
 
-    filtered: list[dict] = []
-    for hit in hits:
-        if _norm_title(hit.get("title", "")) in exclude:
-            continue
-        row = dict(hit)
-        if "relevance_explanation" not in row:
-            row["relevance_explanation"] = (
-                "Found on PubMed for your project spec — not present in your synced library."
-            )
-        row["score"] = row.get("score") or _score_hit(row, terms)
-        filtered.append(row)
-        if len(filtered) >= max_results:
-            break
-    filtered.sort(key=lambda r: -(r.get("score") or 0))
-    return filtered
+    cap = min(max_results, MAX_DISCOVERIES)
+    return _select_relevant(hits, terms, exclude)[:cap]

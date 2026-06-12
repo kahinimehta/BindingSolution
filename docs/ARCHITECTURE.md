@@ -76,10 +76,14 @@ The **Spec** view is a two-tab SPA panel (`Upload & manage` · `Suggested papers
    active library but only persists **core** and **supporting** hits in
    `spec.analysis`. The UI lists those under **Library matches** on the upload tab.
 3. **Discover on PubMed** — `POST /api/specs/{id}/discover` (`app/discovery.py`)
-   builds a query from spec text and categorized keywords, fetches hits via NCBI
-   eutils, excludes titles already in the library, and stores ranked rows in
-   `spec.discoveries`. No Claude call — mock hits when `MOCK_LLM=true` or if
-   PubMed is unreachable.
+   builds a query from spec text and categorized keywords, fetches candidates via
+   NCBI eutils, excludes titles already in the library, scores each hit by keyword
+   overlap (title/abstract), and keeps **up to five** rows at or above
+   `MIN_RELEVANCE_SCORE` (55). A relative drop-off rule trims weak tail hits, so
+   fewer than five may be returned. Each stored row includes `summary` (first
+   abstract sentence or a short fallback), `relevance_explanation`, `score`, and
+   a PubMed `url`. No Claude call — mock hits when `MOCK_LLM=true` or if PubMed
+   is unreachable.
 4. **Map to reading plan** — `POST /api/strategies` with optional `spec_id`
    filters projects to spec-relevant papers (`spec_strategy.projects_from_spec`),
    generates one reading strategy, then merges relevance onto each step

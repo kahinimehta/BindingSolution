@@ -24,7 +24,7 @@ Pricing depends on the model you set in `ANTHROPIC_MODEL` — see
 | **Build reading plan** (from spec) | 1 per plan | Medium | Same as a manual strategy, but only spec-relevant papers are included — not a per-paper screen. |
 | **Upload spec** (validation) | 1 per upload | Low | Checks the text is a real project brief. |
 | **Find in library** (spec screen) | **1 per paper screened** | **High at scale** | Scales linearly with active-library size. |
-| **Discover new papers** (PubMed) | 0 | Free | NCBI eutils; no Claude call. |
+| **Discover new papers** (PubMed) | 0 | Free | Up to 5 ranked hits via NCBI eutils; no Claude call. |
 
 **Zotero sync**, **re-opening saved results**, and **browsing the UI** do not
 call Claude. Neither does **demo AI mode** (no key, or `MOCK_LLM=true`).

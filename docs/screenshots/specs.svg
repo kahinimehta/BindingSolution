@@ -35,35 +35,35 @@
 
     <rect x="0" y="40" width="568" height="56" rx="10" fill="#f6edd6" stroke="#e2d9c6"/>
     <text x="14" y="60" fill="#1f4636" font-family="Georgia, serif" font-size="12" font-weight="600">Suggested papers (PubMed)</text>
-    <text x="14" y="78" fill="#5a564c" font-family="system-ui, sans-serif" font-size="8.5">Search PubMed from your spec and project categories. Lists hits not already in Zotero.</text>
+    <text x="14" y="78" fill="#5a564c" font-family="system-ui, sans-serif" font-size="8.5">Up to five ranked PubMed hits with a brief summary and why each might matter.</text>
 
     <text x="0" y="114" fill="#5a564c" font-family="system-ui, sans-serif" font-size="9.5" font-weight="600">Spec</text>
     <rect x="0" y="120" width="260" height="24" rx="6" fill="#fff" stroke="#d3c8b0"/>
     <text x="12" y="136" fill="#211f1a" font-family="system-ui, sans-serif" font-size="9">Fairness grant aim</text>
-    <text x="272" y="136" fill="#8a8478" font-family="system-ui, sans-serif" font-size="9">5 discovered on PubMed</text>
+    <text x="272" y="136" fill="#8a8478" font-family="system-ui, sans-serif" font-size="9">3 relevant PubMed hits (up to 5)</text>
     <rect x="430" y="116" width="138" height="26" rx="7" fill="#b3892f"/>
     <text x="499" y="133" fill="#2b2410" font-family="system-ui, sans-serif" font-size="8.5" font-weight="700" text-anchor="middle">&#x2726; Discover new papers</text>
 
-    <rect x="0" y="156" width="568" height="72" rx="9" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
-    <text x="14" y="178" fill="#1f4636" font-family="system-ui, sans-serif" font-size="10.5" font-weight="600">Causal fairness with latent confounders in recommender systems</text>
-    <text x="14" y="192" fill="#8a8478" font-family="system-ui, sans-serif" font-size="8.5">Smith J, Lee A &#xB7; Nature Communications &#xB7; 2024</text>
-    <rect x="14" y="198" width="440" height="20" rx="5" fill="#eef4f0" stroke="#cfe0d6"/>
-    <text x="22" y="212" fill="#1f4636" font-family="system-ui, sans-serif" font-size="8">Found on PubMed for your project spec &#x2014; not in your synced library.</text>
-    <text x="500" y="212" fill="#1f4636" font-family="system-ui, sans-serif" font-size="8" font-weight="600">PubMed &#x2197;</text>
+    <rect x="0" y="156" width="568" height="88" rx="9" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
+    <text x="14" y="176" fill="#1f4636" font-family="system-ui, sans-serif" font-size="10.5" font-weight="600" text-decoration="underline">Causal fairness with latent confounders in recommender systems</text>
+    <text x="14" y="190" fill="#8a8478" font-family="system-ui, sans-serif" font-size="8.5">Smith J, Lee A · Nature Communications · 2024</text>
+    <text x="14" y="206" fill="#5a564c" font-family="system-ui, sans-serif" font-size="8.5">We study latent confounders in recommender fairness under partial overlap.</text>
+    <rect x="14" y="214" width="440" height="20" rx="5" fill="#eef4f0" stroke="#cfe0d6"/>
+    <text x="22" y="228" fill="#1f4636" font-family="system-ui, sans-serif" font-size="8">Strong match on fairness, causal from your spec — not already in your library.</text>
 
-    <rect x="0" y="238" width="568" height="72" rx="9" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
-    <text x="14" y="260" fill="#1f4636" font-family="system-ui, sans-serif" font-size="10.5" font-weight="600">Benchmarking fairness metrics on open recommendation datasets</text>
-    <text x="14" y="274" fill="#8a8478" font-family="system-ui, sans-serif" font-size="8.5">Chen R et al. &#xB7; PNAS &#xB7; 2023</text>
-    <rect x="14" y="280" width="440" height="20" rx="5" fill="#eef4f0" stroke="#cfe0d6"/>
-    <text x="22" y="294" fill="#1f4636" font-family="system-ui, sans-serif" font-size="8">Touches fairness and calibration themes from your spec.</text>
-    <text x="500" y="294" fill="#1f4636" font-family="system-ui, sans-serif" font-size="8" font-weight="600">PubMed &#x2197;</text>
+    <rect x="0" y="254" width="568" height="88" rx="9" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
+    <text x="14" y="274" fill="#1f4636" font-family="system-ui, sans-serif" font-size="10.5" font-weight="600" text-decoration="underline">Benchmarking fairness metrics on open recommendation datasets</text>
+    <text x="14" y="288" fill="#8a8478" font-family="system-ui, sans-serif" font-size="8.5">Chen R et al. · PNAS · 2023</text>
+    <text x="14" y="304" fill="#5a564c" font-family="system-ui, sans-serif" font-size="8.5">Open benchmarks compare fairness metrics across large recommendation corpora.</text>
+    <rect x="14" y="312" width="440" height="20" rx="5" fill="#eef4f0" stroke="#cfe0d6"/>
+    <text x="22" y="326" fill="#1f4636" font-family="system-ui, sans-serif" font-size="8">Touches fairness and calibration themes from your spec.</text>
 
-    <rect x="0" y="320" width="568" height="72" rx="9" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
-    <text x="14" y="342" fill="#1f4636" font-family="system-ui, sans-serif" font-size="10.5" font-weight="600">A survey of causal inference for algorithmic fairness</text>
-    <text x="14" y="356" fill="#8a8478" font-family="system-ui, sans-serif" font-size="8.5">Patel K &#xB7; Trends in Cognitive Sciences &#xB7; 2022</text>
-    <rect x="14" y="362" width="440" height="20" rx="5" fill="#eef4f0" stroke="#cfe0d6"/>
-    <text x="22" y="376" fill="#1f4636" font-family="system-ui, sans-serif" font-size="8">Suggested from PubMed; add to Zotero if useful.</text>
-    <text x="500" y="376" fill="#1f4636" font-family="system-ui, sans-serif" font-size="8" font-weight="600">PubMed &#x2197;</text>
+    <rect x="0" y="352" width="568" height="88" rx="9" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
+    <text x="14" y="372" fill="#1f4636" font-family="system-ui, sans-serif" font-size="10.5" font-weight="600" text-decoration="underline">A survey of causal inference for algorithmic fairness</text>
+    <text x="14" y="386" fill="#8a8478" font-family="system-ui, sans-serif" font-size="8.5">Patel K · Trends in Cognitive Sciences · 2022</text>
+    <text x="14" y="402" fill="#5a564c" font-family="system-ui, sans-serif" font-size="8.5">Survey links causal identification tools to fairness audits in ML systems.</text>
+    <rect x="14" y="410" width="440" height="20" rx="5" fill="#eef4f0" stroke="#cfe0d6"/>
+    <text x="22" y="424" fill="#1f4636" font-family="system-ui, sans-serif" font-size="8">Strong match on causal, fairness from your spec — not already in your library.</text>
   </g>
 
   <text x="332" y="524" fill="#8a8478" font-family="system-ui, sans-serif" font-size="9">Illustrative UI mock &#x2014; Suggested papers tab with PubMed discovery.</text>

@@ -822,7 +822,7 @@ async function renderSpecsPanel() {
   } else {
     panel.replaceChildren(
       viewHero("Suggested papers (PubMed)",
-        "Discover papers not in your library. BindingSolution searches PubMed from your spec and project categories, then lists new hits you may want to add to Zotero."),
+        "Up to five new PubMed hits outside your library — ranked by relevance, with a brief summary and why each might matter. Weak matches are dropped, so you may see fewer than five."),
       el("div", { id: "spec-discoveries" }, el("div", { class: "muted" }, "Loading…")),
     );
     await loadSpecDiscoveries();
@@ -1002,12 +1002,12 @@ async function loadSpecDiscoveries() {
     wrap.append(el("div", { class: "spread mt-2", style: "margin:12px 0;align-items:center" },
       el("p", { class: "muted", style: "margin:0;font-size:.86rem" },
         results.length
-          ? `${results.length} new paper${results.length === 1 ? "" : "s"} from PubMed`
-          : "Search PubMed for papers outside your Zotero library"),
+          ? `${results.length} relevant PubMed hit${results.length === 1 ? "" : "s"} (up to 5)`
+          : "Up to 5 relevant PubMed papers not already in your library"),
       el("button", { type: "button", class: "btn btn-primary btn-sm", onclick: () => runDiscoverSpec(pick) }, "✦ Discover new papers")));
     if (!results.length) {
       wrap.append(el("p", { class: "muted", style: "margin-top:8px" },
-        "Uses your spec plus project categories to query PubMed. These are papers to add — not items already synced."));
+        "Queries PubMed from your spec and project categories, ranks by keyword overlap, and keeps only strong fits (max 5)."));
     } else {
       for (const r of results) wrap.append(discoveryRow(r));
     }
@@ -1016,12 +1016,15 @@ async function loadSpecDiscoveries() {
 }
 
 function discoveryRow(r) {
+  const title = r.url
+    ? el("a", { href: r.url, target: "_blank", rel: "noopener", class: "rel-title" }, r.title || "Untitled")
+    : el("div", { class: "rel-title" }, r.title || "Untitled");
   return el("div", { class: "relevance-row relevance-row--suggest" },
     el("div", {},
-      el("div", { class: "rel-title" }, r.title || "Untitled"),
+      title,
       el("div", { class: "muted", style: "font-size:.76rem" }, [r.authors, r.journal, r.year].filter(Boolean).join(" · ")),
-      el("div", { class: "rel-why" }, r.relevance_explanation || "Suggested from PubMed."),
-      r.url ? el("a", { href: r.url, target: "_blank", rel: "noopener", class: "muted", style: "font-size:.78rem" }, "View on PubMed") : null),
+      r.summary ? el("div", { class: "rel-summary" }, r.summary) : null,
+      el("div", { class: "rel-why" }, r.relevance_explanation || "Suggested from PubMed.")),
     el("span", { class: "rel-flag rel-core" }, "new"));
 }
 

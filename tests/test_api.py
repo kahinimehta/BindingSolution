@@ -142,10 +142,13 @@ def test_spec_discover_pubmed(client):
     assert result["discovered"] > 0
     full = client.get(f"/api/specs/{spec['id']}").json()
     assert len(full["discoveries"]) == result["discovered"]
+    assert result["discovered"] <= 5
     for hit in full["discoveries"]:
         assert hit.get("title")
         assert hit.get("url")
+        assert hit.get("summary")
         assert hit.get("relevance_explanation")
+        assert hit.get("score", 0) >= 55
 
 
 def test_spec_upload_text_and_analyze(client):
