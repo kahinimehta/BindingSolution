@@ -5,7 +5,7 @@ import re
 from collections import defaultdict
 
 from .mock import _tokens
-from .projects import inactive_reason
+from .projects import inactive_reason, library_paper_count
 
 _STOP = {
     "the", "a", "an", "of", "for", "and", "or", "to", "in", "on", "with", "via",
@@ -124,10 +124,40 @@ def complete_paper_groups(result: dict, projects: list[dict]) -> dict:
     }
 
 
-def append_single_paper_collections(
+def _library_paper_index(projects: dict[str, dict] | list[dict]) -> dict[str, dict]:
+    if isinstance(projects, dict):
+        projects = list(projects.values())
+    out: dict[str, dict] = {}
+    for proj in projects:
+        reason = inactive_reason(proj)
+        for item in proj.get("items") or []:
+            key = (item.get("key") or "").strip()
+            if not key or key in out:
+                continue
+            out[key] = {
+                "paper_key": key,
+                "title": item.get("title", "Untitled"),
+                "project_key": proj["key"],
+                "inactive_reason": reason,
+            }
+    return out
+
+
+def _shelf_summary(stats: dict) -> str:
+    shelf = stats.get("shelf_papers", 0)
+    grouped = stats.get("papers_grouped", 0)
+    standalone = stats.get("num_ungrouped", 0)
+    drops = stats.get("num_drops", 0)
+    return (
+        f"{shelf} papers on shelf — {grouped} in sets · {standalone} standalone · "
+        f"{drops} to drop"
+    )
+
+
+def finalize_shelf_coverage(
     result: dict, all_projects: dict[str, dict] | list[dict],
 ) -> dict:
-    """Add papers from single-paper collections to standalone (they skip grouping)."""
+    """Place every library paper in a set, standalone, or drop bucket."""
     if isinstance(all_projects, dict):
         projects = list(all_projects.values())
     else:
@@ -140,32 +170,56 @@ def append_single_paper_collections(
 
     ungrouped = list(result.get("ungrouped") or [])
     seen = {p["paper_key"] for p in ungrouped}
-    single_count = 0
+    num_single = 0
+    num_unfiled = 0
 
-    for proj in projects:
-        if inactive_reason(proj) != "single":
+    for key, row in _library_paper_index(projects).items():
+        if key in assigned or key in dropped or key in seen:
             continue
-        for item in proj.get("items") or []:
-            key = (item.get("key") or "").strip()
-            if not key or key in assigned or key in dropped or key in seen:
-                continue
-            ungrouped.append({
-                "paper_key": key,
-                "title": item.get("title", "Untitled"),
-                "project_key": proj["key"],
-                "source": "single_paper_collection",
-            })
-            seen.add(key)
-            single_count += 1
+        reason = row.get("inactive_reason")
+        if reason == "single":
+            source = "single_paper_collection"
+            num_single += 1
+        elif reason == "unfiled":
+            source = "unfiled"
+            num_unfiled += 1
+        else:
+            source = "active"
+        ungrouped.append({
+            "paper_key": key,
+            "title": row["title"],
+            "project_key": row["project_key"],
+            "source": source,
+        })
+        seen.add(key)
 
     ungrouped.sort(key=lambda p: (p.get("title") or "").lower())
     result["ungrouped"] = ungrouped
+
+    grouped = len(assigned)
+    drops_n = len(dropped)
+    standalone_n = len(ungrouped)
+    shelf = library_paper_count(projects)
+
     stats = result.setdefault("stats", {})
-    stats["num_ungrouped"] = len(ungrouped)
-    stats["num_single_collection"] = single_count
-    active_total = stats.get("total_papers", 0)
-    stats["shelf_papers"] = active_total + single_count
+    stats.update({
+        "papers_grouped": grouped,
+        "num_ungrouped": standalone_n,
+        "num_drops": drops_n,
+        "num_single_collection": num_single,
+        "num_unfiled": num_unfiled,
+        "shelf_papers": shelf,
+        "papers_accounted": grouped + standalone_n + drops_n,
+    })
+    result["shelf_summary"] = _shelf_summary(stats)
     return result
+
+
+def append_single_paper_collections(
+    result: dict, all_projects: dict[str, dict] | list[dict],
+) -> dict:
+    """Backward-compatible alias for finalize_shelf_coverage."""
+    return finalize_shelf_coverage(result, all_projects)
 
 
 def heuristic_paper_groups(projects: list[dict]) -> dict:

@@ -15,9 +15,15 @@ from fastapi.staticfiles import StaticFiles
 
 from . import __version__, jobs
 from .analysis import AnalysisError, get_analyzer
-from .grouping import append_single_paper_collections
+from .grouping import finalize_shelf_coverage
 from .config import STATIC_DIR, get_settings
-from .projects import is_usable_project, summary_fields, total_papers, usable_projects
+from .projects import (
+    is_usable_project,
+    library_paper_count,
+    summary_fields,
+    total_papers,
+    usable_projects,
+)
 from .discovery import discover_for_spec
 from .reading_schedule import attach_reading_schedule
 from .spec_strategy import attach_spec_mapping, projects_from_spec
@@ -196,15 +202,17 @@ def create_app() -> FastAPI:
         analyzer = get_analyzer(get_settings())
 
         def work(job: jobs.Job) -> dict:
-            n_papers = total_papers(projects)
+            all_projects = store.get_projects()
+            shelf = library_paper_count(all_projects)
+            n_active = total_papers(projects)
             n_projects = len(projects)
             steps = 3
-            scope = f"{n_papers} papers across {n_projects} projects"
+            scope = f"{shelf} papers on shelf ({n_active} in {n_projects} active projects)"
             job.set_progress(0, steps, f"Preparing {scope}…")
             job.set_progress(1, steps, f"Analyzing {scope}…", indeterminate=True)
             result = analyzer.find_paper_groups(projects)
             job.set_progress(2, steps, "Applying groups…")
-            result = append_single_paper_collections(result, store.get_projects())
+            result = finalize_shelf_coverage(result, all_projects)
             store.set_paper_groups({**result, "generated_at": _now()})
             job.set_progress(steps, steps, "Done")
             return result

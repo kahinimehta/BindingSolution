@@ -118,15 +118,18 @@ The **Groups** view calls `POST /api/groups` (`app/grouping.py`):
 1. **Analyze** — Claude (or `heuristic_paper_groups` offline) receives **all**
    papers in active projects (not a per-collection sample). Returns a
    `PaperGroupingMap`: `groups` (non-overlapping `paper_keys`), `drops`, and
-   server-filled `ungrouped` for papers in neither list, plus every paper from
-   single-paper collections (excluded from active grouping). Job progress is
+   server-filled `ungrouped` for papers in neither list. `finalize_shelf_coverage`
+   then places every remaining library paper into standalone (single-paper
+   collections, unfiled items, and any active stragglers) so
+   `papers_grouped + num_ungrouped + num_drops == shelf_papers`. Job progress is
    **phase-based** (prepare → analyze → apply) with paper/project counts in the
    message; the analyze step is **indeterminate** because it is a single Claude call.
 2. **Validate** — `complete_paper_groups` drops invalid keys, ensures each paper
    appears in at most one group, computes `ungrouped` + `stats` (`total_papers`,
-   `papers_grouped`, `num_ungrouped`, `num_drops`, `shelf_papers`), enriches groups
-   with `papers` display refs and `num_papers`, and tags single-collection rows
-   with `source: single_paper_collection`.
+   `papers_grouped`, `num_ungrouped`, `num_drops`, `shelf_papers`,
+   `papers_accounted`), enriches groups with `papers` display refs and
+   `num_papers`, and tags standalone rows with `source` (`single_paper_collection`,
+   `unfiled`, or `active`).
 3. **Persist** — saved in `paper_groups` on the store until purge.
 
 Offline heuristics: normalized-title duplicate detection across collections,

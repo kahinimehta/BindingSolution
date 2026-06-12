@@ -1,6 +1,9 @@
+from app.projects import UNFILED_KEY
+
 from app.grouping import (
     append_single_paper_collections,
     complete_paper_groups,
+    finalize_shelf_coverage,
     heuristic_paper_groups,
     norm_title,
 )
@@ -73,7 +76,12 @@ def test_complete_paper_groups_lists_ungrouped():
     ungrouped_keys = {p["paper_key"] for p in out["ungrouped"]}
     assert "P4" in ungrouped_keys
     assert out["stats"]["num_ungrouped"] == len(out["ungrouped"])
-    assert out["stats"]["papers_grouped"] + out["stats"]["num_ungrouped"] + out["stats"]["num_drops"] <= out["stats"]["total_papers"]
+    assert (
+        out["stats"]["papers_grouped"]
+        + out["stats"]["num_ungrouped"]
+        + out["stats"]["num_drops"]
+        == out["stats"]["total_papers"]
+    )
 
 
 def test_append_single_paper_collections():
@@ -95,3 +103,31 @@ def test_append_single_paper_collections():
     assert "LONE" in keys
     assert out["stats"]["num_single_collection"] == 1
     assert out["stats"]["shelf_papers"] == out["stats"]["total_papers"] + 1
+    assert out["stats"]["papers_accounted"] == out["stats"]["shelf_papers"]
+
+
+def test_finalize_shelf_coverage_includes_unfiled():
+    projects = _projects()
+    all_projects = {
+        **{p["key"]: p for p in projects},
+        UNFILED_KEY: {
+            "key": UNFILED_KEY,
+            "name": "Library (unfiled)",
+            "items": [{"key": "UF1", "title": "Unfiled Note"}],
+        },
+    }
+    raw = complete_paper_groups(
+        {"overview": "", "groups": [], "drops": []},
+        projects,
+    )
+    out = finalize_shelf_coverage(raw, all_projects)
+    keys = {p["paper_key"] for p in out["ungrouped"]}
+    assert "UF1" in keys
+    assert out["stats"]["num_unfiled"] == 1
+    assert out["stats"]["papers_accounted"] == out["stats"]["shelf_papers"]
+
+
+def test_finalize_shelf_accounts_for_every_paper():
+    out = finalize_shelf_coverage(heuristic_paper_groups(_projects()), _projects())
+    stats = out["stats"]
+    assert stats["papers_grouped"] + stats["num_ungrouped"] + stats["num_drops"] == stats["shelf_papers"]

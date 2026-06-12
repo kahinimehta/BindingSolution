@@ -37,3 +37,10 @@ def usable_projects(projects: dict[str, dict]) -> list[dict]:
 
 def total_papers(projects: list[dict]) -> int:
     return sum(item_count(p) for p in projects)
+
+
+def library_paper_count(projects: dict[str, dict] | list[dict]) -> int:
+    """Every paper in the synced library, including unfiled and single-paper collections."""
+    if isinstance(projects, dict):
+        projects = list(projects.values())
+    return sum(item_count(p) for p in projects)

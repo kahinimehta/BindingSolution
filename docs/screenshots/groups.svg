@@ -47,21 +47,30 @@
     <text x="544" y="41" fill="#fff" font-family="system-ui, sans-serif" font-size="9" font-weight="600" text-anchor="middle">&#x25CE; Group papers</text>
 
     <g transform="translate(358, 96)">
-      <rect x="0" y="0" width="88" height="40" rx="8" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
-      <text x="44" y="19" fill="#1f4636" font-size="16" font-weight="700" text-anchor="middle" font-family="Georgia, serif">18</text>
-      <text x="44" y="33" fill="#8a8478" font-size="6.5" text-anchor="middle" font-family="system-ui, sans-serif">PAPER SETS</text>
-      <rect x="98" y="0" width="88" height="40" rx="8" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
-      <text x="142" y="19" fill="#1f4636" font-size="16" font-weight="700" text-anchor="middle" font-family="Georgia, serif">52</text>
-      <text x="142" y="33" fill="#8a8478" font-size="6.5" text-anchor="middle" font-family="system-ui, sans-serif">STANDALONE</text>
-      <rect x="196" y="0" width="88" height="40" rx="8" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
-      <text x="240" y="19" fill="#1f4636" font-size="16" font-weight="700" text-anchor="middle" font-family="Georgia, serif">5</text>
-      <text x="240" y="33" fill="#8a8478" font-size="6.5" text-anchor="middle" font-family="system-ui, sans-serif">TO DROP</text>
+      <rect x="0" y="0" width="68" height="40" rx="8" fill="#eef4f0" stroke="#cfe0d6" filter="url(#shadow)"/>
+      <text x="34" y="19" fill="#1f4636" font-size="16" font-weight="700" text-anchor="middle" font-family="Georgia, serif">184</text>
+      <text x="34" y="33" fill="#8a8478" font-size="6" text-anchor="middle" font-family="system-ui, sans-serif">TOTAL PAPERS</text>
+      <rect x="76" y="0" width="68" height="40" rx="8" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
+      <text x="110" y="19" fill="#1f4636" font-size="16" font-weight="700" text-anchor="middle" font-family="Georgia, serif">13</text>
+      <text x="110" y="33" fill="#8a8478" font-size="6" text-anchor="middle" font-family="system-ui, sans-serif">ACTIVE PROJECTS</text>
+      <rect x="152" y="0" width="68" height="40" rx="8" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
+      <text x="186" y="19" fill="#1f4636" font-size="16" font-weight="700" text-anchor="middle" font-family="Georgia, serif">18</text>
+      <text x="186" y="33" fill="#8a8478" font-size="6" text-anchor="middle" font-family="system-ui, sans-serif">PAPER SETS</text>
+      <rect x="228" y="0" width="68" height="40" rx="8" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
+      <text x="262" y="19" fill="#1f4636" font-size="16" font-weight="700" text-anchor="middle" font-family="Georgia, serif">132</text>
+      <text x="262" y="33" fill="#8a8478" font-size="6" text-anchor="middle" font-family="system-ui, sans-serif">STANDALONE</text>
+      <rect x="304" y="0" width="68" height="40" rx="8" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
+      <text x="338" y="19" fill="#1f4636" font-size="16" font-weight="700" text-anchor="middle" font-family="Georgia, serif">5</text>
+      <text x="338" y="33" fill="#8a8478" font-size="6" text-anchor="middle" font-family="system-ui, sans-serif">TO DROP</text>
 
       <rect x="0" y="52" width="552" height="56" rx="10" fill="#f6edd6" stroke="#e2d9c6"/>
       <text x="14" y="74" fill="#1f4636" font-family="Georgia, serif" font-size="11.5" font-weight="600">Shelf organization</text>
-      <text x="14" y="92" fill="#5a564c" font-family="system-ui, sans-serif" font-size="8.5">Grouped 47 of 105 active papers into 18 sets, 52 standalone, 5 to drop.</text>
+      <text x="14" y="92" fill="#5a564c" font-family="system-ui, sans-serif" font-size="8.5">Every paper lands in a reading set, standalone, or suggested drop.</text>
 
-      <text x="0" y="124" fill="#8a8478" font-family="system-ui, sans-serif" font-size="8">47 grouped &#xB7; 52 standalone &#xB7; 5 to drop &#xB7; 110 papers on shelf</text>
+      <text x="0" y="124" fill="#5a564c" font-family="system-ui, sans-serif" font-size="8.5" font-weight="600">184 papers on shelf</text>
+      <text x="108" y="124" fill="#8a8478" font-family="system-ui, sans-serif" font-size="8"> &#x2014; 47 in sets &#xB7; 132 standalone &#xB7; 5 to drop</text>
+      <rect x="318" y="114" width="78" height="14" rx="7" fill="#eef4f0" stroke="#cfe0d6"/>
+      <text x="357" y="124" fill="#1f4636" font-size="7" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="600">All accounted for</text>
 
       <text x="0" y="148" fill="#1f4636" font-family="Georgia, serif" font-size="13" font-weight="600">Optimal paper sets</text>
       <rect x="0" y="158" width="552" height="118" rx="10" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
@@ -91,5 +100,5 @@
     </g>
   </g>
 
-  <text x="500" y="628" fill="#8a8478" font-family="system-ui, sans-serif" font-size="9" text-anchor="middle">Illustrative UI mock &#x2014; Groups with per-set counts, standalone (incl. single-paper collections), shelf accounting.</text>
+  <text x="500" y="628" fill="#8a8478" font-family="system-ui, sans-serif" font-size="9" text-anchor="middle">Illustrative UI mock &#x2014; Groups with total-paper KPI, full-shelf accounting, standalone (incl. unfiled &amp; single-paper collections).</text>
 </svg>

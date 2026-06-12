@@ -582,25 +582,31 @@ async function renderKpiStrip(route) {
     }
   } else if (route === "groups") {
     const active = usableProjects();
-    items.push(
-      kpiItem(active.length, "Active projects", "Used for grouping", true),
-      kpiItem(active.length >= 2 ? "Ready" : "Need 2+", "Status", "Minimum for groups"),
-    );
+    const libraryTotal = totalPapers();
+    items.push(kpiItem(libraryTotal, "Total papers", "On your shelf", true));
+    items.push(kpiItem(active.length, "Active projects", "Used for grouping"));
     try {
       const { paper_groups: g } = await api.get("/groups");
       if (g?.stats) {
+        const shelf = g.stats.shelf_papers ?? libraryTotal;
+        items[0] = kpiItem(shelf, "Total papers", "On your shelf", true);
         items.push(
           kpiItem(g.stats.num_groups || 0, "Paper sets", "Non-overlapping"),
-          kpiItem(g.stats.num_ungrouped ?? "—", "Standalone", "Not in a set"),
+          kpiItem(g.stats.num_ungrouped ?? 0, "Standalone", "Not in a set"),
           kpiItem(g.stats.num_drops || 0, "To drop", "Duplicates & weak fits"),
         );
       } else if (g) {
         items.push(
           kpiItem(g.groups?.length || 0, "Paper sets", "Non-overlapping"),
+          kpiItem(g.ungrouped?.length ?? 0, "Standalone", "Not in a set"),
           kpiItem(g.drops?.length || 0, "To drop", "Duplicates & weak fits"),
         );
       } else {
-        items.push(kpiItem("—", "Paper sets", "Run analysis"), kpiItem("—", "To drop", "Run analysis"));
+        items.push(
+          kpiItem(active.length >= 2 ? "Ready" : "Need 2+", "Status", "Minimum for groups"),
+          kpiItem("—", "Paper sets", "Run analysis"),
+          kpiItem("—", "To drop", "Run analysis"),
+        );
       }
     } catch {
       items.push(kpiItem("—", "Paper sets", "—"), kpiItem("—", "To drop", "—"));
@@ -881,7 +887,7 @@ async function renderGroups() {
 
   view().replaceChildren(
     viewHero("Shelf organization",
-      "Each paper appears in at most one reading set. Duplicates filed in multiple Zotero collections are flagged to drop."),
+      "Every paper on your shelf lands in exactly one place: a reading set, standalone, or suggested drop."),
     el("div", { id: "groups-body" }, el("div", { class: "muted" }, "Loading…")));
 
   try {
@@ -904,6 +910,7 @@ async function findPaperGroups() {
     toast("Paper groups ready.", "ok");
     const { paper_groups: g } = await api.get("/groups");
     renderPaperGroups(g);
+    await renderKpiStrip("groups");
   } catch (e) {
     closeModal();
     toast(e.message, "err");
@@ -925,9 +932,21 @@ function renderPaperGroups(g) {
     el("p", { class: "lead", style: "margin:0;font-size:1.02rem" }, g.overview)));
 
   const stats = g.stats || {};
-  if (stats.total_papers) {
-    root.append(el("p", { class: "muted", style: "margin:-8px 0 18px;font-size:.86rem" },
-      `${stats.papers_grouped ?? 0} grouped · ${stats.num_ungrouped ?? 0} standalone · ${stats.num_drops ?? 0} to drop · ${stats.shelf_papers ?? stats.total_papers} papers on shelf`));
+  const shelf = stats.shelf_papers ?? stats.total_papers ?? 0;
+  const grouped = stats.papers_grouped ?? 0;
+  const standalone = stats.num_ungrouped ?? 0;
+  const drops = stats.num_drops ?? 0;
+  const accounted = stats.papers_accounted ?? grouped + standalone + drops;
+  if (shelf) {
+    const summaryKids = [
+      el("strong", {}, `${shelf} papers on shelf`),
+      el("span", {}, ` — ${grouped} in sets · ${standalone} standalone · ${drops} to drop`),
+    ];
+    if (accounted === shelf) {
+      summaryKids.push(el("span", { class: "pill green", style: "margin-left:8px" }, "All accounted for"));
+    }
+    root.append(el("div", { class: "shelf-accounting muted", style: "margin:-8px 0 18px;font-size:.86rem;display:flex;flex-wrap:wrap;align-items:center;gap:4px" },
+      ...summaryKids));
   }
 
   if (g.groups?.length) {
@@ -956,13 +975,15 @@ function renderPaperGroups(g) {
   if (g.ungrouped?.length) {
     root.append(el("h3", { style: "font-family:var(--font-display);margin:22px 0 12px" }, "Standalone papers"));
     root.append(el("p", { class: "muted", style: "margin:-6px 0 14px;font-size:.88rem" },
-      `Not in a thematic set — includes loose active papers and papers from single-paper collections.`));
+      `Not in a thematic set — includes loose active papers, single-paper collections, and unfiled library items.`));
     const solo = el("div", { class: "card spine cluster" });
     const list = el("div", { class: "group-paper-lines" });
     for (const p of g.ungrouped) {
       const sub = p.source === "single_paper_collection"
         ? `${projName(p.project_key)} · single-paper collection`
-        : projName(p.project_key);
+        : p.source === "unfiled"
+          ? "Library (unfiled)"
+          : projName(p.project_key);
       list.append(el("div", { class: "paper-line" },
         el("div", { class: "pt" }, p.title || p.paper_key),
         el("div", { class: "pm" }, sub)));

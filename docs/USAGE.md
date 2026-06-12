@@ -89,12 +89,13 @@ panel. It returns:
 - **Optimal paper sets** — thematic reading groups that may span multiple
   Zotero collections. Each set shows a **paper count** and a flat list (no
   bullets). A paper appears in **at most one** set.
+- **Total papers** — KPI at the top counts **every** synced paper (active
+  collections, single-paper folders, and unfiled items).
 - **Standalone papers** — active papers not placed in any thematic set, **plus
-  every paper from single-paper collections** (those collections are excluded from
-  grouping but still appear here). If a thematic set looks short, check standalone
-  and **Suggested drops** — the summary line accounts for the full shelf
-  (`N grouped · M standalone · … · P papers on shelf` — standalone includes
-  single-paper collections).
+  every paper from single-paper collections and unfiled library items** (those are
+  excluded from grouping but still appear here). The summary line shows the full
+  shelf partition (`P papers on shelf — N in sets · M standalone · K to drop`) with
+  an **All accounted for** badge when every paper is placed.
 - **Suggested drops** — papers to remove or archive: duplicates filed in more
   than one collection, redundant surveys, weak fits, or entries that no longer
   match your shelf.
