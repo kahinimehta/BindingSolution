@@ -142,7 +142,7 @@ def create_app() -> FastAPI:
         def work(job: jobs.Job) -> dict:
             job.set_progress(0, 1, f"Categorizing {proj['name']}", indeterminate=True)
             job.check_cancelled()
-            category = analyzer.categorize_project(proj)
+            category = analyzer.categorize_project(proj, cancel_check=job.check_cancelled)
             job.check_cancelled()
             store.set_project_category(key, category)
             job.set_progress(1, 1, "Done")
@@ -167,7 +167,7 @@ def create_app() -> FastAPI:
             for i, proj in enumerate(projects, start=1):
                 job.check_cancelled()
                 job.set_progress(i, total, f"Categorizing {proj['name']}", indeterminate=True)
-                category = analyzer.categorize_project(proj)
+                category = analyzer.categorize_project(proj, cancel_check=job.check_cancelled)
                 store.set_project_category(proj["key"], category)
                 done.append(proj["key"])
             job.set_progress(total, total, "Done")
@@ -194,7 +194,7 @@ def create_app() -> FastAPI:
             job.set_progress(0, steps, f"Preparing {scope}")
             job.set_progress(1, steps, f"Analyzing connections across {scope}", indeterminate=True)
             job.check_cancelled()
-            result = analyzer.find_connections(projects)
+            result = analyzer.find_connections(projects, cancel_check=job.check_cancelled)
             job.check_cancelled()
             job.set_progress(2, steps, "Applying connections")
             store.set_connections({**result, "generated_at": _now()})
@@ -233,7 +233,7 @@ def create_app() -> FastAPI:
             job.set_progress(0, steps, f"Preparing {scope}")
             job.set_progress(1, steps, f"Analyzing {scope}", indeterminate=True)
             job.check_cancelled()
-            result = analyzer.find_paper_groups(projects)
+            result = analyzer.find_paper_groups(projects, cancel_check=job.check_cancelled)
             job.check_cancelled()
             job.set_progress(2, steps, "Applying groups")
             result = finalize_shelf_coverage(result, all_projects)
@@ -296,7 +296,9 @@ def create_app() -> FastAPI:
         def work(job: jobs.Job) -> dict:
             job.set_progress(0, 1, "Designing reading strategy", indeterminate=True)
             job.check_cancelled()
-            result = analyzer.reading_strategy(projects, plan_goal)
+            result = analyzer.reading_strategy(
+                projects, plan_goal, cancel_check=job.check_cancelled,
+            )
             job.check_cancelled()
             if spec:
                 result = attach_spec_mapping(result, spec)

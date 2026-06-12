@@ -181,25 +181,14 @@ function failJobEntry(entry, message) {
 
 function cancelJobEntry(entry, message = "Cancelled") {
   const handlers = entry.handlers.splice(0);
-  entry.status = "cancelled";
-  entry.error = message;
-  entry.progress = {
-    ...(entry.progress || {}),
-    message: "Cancelled",
-    indeterminate: false,
-  };
-  renderJobRail();
   dismissProgressModalIfJob(entry.id);
-  persistJobStore();
   const err = new Error(message);
   err.cancelled = true;
   handlers.forEach((h) => h.reject(err));
   toast(`${entry.label} cancelled.`, "ok");
-  setTimeout(() => {
-    jobStore.byId.delete(entry.id);
-    persistJobStore();
-    renderJobRail();
-  }, 8000);
+  jobStore.byId.delete(entry.id);
+  persistJobStore();
+  renderJobRail();
 }
 
 function jobWasCancelled(err) {
@@ -288,7 +277,7 @@ function renderJobRail() {
 
   const visible = [...jobStore.byId.values()].filter((e) => !e.hidden);
   const running = visible.filter((e) => jobIsActive(e.status));
-  const recent = visible.filter((e) => e.status === "done" || e.status === "error" || e.status === "cancelled");
+  const recent = visible.filter((e) => e.status === "done" || e.status === "error");
 
   if (badge) {
     badge.hidden = !running.length;
