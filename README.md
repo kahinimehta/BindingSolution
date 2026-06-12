@@ -35,7 +35,7 @@ After sync, collections split into **active** (2+ papers) and **excluded** (refe
 Excluded items appear in a separate section at the bottom of **Library**. Add papers or merge collections in Zotero, then re-sync.
 
 <p align="center">
-  <img src="docs/screenshots/library.svg" alt="Library view with active projects and excluded collections" width="900" />
+  <img src="docs/screenshots/library.svg" alt="Library view with KPI bar above active and excluded collections" width="820" />
 </p>
 
 ## Persistence
