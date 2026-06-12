@@ -222,6 +222,7 @@ function renderJobRail() {
     badge.hidden = !running.length;
     badge.textContent = running.length ? String(running.length) : "";
   }
+  rail.classList.toggle("job-rail-open", jobStore.panelOpen);
   tab?.setAttribute("aria-expanded", jobStore.panelOpen ? "true" : "false");
   panel.hidden = !jobStore.panelOpen;
 
@@ -268,9 +269,18 @@ function renderJobRail() {
 }
 
 function bindJobRail() {
-  $("#job-rail-tab")?.addEventListener("click", () => {
+  const rail = $("#job-rail");
+  $("#job-rail-tab")?.addEventListener("click", (e) => {
+    e.stopPropagation();
     jobStore.panelOpen = !jobStore.panelOpen;
     renderJobRail();
+  });
+  document.addEventListener("click", (e) => {
+    if (!jobStore.panelOpen || !rail) return;
+    if (!rail.contains(e.target)) {
+      jobStore.panelOpen = false;
+      renderJobRail();
+    }
   });
 }
 
@@ -390,7 +400,11 @@ function showProgressModal(title, message, jobId, { kind } = {}) {
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape") {
     if (_progressModalJobId) dismissProgressModal();
-    else closeModal();
+    else if (!$("#modal-host")?.hidden) closeModal();
+    else if (jobStore.panelOpen) {
+      jobStore.panelOpen = false;
+      renderJobRail();
+    }
   }
 });
 
@@ -482,16 +496,26 @@ async function loadProjects() {
   } catch { state.projects = []; }
 }
 
+function buildConfirmModalBody(contentKids, actionKids) {
+  return el("div", { class: "modal-confirm-wrap" },
+    el("div", { class: "modal-confirm-content" }, ...contentKids),
+    el("div", { class: "modal-confirm-actions spread" }, ...actionKids));
+}
+
 function confirmPurgeLibrary() {
-  const body = el("div", {},
-    el("p", { class: "lead" },
-      "This removes everything stored locally: synced projects, categorizations, connections, paper groups, reading plans, and project specs."),
-    el("p", { class: "muted", style: "margin-top:36px;font-size:.9rem" },
-      "Your Zotero library is not changed. After purging, sync again or load the demo library to start fresh."),
-    el("div", { class: "spread mt-3", style: "justify-content:flex-end;gap:30px" },
+  const body = buildConfirmModalBody(
+    [
+      el("p", { class: "lead" },
+        "This removes everything stored locally: synced projects, categorizations, connections, paper groups, reading plans, and project specs."),
+      el("p", { class: "muted modal-confirm-note" },
+        "Your Zotero library is not changed. After purging, sync again or load the demo library to start fresh."),
+    ],
+    [
       el("button", { type: "button", class: "btn btn-ghost", onclick: closeModal }, "Cancel"),
-      el("button", { type: "button", class: "btn btn-danger", onclick: () => { closeModal(); runPurgeLibrary(); } }, "Purge library")));
-  openModal("Purge library?", body, "dialog");
+      el("button", { type: "button", class: "btn btn-danger", onclick: () => { closeModal(); runPurgeLibrary(); } }, "Purge library"),
+    ],
+  );
+  openModal("Purge library?", body, "confirm");
 }
 
 async function runPurgeLibrary() {
@@ -1572,19 +1596,23 @@ async function confirmAnalyzeSpec(specId) {
     already = spec.papers_already_screened ?? 0;
   } catch { /* use library totals */ }
   const paperLabel = pending === 1 ? "paper" : "papers";
-  const body = el("div", {},
-    el("p", { class: "lead" },
-      already
-        ? `Re-screen screens only new papers (${pending} ${paperLabel} not screened yet). Saved matches are kept.`
-        : `This will screen your active library (${pending} ${paperLabel}) and list only the papers that look relevant to your project spec.`),
-    el("p", { class: "muted", style: "margin-top:36px;font-size:.9rem" },
-      "Depending on how many papers you have, this can take a while — from under a minute for a small library to several minutes for a large one. Close the progress window, switch views, or refresh — the job keeps running. Track it under ",
-      el("strong", {}, "Running"),
-      " at the bottom of the sidebar."),
-    el("div", { class: "spread mt-3", style: "justify-content:flex-end;gap:30px" },
+  const body = buildConfirmModalBody(
+    [
+      el("p", { class: "lead" },
+        already
+          ? `Re-screen screens only new papers (${pending} ${paperLabel} not screened yet). Saved matches are kept.`
+          : `This will screen your active library (${pending} ${paperLabel}) and list only the papers that look relevant to your project spec.`),
+      el("p", { class: "muted modal-confirm-note" },
+        "Depending on how many papers you have, this can take a while — from under a minute for a small library to several minutes for a large one. Close the progress window, switch views, or refresh — the job keeps running. Track it under ",
+        el("strong", {}, "Running"),
+        " at the bottom of the sidebar."),
+    ],
+    [
       el("button", { type: "button", class: "btn btn-ghost", onclick: closeModal }, "Cancel"),
-      el("button", { type: "button", class: "btn btn-primary", onclick: () => runAnalyzeSpec(specId) }, "Find in library")));
-  openModal("Screen your library?", body, "dialog");
+      el("button", { type: "button", class: "btn btn-primary", onclick: () => runAnalyzeSpec(specId) }, "Find in library"),
+    ],
+  );
+  openModal("Screen your library?", body, "confirm");
 }
 
 async function runAnalyzeSpec(specId) {
