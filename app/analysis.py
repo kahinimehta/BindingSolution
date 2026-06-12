@@ -35,6 +35,9 @@ _MAX_TOKENS_HEAVY = 16000
 # Paper grouping returns many paper_keys + per-set summaries — avoid parse truncation.
 _MAX_TOKENS_GROUPS = 32000
 _MAX_TOKENS_CHAT = 4096
+# Anthropic SDK rejects non-streaming calls when estimated runtime exceeds 10 minutes:
+# expected_time = 3600 * max_tokens / 128_000  →  cap ≈ 21_333 output tokens.
+_NONSTREAMING_TIME_TOKEN_LIMIT = 128_000 * 600 // 3600
 
 _SYSTEM = (
     "You are a meticulous research librarian and methodologist helping a "
@@ -79,6 +82,41 @@ class Analyzer:
             self._client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
 
     # ── low-level call ───────────────────────────────────────────────
+    def _needs_streaming(self, max_tokens: int) -> bool:
+        """Mirror Anthropic SDK rules for when `messages.parse()` must use streaming."""
+        try:
+            from anthropic._constants import MODEL_NONSTREAMING_TOKENS
+        except ImportError:
+            MODEL_NONSTREAMING_TOKENS = {}
+        cap = MODEL_NONSTREAMING_TOKENS.get(self.model)
+        if cap is not None and max_tokens > cap:
+            return True
+        return max_tokens > _NONSTREAMING_TIME_TOKEN_LIMIT
+
+    def _structured_response(self, kwargs: dict[str, Any]) -> Any:
+        """Call Claude with structured output; stream when the SDK requires it."""
+        import anthropic
+
+        max_tokens = kwargs["max_tokens"]
+        try:
+            if self._needs_streaming(max_tokens):
+                with self._client.messages.stream(**kwargs) as stream:
+                    return stream.get_final_message()
+            return self._client.messages.parse(**kwargs)
+        except ValidationError as exc:
+            raise AnalysisError(
+                "Structured output was truncated or invalid JSON — retrying with a more compact prompt."
+            ) from exc
+        except ValueError as exc:
+            if "Streaming is required" not in str(exc):
+                raise
+            with self._client.messages.stream(**kwargs) as stream:
+                return stream.get_final_message()
+        except anthropic.APIStatusError as exc:
+            raise AnalysisError(f"Claude API error ({exc.status_code}): {exc.message}") from exc
+        except anthropic.APIConnectionError as exc:
+            raise AnalysisError("Could not reach the Claude API. Check your connection.") from exc
+
     def _parse(
         self,
         prompt: str,
@@ -89,8 +127,6 @@ class Analyzer:
         thinking: bool | None = None,
     ) -> Any:
         """Single structured-output call returning a validated `schema` instance."""
-        import anthropic
-
         if max_tokens is None:
             max_tokens = _MAX_TOKENS_HEAVY if heavy else _MAX_TOKENS_LIGHT
         kwargs: dict[str, Any] = {
@@ -105,16 +141,7 @@ class Analyzer:
             # Cross-project reasoning benefits from adaptive thinking.
             kwargs["thinking"] = {"type": "adaptive"}
 
-        try:
-            response = self._client.messages.parse(**kwargs)
-        except ValidationError as exc:
-            raise AnalysisError(
-                "Structured output was truncated or invalid JSON — retrying with a more compact prompt."
-            ) from exc
-        except anthropic.APIStatusError as exc:
-            raise AnalysisError(f"Claude API error ({exc.status_code}): {exc.message}") from exc
-        except anthropic.APIConnectionError as exc:
-            raise AnalysisError("Could not reach the Claude API. Check your connection.") from exc
+        response = self._structured_response(kwargs)
 
         if response.stop_reason == "refusal":
             raise AnalysisError("The model declined to analyze this content.")

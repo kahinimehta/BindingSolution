@@ -11,6 +11,59 @@ def _analyzer(monkeypatch) -> Analyzer:
     return Analyzer(get_settings())
 
 
+def test_needs_streaming_for_large_grouping_budget(monkeypatch):
+    analyzer = _analyzer(monkeypatch)
+    assert analyzer._needs_streaming(_MAX_TOKENS_GROUPS := 32000) is True
+    assert analyzer._needs_streaming(16000) is False
+    assert analyzer._needs_streaming(4000) is False
+
+
+def test_structured_response_uses_stream_for_large_max_tokens(monkeypatch):
+    from app.analysis import _MAX_TOKENS_GROUPS
+    from app.schemas import PaperGroupingMapSpec
+
+    analyzer = _analyzer(monkeypatch)
+    stream_calls: list[dict] = []
+    parse_calls: list[dict] = []
+
+    class FakeParsed:
+        stop_reason = "end_turn"
+        parsed_output = PaperGroupingMapSpec(overview="ok", groups=[], drops=[])
+
+    class FakeStream:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args):
+            return False
+
+        def get_final_message(self):
+            return FakeParsed()
+
+    def fake_stream(**kwargs):
+        stream_calls.append(kwargs)
+        return FakeStream()
+
+    def fake_parse(**kwargs):
+        parse_calls.append(kwargs)
+        raise ValueError(
+            "Streaming is required for operations that may take longer than 10 minutes."
+        )
+
+    monkeypatch.setattr(analyzer._client.messages, "stream", fake_stream)
+    monkeypatch.setattr(analyzer._client.messages, "parse", fake_parse)
+
+    result = analyzer._structured_response({
+        "model": analyzer.model,
+        "max_tokens": _MAX_TOKENS_GROUPS,
+        "system": "sys",
+        "messages": [{"role": "user", "content": "hi"}],
+        "output_format": PaperGroupingMapSpec,
+    })
+    assert result.parsed_output.overview == "ok"
+    assert stream_calls and not parse_calls
+
+
 def test_parse_wraps_validation_error(monkeypatch):
     analyzer = _analyzer(monkeypatch)
 
