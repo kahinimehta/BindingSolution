@@ -1,8 +1,10 @@
 # Usage
 
-Start the app with `make run` and open <http://127.0.0.1:8765>. The sidebar
-has five views — use them in any order; the status chips (bottom-left) show
-whether Claude and Zotero are connected.
+Start the app with `make run` and open <http://127.0.0.1:8765>. The **sidebar**
+has five views — use them in any order. On wide screens the whole interface
+(sidebar + content) is **centered** as one panel. **Sync library** and
+**Purge library** live in the **hero toolbar** (top right); status chips at the
+bottom of the sidebar show whether Claude and Zotero are connected.
 
 > **No keys?** Click **Load demo library** on the Library screen. You get a
 > small synthetic library spanning four overlapping research areas so every
@@ -13,7 +15,7 @@ whether Claude and Zotero are connected.
 
 ## 1. Sync your library
 
-Click **Sync library** in the sidebar (or **Load demo library** on the empty
+Click **Sync library** in the top toolbar (or **Load demo library** on the empty
 state). Each Zotero **collection** becomes a **project**; nested collections
 keep their full path as the name. Re-syncing refreshes papers while keeping
 any categorization you've already generated.
@@ -25,7 +27,7 @@ of categorization, connections, paper groups, reading plans, and spec screening.
 merge collections in Zotero, then re-sync.
 
 **Purge library:** to wipe everything locally and start over, click **Purge
-library** in the sidebar (below **Sync library**). This deletes synced projects,
+library** in the top toolbar (next to **Sync library**). This deletes synced projects,
 categorizations, connections, paper groups, saved reading plans, and project specs from
 `./data/library.json`. It does **not** change your Zotero library. Confirm in
 the dialog, then sync again or load the demo library. The button is hidden when
@@ -75,7 +77,7 @@ Demo mode uses deterministic heuristics (title deduping and tag clustering); wit
 a Claude key the same schema is filled by the model.
 
 <p align="center">
-  <img src="screenshots/groups.svg" alt="Groups view with paper sets and drop suggestions" width="720" />
+  <img src="screenshots/groups.svg" alt="Groups view with paper sets and drop suggestions" width="1000" />
 </p>
 
 ## 5. ↯ Plan your reading — *Strategies*
@@ -113,7 +115,7 @@ Estimates assume a **medium academic reading pace**:
 These are planning hints, not deadlines. Skim faster or read deeper and your real time will differ. The schedule banner on each plan states the assumptions used.
 
 <p align="center">
-  <img src="screenshots/strategies.svg" alt="Reading strategies compose form and spec-mapped plan" width="920" />
+  <img src="screenshots/strategies.svg" alt="Reading strategies compose form and spec-mapped plan" width="1000" />
 </p>
 
 ## 6. ✦ Spec — upload, screen library, discover on PubMed
@@ -139,7 +141,7 @@ Open **Spec** in the sidebar. The view has two tabs with different jobs:
    plan** to turn them into an ordered path in **Strategies**.
 
 <p align="center">
-  <img src="screenshots/specs-upload.svg" alt="Spec upload tab with library matches" width="720" />
+  <img src="screenshots/specs-upload.svg" alt="Spec upload tab with library matches" width="1000" />
 </p>
 
 ### Suggested papers (PubMed)
@@ -161,7 +163,7 @@ Demo mode (`MOCK_LLM=true`) uses deterministic mock PubMed hits so you can try
 the flow offline.
 
 <p align="center">
-  <img src="screenshots/specs.svg" alt="Suggested papers PubMed discovery tab" width="720" />
+  <img src="screenshots/specs.svg" alt="Suggested papers PubMed discovery tab" width="1000" />
 </p>
 
 ---

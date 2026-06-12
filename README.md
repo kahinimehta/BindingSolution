@@ -45,24 +45,24 @@ Use any view in any order.
 - **Reading strategies** — ordered path + synthesis prompts; **schedule with estimated hours/days** (medium pace, ~12 pages/h at 2 h/day — see [docs/USAGE.md](docs/USAGE.md#reading-time-assumptions))
 - **Spec** — upload a brief (PDF/Word/MD/text); **Find in library** screens your Zotero shelf (core/supporting only); **Suggested papers** returns up to five ranked PubMed hits *not* in your library, with summaries and relevance notes
 - **Spec → reading plan** — **Build reading plan** from library matches; steps keep relevance notes; plan links back to the spec
-- **Purge library** — wipe local data without touching Zotero (sidebar)
+- **Purge library** — wipe local data without touching Zotero (hero toolbar)
 
 <p align="center">
-  <img src="docs/screenshots/library.svg" alt="Library view" width="920" />
+  <img src="docs/screenshots/library.svg" alt="Library view" width="1000" />
 </p>
 
 <p align="center">
-  <img src="docs/screenshots/groups.svg" alt="Groups view with paper sets and prune suggestions" width="920" />
+  <img src="docs/screenshots/groups.svg" alt="Groups view with paper sets and prune suggestions" width="1000" />
 </p>
 
 <p align="center">
-  <img src="docs/screenshots/strategies.svg" alt="Reading strategies with schedule" width="920" />
+  <img src="docs/screenshots/strategies.svg" alt="Reading strategies with schedule" width="1000" />
 </p>
 
 <p align="center">
-  <img src="docs/screenshots/specs-upload.svg" alt="Spec upload and library matches" width="920" />
+  <img src="docs/screenshots/specs-upload.svg" alt="Spec upload and library matches" width="1000" />
   <br /><br />
-  <img src="docs/screenshots/specs.svg" alt="Suggested papers PubMed discovery" width="920" />
+  <img src="docs/screenshots/specs.svg" alt="Suggested papers PubMed discovery" width="1000" />
 </p>
 
 ## Persistence

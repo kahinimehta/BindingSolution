@@ -24,6 +24,15 @@ human-readable JSON store, no build step) over scale.
 └─────────────────────────────────────────────────────────────┘
 ```
 
+## Frontend layout
+
+The SPA (`app/static/`) is a hash router with five views. CSS centers the whole
+shell (`max-width: 1680px`, `margin: 0 auto`) so the green sidebar and main pane
+move together on ultrawide monitors. The sidebar (`--rail-w: 288px`) holds
+navigation and status chips; **Sync library** / **Purge library** and per-view
+actions sit in the hero toolbar. Main content fills the remaining width without
+a separate max-width offset (no sidebar/content gap on large displays).
+
 ## How AI analysis works
 
 `app/analysis.py` wraps the Anthropic Python SDK. Every analysis uses

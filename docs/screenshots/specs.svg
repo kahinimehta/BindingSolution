@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 540" width="920" height="540" role="img" aria-label="Spec Suggested papers PubMed discovery tab">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 540" width="1000" height="540" role="img" aria-label="Spec Suggested papers PubMed discovery tab">
   <defs>
     <linearGradient id="green" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#1f4636"/>
@@ -9,62 +9,59 @@
       <stop offset="0" stop-color="#1f4636"/>
       <stop offset="1" stop-color="#254f3f"/>
     </linearGradient>
+    <filter id="shellShadow" x="-4%" y="-2%" width="108%" height="104%">
+      <feDropShadow dx="0" dy="8" stdDeviation="14" flood-color="#1f4636" flood-opacity="0.12"/>
+    </filter>
     <filter id="shadow" x="-8%" y="-8%" width="116%" height="116%">
       <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#1f4636" flood-opacity="0.1"/>
     </filter>
   </defs>
 
-  <rect width="920" height="540" fill="#f4efe4"/>
-  <rect x="0" y="0" width="312" height="540" fill="url(#green)"/>
-  <line x1="312" y1="0" x2="312" y2="540" stroke="#caa14a" stroke-width="2" stroke-opacity="0.42"/>
+  <rect width="1000" height="540" fill="#f4efe4"/>
 
-  <text x="20" y="38" fill="#eef3ee" font-family="Georgia, serif" font-size="15" font-weight="700">BindingSolution</text>
-  <rect x="16" y="240" width="280" height="48" rx="11" fill="rgba(255,255,255,0.14)" stroke="#caa14a" stroke-width="1.5"/>
-  <text x="28" y="260" fill="#fff" font-family="system-ui, sans-serif" font-size="12" font-weight="600">Spec</text>
-  <text x="28" y="276" fill="#b8cfc4" font-family="system-ui, sans-serif" font-size="8.5">Upload &amp; screen library</text>
+  <g filter="url(#shellShadow)">
+    <rect x="50" y="0" width="900" height="540" fill="#f4efe4"/>
+    <rect x="50" y="0" width="288" height="540" fill="url(#green)"/>
+    <line x1="338" y1="0" x2="338" y2="540" stroke="#caa14a" stroke-width="2" stroke-opacity="0.42"/>
 
-  <rect x="312" y="0" width="608" height="84" fill="url(#hero)"/>
-  <text x="332" y="44" fill="#fff" font-family="Georgia, serif" font-size="26" font-weight="600">Spec</text>
-  <text x="332" y="64" fill="#b8cfc4" font-family="system-ui, sans-serif" font-size="10.5">Discover papers not in your library via PubMed.</text>
+    <g transform="translate(50, 0)">
+      <text x="58" y="30" fill="#eef3ee" font-family="Georgia, serif" font-size="14" font-weight="700">BindingSolution</text>
+      <rect x="18" y="246" width="252" height="38" rx="11" fill="rgba(255,255,255,0.14)" stroke="#caa14a" stroke-width="1.5"/>
+      <text x="30" y="262" fill="#fff" font-family="system-ui, sans-serif" font-size="11" font-weight="600">Spec</text>
+      <text x="30" y="275" fill="#b8cfc4" font-family="system-ui, sans-serif" font-size="7.5">Upload &amp; screen library</text>
+    </g>
 
-  <g transform="translate(332, 96)">
-    <rect x="0" y="0" width="140" height="30" rx="15" fill="#fffdf8" stroke="#d3c8b0"/>
-    <text x="70" y="19" fill="#5a564c" font-family="system-ui, sans-serif" font-size="9.5" font-weight="600" text-anchor="middle">Upload &amp; manage</text>
-    <rect x="148" y="0" width="140" height="30" rx="15" fill="#1f4636"/>
-    <text x="218" y="19" fill="#fff" font-family="system-ui, sans-serif" font-size="9.5" font-weight="600" text-anchor="middle">Suggested papers</text>
+    <rect x="338" y="0" width="612" height="84" fill="url(#hero)"/>
+    <text x="358" y="42" fill="#fff" font-family="Georgia, serif" font-size="25" font-weight="600">Spec</text>
+    <text x="358" y="62" fill="#b8cfc4" font-family="system-ui, sans-serif" font-size="10">Discover papers not in your library via PubMed.</text>
 
-    <rect x="0" y="40" width="568" height="56" rx="10" fill="#f6edd6" stroke="#e2d9c6"/>
-    <text x="14" y="60" fill="#1f4636" font-family="Georgia, serif" font-size="12" font-weight="600">Suggested papers (PubMed)</text>
-    <text x="14" y="78" fill="#5a564c" font-family="system-ui, sans-serif" font-size="8.5">Up to five ranked PubMed hits with a brief summary and why each might matter.</text>
+    <g transform="translate(358, 96)">
+      <rect x="0" y="0" width="132" height="28" rx="14" fill="#fffdf8" stroke="#d3c8b0"/>
+      <text x="66" y="18" fill="#5a564c" font-family="system-ui, sans-serif" font-size="9" font-weight="600" text-anchor="middle">Upload &amp; manage</text>
+      <rect x="140" y="0" width="132" height="28" rx="14" fill="#1f4636"/>
+      <text x="206" y="18" fill="#fff" font-family="system-ui, sans-serif" font-size="9" font-weight="600" text-anchor="middle">Suggested papers</text>
 
-    <text x="0" y="114" fill="#5a564c" font-family="system-ui, sans-serif" font-size="9.5" font-weight="600">Spec</text>
-    <rect x="0" y="120" width="260" height="24" rx="6" fill="#fff" stroke="#d3c8b0"/>
-    <text x="12" y="136" fill="#211f1a" font-family="system-ui, sans-serif" font-size="9">Fairness grant aim</text>
-    <text x="272" y="136" fill="#8a8478" font-family="system-ui, sans-serif" font-size="9">3 relevant PubMed hits (up to 5)</text>
-    <rect x="430" y="116" width="138" height="26" rx="7" fill="#b3892f"/>
-    <text x="499" y="133" fill="#2b2410" font-family="system-ui, sans-serif" font-size="8.5" font-weight="700" text-anchor="middle">&#x2726; Discover new papers</text>
+      <rect x="0" y="40" width="552" height="48" rx="10" fill="#f6edd6" stroke="#e2d9c6"/>
+      <text x="14" y="60" fill="#1f4636" font-family="Georgia, serif" font-size="11.5" font-weight="600">Suggested papers (PubMed)</text>
+      <text x="14" y="76" fill="#5a564c" font-family="system-ui, sans-serif" font-size="8.5">Up to five ranked hits with summary and relevance note.</text>
 
-    <rect x="0" y="156" width="568" height="88" rx="9" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
-    <text x="14" y="176" fill="#1f4636" font-family="system-ui, sans-serif" font-size="10.5" font-weight="600" text-decoration="underline">Causal fairness with latent confounders in recommender systems</text>
-    <text x="14" y="190" fill="#8a8478" font-family="system-ui, sans-serif" font-size="8.5">Smith J, Lee A · Nature Communications · 2024</text>
-    <text x="14" y="206" fill="#5a564c" font-family="system-ui, sans-serif" font-size="8.5">We study latent confounders in recommender fairness under partial overlap.</text>
-    <rect x="14" y="214" width="440" height="20" rx="5" fill="#eef4f0" stroke="#cfe0d6"/>
-    <text x="22" y="228" fill="#1f4636" font-family="system-ui, sans-serif" font-size="8">Strong match on fairness, causal from your spec — not already in your library.</text>
+      <rect x="400" y="100" width="152" height="26" rx="7" fill="#b3892f"/>
+      <text x="476" y="117" fill="#2b2410" font-family="system-ui, sans-serif" font-size="8.5" font-weight="700" text-anchor="middle">&#x2726; Discover new papers</text>
 
-    <rect x="0" y="254" width="568" height="88" rx="9" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
-    <text x="14" y="274" fill="#1f4636" font-family="system-ui, sans-serif" font-size="10.5" font-weight="600" text-decoration="underline">Benchmarking fairness metrics on open recommendation datasets</text>
-    <text x="14" y="288" fill="#8a8478" font-family="system-ui, sans-serif" font-size="8.5">Chen R et al. · PNAS · 2023</text>
-    <text x="14" y="304" fill="#5a564c" font-family="system-ui, sans-serif" font-size="8.5">Open benchmarks compare fairness metrics across large recommendation corpora.</text>
-    <rect x="14" y="312" width="440" height="20" rx="5" fill="#eef4f0" stroke="#cfe0d6"/>
-    <text x="22" y="326" fill="#1f4636" font-family="system-ui, sans-serif" font-size="8">Touches fairness and calibration themes from your spec.</text>
+      <rect x="0" y="136" width="552" height="88" rx="9" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
+      <text x="14" y="158" fill="#1f4636" font-family="system-ui, sans-serif" font-size="10.5" font-weight="600" text-decoration="underline">Causal fairness with latent confounders</text>
+      <text x="14" y="174" fill="#8a8478" font-family="system-ui, sans-serif" font-size="8.5">Smith J &#xB7; Nature Communications &#xB7; 2024</text>
+      <text x="14" y="190" fill="#5a564c" font-family="system-ui, sans-serif" font-size="8.5">We study latent confounders in recommender fairness.</text>
+      <rect x="14" y="198" width="420" height="20" rx="5" fill="#eef4f0" stroke="#cfe0d6"/>
+      <text x="22" y="212" fill="#1f4636" font-family="system-ui, sans-serif" font-size="8">Strong match on fairness, causal &#x2014; not in your library.</text>
 
-    <rect x="0" y="352" width="568" height="88" rx="9" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
-    <text x="14" y="372" fill="#1f4636" font-family="system-ui, sans-serif" font-size="10.5" font-weight="600" text-decoration="underline">A survey of causal inference for algorithmic fairness</text>
-    <text x="14" y="386" fill="#8a8478" font-family="system-ui, sans-serif" font-size="8.5">Patel K · Trends in Cognitive Sciences · 2022</text>
-    <text x="14" y="402" fill="#5a564c" font-family="system-ui, sans-serif" font-size="8.5">Survey links causal identification tools to fairness audits in ML systems.</text>
-    <rect x="14" y="410" width="440" height="20" rx="5" fill="#eef4f0" stroke="#cfe0d6"/>
-    <text x="22" y="424" fill="#1f4636" font-family="system-ui, sans-serif" font-size="8">Strong match on causal, fairness from your spec — not already in your library.</text>
+      <rect x="0" y="234" width="552" height="88" rx="9" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
+      <text x="14" y="256" fill="#1f4636" font-family="system-ui, sans-serif" font-size="10.5" font-weight="600" text-decoration="underline">Benchmarking fairness metrics on open datasets</text>
+      <text x="14" y="272" fill="#8a8478" font-family="system-ui, sans-serif" font-size="8.5">Chen R &#xB7; PNAS &#xB7; 2023</text>
+      <rect x="14" y="296" width="420" height="20" rx="5" fill="#eef4f0" stroke="#cfe0d6"/>
+      <text x="22" y="310" fill="#1f4636" font-family="system-ui, sans-serif" font-size="8">Touches fairness themes from your spec.</text>
+    </g>
   </g>
 
-  <text x="332" y="524" fill="#8a8478" font-family="system-ui, sans-serif" font-size="9">Illustrative UI mock &#x2014; Suggested papers tab with PubMed discovery.</text>
+  <text x="500" y="528" fill="#8a8478" font-family="system-ui, sans-serif" font-size="9" text-anchor="middle">Illustrative UI mock &#x2014; Suggested papers tab with PubMed discovery.</text>
 </svg>
