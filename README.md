@@ -6,7 +6,7 @@
 
 *Categorize collections, find cross-project threads, group papers without duplication, plan what to read, and match papers to a project spec — locally, with Claude.*
 
-A [Vercel](https://vercel.com) preview site may be linked separately as a **demo only** — the real app runs on **localhost** (`make run` below).
+**[Live demo](https://bindingsolution.vercel.app)** on Vercel — browse the bundled sample library in your browser (demo data only; nothing to install or run). For your own Zotero shelf, use **localhost** (`make run` below).
 
 </div>
 
@@ -23,12 +23,6 @@ make setup && make run    # → http://127.0.0.1:8765
 Add `ANTHROPIC_API_KEY`, `ZOTERO_LIBRARY_ID`, and `ZOTERO_API_KEY` to the gitignored `.env` from setup — see [docs/CONFIGURATION.md](docs/CONFIGURATION.md).
 
 **No keys?** `make run` → **Load demo library** (heuristic “demo AI”, full UI).
-
-### Live demo (Vercel)
-
-A **read-only** static demo is deployed on Vercel: pre-loaded sample library, no sign-in, no API calls, no data collection. Browse Library, Connections, Groups, Spec, Strategies, and a sample Chat thread. For your own Zotero library, run locally with `make run`.
-
-Rebuild the static site after UI changes: `make vercel-demo`.
 
 ## Features
 
