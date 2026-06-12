@@ -81,7 +81,8 @@ Connections need at least two projects.
 ## 4. ◎ Group papers — *Groups*
 
 Open **Groups** and click **◎ Group papers**. BindingSolution reads across all
-active projects and proposes:
+active projects and proposes (progress tracks **papers** on your shelf, e.g.
+`72/184`, in the dialog and **Running** panel):
 
 - **Optimal paper sets** — non-overlapping reading groups that may span multiple
   Zotero collections. Each paper appears in **at most one** set, so you are not

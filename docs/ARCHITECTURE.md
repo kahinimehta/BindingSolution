@@ -117,7 +117,8 @@ The **Groups** view calls `POST /api/groups` (`app/grouping.py`):
 
 1. **Analyze** — Claude (or `heuristic_paper_groups` offline) returns a
    `PaperGroupingMap`: `groups` (non-overlapping `paper_keys` across projects)
-   and `drops` (duplicate, redundant, weak_fit, outdated).
+   and `drops` (duplicate, redundant, weak_fit, outdated). Job progress uses the
+   total active **paper** count as the denominator (not project count).
 2. **Validate** — `complete_paper_groups` drops invalid keys, ensures each paper
    appears in at most one group, and enriches groups with `papers` display refs.
 3. **Persist** — saved in `paper_groups` on the store until purge.
