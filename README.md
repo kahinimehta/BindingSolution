@@ -6,6 +6,8 @@
 
 *Categorize collections, find cross-project threads, group papers without duplication, plan what to read, and match papers to a project spec — locally, with Claude.*
 
+A [Vercel](https://vercel.com) preview site may be linked separately as a **demo only** — the real app runs on **localhost** (`make run` below).
+
 </div>
 
 ---
