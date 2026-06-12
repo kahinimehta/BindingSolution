@@ -218,7 +218,9 @@ The **Chat** view calls `POST /api/chat` (`app/chat_context.py`, `app/analysis.p
 
 The Chat view hides the KPI strip and shows a compact **can / cannot** overview
 (local store metadata only — no PDFs or full paper text). The compose box uses a
-large binding-green circular **↑** send button (center-right of the input, clear of
+tall scrollable transcript with green (user) and white (assistant) message
+bubbles; light markdown in replies (`**bold**`, `*italic*`, `` `code` ``); large
+binding-green circular **↑** send button (center-right of the input, clear of
 the resize handle); **Enter** sends,
 **Shift+Enter** inserts a newline. `GET /api/status` exposes `capabilities`
 (`chat`, `jobs_cancel`, etc.) so the UI can detect a stale server missing new

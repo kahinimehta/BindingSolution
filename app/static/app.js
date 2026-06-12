@@ -21,6 +21,14 @@ const el = (tag, attrs = {}, ...kids) => {
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => (
   { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
+function formatChatText(text) {
+  let s = esc(String(text ?? ""));
+  s = s.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+  s = s.replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g, (_, pre, inner) => `${pre}<em>${inner}</em>`);
+  s = s.replace(/`([^`\n]+)`/g, "<code>$1</code>");
+  return s.replace(/\n/g, "<br>");
+}
+
 /* ── API ──────────────────────────────────────────────────────── */
 const api = {
   async get(path) { return this._req("GET", path); },
@@ -1100,9 +1108,9 @@ function chatOverviewPanel() {
 }
 
 function chatBubble(role, text) {
-  return el("div", { class: `chat-msg ${role}` },
-    el("div", { class: "chat-msg-role" }, role === "user" ? "You" : "Assistant"),
-    el("div", { class: "chat-msg-body" }, text));
+  const body = el("div", { class: "chat-msg-body" });
+  body.innerHTML = formatChatText(text);
+  return el("div", { class: `chat-msg ${role}` }, body);
 }
 
 function renderChatMessages(messages) {
