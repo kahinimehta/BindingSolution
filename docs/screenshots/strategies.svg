@@ -59,17 +59,17 @@
 
     <text x="20" y="206" fill="#5a564c" font-family="system-ui, sans-serif" font-size="9.5" font-weight="600">Your goal (optional)</text>
     <rect x="20" y="214" width="536" height="64" rx="8" fill="#fff" stroke="#d3c8b0"/>
-    <text x="32" y="236" fill="#8a8478" font-family="system-ui, sans-serif" font-size="9">Related-work section linking fairness and causal inference&#x2026;</text>
+    <text x="32" y="236" fill="#8a8478" font-family="system-ui, sans-serif" font-size="9">Related-work section linking fairness and causal inference…</text>
 
     <rect x="20" y="296" width="140" height="32" rx="9" fill="#1f4636"/>
     <text x="90" y="316" fill="#f2f7f3" font-family="system-ui, sans-serif" font-size="9.5" font-weight="600" text-anchor="middle">Generate strategy</text>
 
     <text x="20" y="352" fill="#5a564c" font-family="system-ui, sans-serif" font-size="9.5" font-weight="600">Saved plans</text>
     <rect x="20" y="362" width="536" height="48" rx="9" fill="#fff" stroke="#d3c8b0"/>
-    <text x="34" y="382" fill="#1f4636" font-family="system-ui, sans-serif" font-size="10" font-weight="600">Fairness grant aim &#x2014; reading path</text>
-    <text x="34" y="398" fill="#8a8478" font-family="system-ui, sans-serif" font-size="8.5">4 papers &#xB7; 3 h &#xB7; 2 days &#xB7; from spec &#xB7; Fairness grant aim</text>
+    <text x="34" y="382" fill="#1f4636" font-family="system-ui, sans-serif" font-size="10" font-weight="600">Reading plan: Fairness in ML + Causal Inference</text>
+    <text x="34" y="398" fill="#8a8478" font-family="system-ui, sans-serif" font-size="8.5">4 papers · 3 h · 2 days · from spec · Fairness grant aim</text>
     <text x="460" y="388" fill="#1f4636" font-family="system-ui, sans-serif" font-size="8.5" font-weight="600">Open</text>
   </g>
 
-  <text x="332" y="542" fill="#8a8478" font-family="system-ui, sans-serif" font-size="9">Illustrative UI mock &#x2014; Reading strategies with schedule estimates on saved plans.</text>
+  <text x="332" y="542" fill="#8a8478" font-family="system-ui, sans-serif" font-size="9">Illustrative UI mock — Reading strategies with schedule estimates on saved plans.</text>
 </svg>
