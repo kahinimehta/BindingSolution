@@ -37,7 +37,9 @@ Typography and layout spacing are scaled **3×** from a conventional baseline:
 `html` root font-size clamps to roughly **54–66px** (viewport-responsive), and
 structural `px` values (padding, grid min widths, modal sizes) scale with it so
 text does not clip inside cards or the sidebar. Project cards expand to full
-height instead of using an inner scroll region.
+height instead of using an inner scroll region. Display headings use
+**Montserrat** (`--font-display`); UI body copy uses **Hanken Grotesk**
+(`--font-body`), loaded from Google Fonts in `index.html`.
 
 ## How AI analysis works
 

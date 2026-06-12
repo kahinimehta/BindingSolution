@@ -25,7 +25,7 @@
     <line x1="372" y1="0" x2="372" y2="560" stroke="#caa14a" stroke-width="2" stroke-opacity="0.42"/>
 
     <g transform="translate(50, 0)">
-      <text x="58" y="30" fill="#eef3ee" font-family="Georgia, serif" font-size="17.9" font-weight="700">BindingSolution</text>
+      <text x="58" y="30" fill="#eef3ee" font-family="Montserrat, system-ui, sans-serif" font-size="17.9" font-weight="700">BindingSolution</text>
       <rect x="18" y="202" width="252" height="38" rx="11" fill="rgba(255,255,255,0.14)" stroke="#caa14a" stroke-width="1.5"/>
       <text x="30" y="218" fill="#fff" font-family="system-ui, sans-serif" font-size="14.1" font-weight="600">Strategies</text>
       <text x="30" y="231" fill="#b8cfc4" font-family="system-ui, sans-serif" font-size="9.6">Reading plans</text>
@@ -41,12 +41,12 @@
     </g>
 
     <rect x="372" y="0" width="578" height="84" fill="url(#hero)"/>
-    <text x="382" y="42" fill="#fff" font-family="Georgia, serif" font-size="32.0" font-weight="600">Reading strategies</text>
+    <text x="382" y="42" fill="#fff" font-family="Montserrat, system-ui, sans-serif" font-size="32.0" font-weight="600">Reading strategies</text>
     <text x="382" y="62" fill="#b8cfc4" font-family="system-ui, sans-serif" font-size="12.8">Compose ordered reading paths across projects for a specific goal.</text>
 
     <g transform="translate(382, 100)">
       <rect x="0" y="0" width="552" height="390" rx="12" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
-      <text x="20" y="32" fill="#1f4636" font-family="Georgia, serif" font-size="19.2" font-weight="600">Compose a reading plan</text>
+      <text x="20" y="32" fill="#1f4636" font-family="Montserrat, system-ui, sans-serif" font-size="19.2" font-weight="600">Compose a reading plan</text>
       <text x="20" y="48" fill="#8a8478" font-family="system-ui, sans-serif" font-size="12.2">Pick the projects to combine and state your goal.</text>
       <rect x="20" y="60" width="240" height="28" rx="8" fill="#faf6ec" stroke="#d3c8b0"/>
       <rect x="22" y="62" width="116" height="24" rx="7" fill="#1f4636"/>

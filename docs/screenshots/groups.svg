@@ -25,7 +25,7 @@
     <line x1="372" y1="0" x2="372" y2="640" stroke="#caa14a" stroke-width="2" stroke-opacity="0.42"/>
 
     <g transform="translate(50, 0)">
-      <text x="58" y="30" fill="#eef3ee" font-family="Georgia, serif" font-size="17.9" font-weight="700">BindingSolution</text>
+      <text x="58" y="30" fill="#eef3ee" font-family="Montserrat, system-ui, sans-serif" font-size="17.9" font-weight="700">BindingSolution</text>
       <rect x="18" y="158" width="252" height="38" rx="11" fill="rgba(255,255,255,0.14)" stroke="#caa14a" stroke-width="1.5"/>
       <text x="30" y="174" fill="#fff" font-family="system-ui, sans-serif" font-size="14.1" font-weight="600">Groups</text>
       <text x="30" y="187" fill="#b8cfc4" font-family="system-ui, sans-serif" font-size="9.6">Paper sets &amp; prune</text>
@@ -41,31 +41,31 @@
     </g>
 
     <rect x="372" y="0" width="578" height="84" fill="url(#hero)"/>
-    <text x="382" y="42" fill="#fff" font-family="Georgia, serif" font-size="32.0" font-weight="600">Groups</text>
+    <text x="382" y="42" fill="#fff" font-family="Montserrat, system-ui, sans-serif" font-size="32.0" font-weight="600">Groups</text>
     <text x="382" y="62" fill="#b8cfc4" font-family="system-ui, sans-serif" font-size="12.8">Optimal paper sets, standalone papers, and prune suggestions.</text>
     <rect x="488" y="24" width="112" height="26" rx="8" fill="#1f4636"/>
     <text x="544" y="41" fill="#fff" font-family="system-ui, sans-serif" font-size="11.5" font-weight="600" text-anchor="middle">&#x25CE; Group papers</text>
 
     <g transform="translate(382, 96)">
       <rect x="0" y="0" width="68" height="44" rx="8" fill="#eef4f0" stroke="#cfe0d6" filter="url(#shadow)"/>
-      <text x="34" y="17" fill="#1f4636" font-size="20.5" font-weight="700" text-anchor="middle" font-family="Georgia, serif">184</text>
+      <text x="34" y="17" fill="#1f4636" font-size="20.5" font-weight="700" text-anchor="middle" font-family="Montserrat, system-ui, sans-serif">184</text>
       <text x="34" y="29" fill="#8a8478" font-size="6.4" text-anchor="middle" font-family="system-ui, sans-serif">PAPERS</text>
       <text x="34" y="39" fill="#8a8478" font-size="5.8" text-anchor="middle" font-family="system-ui, sans-serif">(including standalone papers)</text>
       <rect x="76" y="0" width="68" height="40" rx="8" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
-      <text x="110" y="19" fill="#1f4636" font-size="20.5" font-weight="700" text-anchor="middle" font-family="Georgia, serif">13</text>
+      <text x="110" y="19" fill="#1f4636" font-size="20.5" font-weight="700" text-anchor="middle" font-family="Montserrat, system-ui, sans-serif">13</text>
       <text x="110" y="33" fill="#8a8478" font-size="7.7" text-anchor="middle" font-family="system-ui, sans-serif">ACTIVE PROJECTS</text>
       <rect x="152" y="0" width="68" height="40" rx="8" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
-      <text x="186" y="19" fill="#1f4636" font-size="20.5" font-weight="700" text-anchor="middle" font-family="Georgia, serif">18</text>
+      <text x="186" y="19" fill="#1f4636" font-size="20.5" font-weight="700" text-anchor="middle" font-family="Montserrat, system-ui, sans-serif">18</text>
       <text x="186" y="33" fill="#8a8478" font-size="7.7" text-anchor="middle" font-family="system-ui, sans-serif">PAPER SETS</text>
       <rect x="228" y="0" width="68" height="40" rx="8" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
-      <text x="262" y="19" fill="#1f4636" font-size="20.5" font-weight="700" text-anchor="middle" font-family="Georgia, serif">63</text>
+      <text x="262" y="19" fill="#1f4636" font-size="20.5" font-weight="700" text-anchor="middle" font-family="Montserrat, system-ui, sans-serif">63</text>
       <text x="262" y="33" fill="#8a8478" font-size="7.7" text-anchor="middle" font-family="system-ui, sans-serif">STANDALONE</text>
       <rect x="304" y="0" width="68" height="40" rx="8" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
-      <text x="338" y="19" fill="#1f4636" font-size="20.5" font-weight="700" text-anchor="middle" font-family="Georgia, serif">5</text>
+      <text x="338" y="19" fill="#1f4636" font-size="20.5" font-weight="700" text-anchor="middle" font-family="Montserrat, system-ui, sans-serif">5</text>
       <text x="338" y="33" fill="#8a8478" font-size="7.7" text-anchor="middle" font-family="system-ui, sans-serif">TO DROP</text>
 
       <rect x="0" y="56" width="552" height="56" rx="10" fill="#f6edd6" stroke="#e2d9c6"/>
-      <text x="14" y="78" fill="#1f4636" font-family="Georgia, serif" font-size="14.7" font-weight="600">Shelf organization</text>
+      <text x="14" y="78" fill="#1f4636" font-family="Montserrat, system-ui, sans-serif" font-size="14.7" font-weight="600">Shelf organization</text>
       <text x="14" y="96" fill="#5a564c" font-family="system-ui, sans-serif" font-size="10.9">Same Papers count as Library. Summary below splits unique items into sets, standalone, and drops.</text>
 
       <text x="0" y="124" fill="#5a564c" font-family="system-ui, sans-serif" font-size="10.9" font-weight="600">115 unique papers</text>
@@ -73,9 +73,9 @@
       <rect x="318" y="114" width="78" height="14" rx="7" fill="#eef4f0" stroke="#cfe0d6"/>
       <text x="357" y="124" fill="#1f4636" font-size="9.0" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="600">All accounted for</text>
 
-      <text x="0" y="148" fill="#1f4636" font-family="Georgia, serif" font-size="16.6" font-weight="600">Optimal paper sets</text>
+      <text x="0" y="148" fill="#1f4636" font-family="Montserrat, system-ui, sans-serif" font-size="16.6" font-weight="600">Optimal paper sets</text>
       <rect x="0" y="158" width="552" height="118" rx="10" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
-      <text x="14" y="180" fill="#211f1a" font-family="Georgia, serif" font-size="15.4" font-weight="600">Neural population dynamics</text>
+      <text x="14" y="180" fill="#211f1a" font-family="Montserrat, system-ui, sans-serif" font-size="15.4" font-weight="600">Neural population dynamics</text>
       <rect x="210" y="170" width="52" height="16" rx="8" fill="#efe8d8" stroke="#d3c8b0"/>
       <text x="236" y="181" fill="#5a564c" font-size="9.6" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="600">8 papers</text>
       <rect x="14" y="174" width="48" height="14" rx="7" fill="#eef4f0" stroke="#cfe0d6"/>
@@ -87,7 +87,7 @@
       <text x="14" y="256" fill="#211f1a" font-family="system-ui, sans-serif" font-size="11.5" font-weight="600">Demixed principal component analysis of neural&#x2026;</text>
       <text x="14" y="270" fill="#8a8478" font-family="system-ui, sans-serif" font-size="9.6">NDSEG</text>
 
-      <text x="0" y="296" fill="#1f4636" font-family="Georgia, serif" font-size="16.6" font-weight="600">Standalone papers</text>
+      <text x="0" y="296" fill="#1f4636" font-family="Montserrat, system-ui, sans-serif" font-size="16.6" font-weight="600">Standalone papers</text>
       <rect x="0" y="306" width="552" height="88" rx="10" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
       <text x="14" y="330" fill="#211f1a" font-family="system-ui, sans-serif" font-size="11.5" font-weight="600">A Lone Survey on Graph Representation Learning</text>
       <text x="14" y="344" fill="#8a8478" font-family="system-ui, sans-serif" font-size="9.6">Single paper (demo) &#xB7; single-paper collection</text>
@@ -95,7 +95,7 @@
       <text x="14" y="368" fill="#211f1a" font-family="system-ui, sans-serif" font-size="11.5" font-weight="600">Stimulus onset quenches neural variability</text>
       <text x="14" y="382" fill="#8a8478" font-family="system-ui, sans-serif" font-size="9.6">Single Neuron Recordings Memory</text>
 
-      <text x="0" y="412" fill="#1f4636" font-family="Georgia, serif" font-size="16.6" font-weight="600">Suggested drops</text>
+      <text x="0" y="412" fill="#1f4636" font-family="Montserrat, system-ui, sans-serif" font-size="16.6" font-weight="600">Suggested drops</text>
       <rect x="0" y="422" width="552" height="56" rx="9" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
       <text x="14" y="442" fill="#1f4636" font-family="system-ui, sans-serif" font-size="12.8" font-weight="600">Auditing Recommender Systems (duplicate)</text>
       <text x="14" y="462" fill="#5a564c" font-family="system-ui, sans-serif" font-size="10.2">Same paper in Fairness in ML &#x2014; keep one copy on your shelf.</text>

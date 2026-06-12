@@ -43,10 +43,10 @@
 
       <!-- wordmark + tagline, left-aligned beside emblem -->
       <g transform="translate(112 0)">
-        <text x="0" y="62" font-family="Georgia, 'Times New Roman', serif" font-size="64" font-weight="700" fill="url(#paper)" letter-spacing="0.4">
+        <text x="0" y="62" font-family="Montserrat, system-ui, sans-serif" font-size="64" font-weight="700" fill="url(#paper)" letter-spacing="0.4">
           Binding<tspan fill="url(#foil)">Solution</tspan>
         </text>
-        <text x="2" y="98" font-family="Georgia, serif" font-size="22" font-style="italic" fill="#c9d8cf">your AI reading room</text>
+        <text x="2" y="98" font-family="Montserrat, system-ui, sans-serif" font-size="22" font-style="italic" fill="#c9d8cf">your AI reading room</text>
         <line x1="2" y1="118" x2="520" y2="118" stroke="url(#foil)" stroke-width="1.2" opacity="0.42"/>
         <text x="2" y="142" font-family="'Hanken Grotesk', system-ui, sans-serif" font-size="14" fill="#b8cfc4" letter-spacing="2.2">CATEGORIZE &#xB7; CONNECT &#xB7; READ &#xB7; MATCH</text>
       </g>

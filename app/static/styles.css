@@ -35,7 +35,7 @@
   --shadow:    0 3px 9px rgba(40,33,20,.06), 0 12px 42px rgba(40,33,20,.08);
   --shadow-lg: 0 36px 120px -16px rgba(31,70,54,.35);
   --shadow-card: 0 6px 24px rgba(31,70,54,.06), 0 24px 72px -8px rgba(31,70,54,.12);
-  --font-display: "Fraunces", Georgia, "Times New Roman", serif;
+  --font-display: "Montserrat", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-body: "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
   --app-max: min(19200px, calc(100vw - 0.5rem));
   --shell-max: 100%;

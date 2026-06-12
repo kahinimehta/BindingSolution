@@ -111,4 +111,6 @@ zoom. Key values in `app/static/styles.css` (not `.env`):
 | `--rail-w` | `864px` | Green sidebar width |
 
 Project cards and nav labels wrap to their full height instead of clipping with
-an inner scroll box.
+an inner scroll box. Fonts: **Montserrat** (headings / hero titles) and
+**Hanken Grotesk** (body UI), via `--font-display` and `--font-body` in
+`app/static/styles.css`.
