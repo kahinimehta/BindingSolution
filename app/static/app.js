@@ -67,17 +67,70 @@ function toast(msg, kind = "") {
 }
 
 /* ── modal ────────────────────────────────────────────────────── */
-function openModal(title, bodyNode) {
-  const host = $("#modal-host");
-  host.hidden = false;
-  host.replaceChildren(el("div", { class: "modal" },
+let _scrollLock = 0;
+
+function lockScroll() {
+  if (_scrollLock++ === 0) {
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
+  }
+}
+
+function unlockScroll() {
+  if (--_scrollLock <= 0) {
+    _scrollLock = 0;
+    document.documentElement.style.overflow = "";
+    document.body.style.overflow = "";
+  }
+}
+
+function buildModalNode(title, bodyNode, size = "dialog") {
+  return el("div", { class: `modal modal-${size}` },
     el("div", { class: "modal-head" },
       el("h2", {}, title),
-      el("button", { class: "modal-x", onclick: closeModal, "aria-label": "Close" }, "✕")),
-    el("div", { class: "modal-body" }, bodyNode)));
-  host.onclick = (e) => { if (e.target === host) closeModal(); };
+      el("button", { type: "button", class: "modal-x", onclick: closeModal, "aria-label": "Close" }, "✕")),
+    el("div", { class: "modal-body" }, bodyNode));
 }
-function closeModal() { const h = $("#modal-host"); h.hidden = true; h.replaceChildren(); }
+
+function openModal(title, bodyNode, size = "dialog") {
+  const host = $("#modal-host");
+  host.hidden = false;
+  host.replaceChildren(buildModalNode(title, bodyNode, size));
+  host.onclick = (e) => { if (e.target === host) closeModal(); };
+  lockScroll();
+}
+
+function setModal(title, bodyNode, size = "dialog") {
+  const host = $("#modal-host");
+  if (host.hidden) {
+    openModal(title, bodyNode, size);
+    return;
+  }
+  const modal = $(".modal", host);
+  if (modal) modal.className = `modal modal-${size}`;
+  const heading = $(".modal-head h2", host);
+  if (heading) heading.textContent = title;
+  const body = $(".modal-body", host);
+  if (body) body.replaceChildren(bodyNode);
+}
+
+function closeModal() {
+  const host = $("#modal-host");
+  if (host.hidden) return;
+  host.hidden = true;
+  host.replaceChildren();
+  host.onclick = null;
+  unlockScroll();
+}
+
+function showProgressModal(title, message) {
+  const bar = progressBlock(message);
+  const box = el("div", { class: "modal-progress" }, bar.node);
+  box._update = bar.update;
+  setModal(title, box, "dialog");
+  return box;
+}
+
 document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
 
 /* ── global state ─────────────────────────────────────────────── */
@@ -161,7 +214,7 @@ function confirmPurgeLibrary() {
     el("div", { class: "spread mt-3", style: "justify-content:flex-end;gap:10px" },
       el("button", { type: "button", class: "btn btn-ghost", onclick: closeModal }, "Cancel"),
       el("button", { type: "button", class: "btn btn-danger", onclick: () => { closeModal(); runPurgeLibrary(); } }, "Purge library")));
-  openModal("Purge library?", body);
+  openModal("Purge library?", body, "dialog");
 }
 
 async function runPurgeLibrary() {
@@ -387,19 +440,24 @@ async function categorizeOne(key, btn) {
 
 async function categorizeAll(e) {
   const btn = e?.currentTarget;
-  if (btn) { btn.disabled = true; }
-  const bar = progressBlock("Categorizing every project…");
-  view().prepend(bar.node);
+  if (btn) btn.disabled = true;
+  const box = showProgressModal("Categorizing projects", "Categorizing every project…");
   try {
     const start = await api.post("/projects/categorize-all");
-    await runJob(start, { onProgress: bar.update });
+    await runJob(start, { onProgress: (p) => box._update(p) });
+    closeModal();
     toast("All projects categorized.", "ok");
     await renderLibrary();
-  } catch (err) { toast(err.message, "err"); bar.node.remove(); if (btn) btn.disabled = false; }
+  } catch (err) {
+    closeModal();
+    toast(err.message, "err");
+  } finally {
+    if (btn) btn.disabled = false;
+  }
 }
 
 async function openProject(key, { readOnly = false } = {}) {
-  openModal("Loading…", el("div", { class: "skeleton", style: "height:200px" }));
+  openModal("Loading…", el("div", { class: "skeleton modal-skeleton" }), "sheet");
   try {
     const p = await api.get(`/projects/${key}`);
     const body = el("div", {});
@@ -429,7 +487,7 @@ async function openProject(key, { readOnly = false } = {}) {
         el("div", { class: "pm" }, [it.creators, it.year, it.publication].filter(Boolean).join(" · "))));
     }
     body.append(list);
-    openModal(p.name, body);
+    setModal(p.name, body, "sheet");
   } catch (e) { closeModal(); toast(e.message, "err"); }
 }
 function labeledTags(label, items) {
@@ -472,15 +530,19 @@ async function renderConnections() {
 }
 
 async function findConnections() {
-  const bar = progressBlock("Reading across your projects…");
-  $("#conn-body")?.replaceChildren(bar.node);
+  const box = showProgressModal("Finding connections", "Reading across your projects…");
   try {
     const start = await api.post("/connections");
-    await runJob(start, { onProgress: bar.update });
+    await runJob(start, { onProgress: (p) => box._update(p) });
+    closeModal();
     toast("Connections mapped.", "ok");
     const { connections } = await api.get("/connections");
     renderConnectionMap(connections);
-  } catch (e) { toast(e.message, "err"); renderConnections(); }
+  } catch (e) {
+    closeModal();
+    toast(e.message, "err");
+    renderConnections();
+  }
 }
 
 function projName(key) { return state.projects.find((p) => p.key === key)?.name || key; }
@@ -599,13 +661,7 @@ async function submitStrategy(e) {
   const keys = [...strategySelection];
   if (strategyMode === "manual" && keys.length === 0) { toast("Pick at least one project, or switch to “Let the agent decide”.", "err"); return; }
   btn.disabled = true;
-  const bar = progressBlock("Designing your reading path…");
-  openModal("Generating reading plan", (() => {
-    const box = el("div", {}, bar.node);
-    box._update = bar.update;
-    return box;
-  })());
-  const box = $(".modal-body > div");
+  const box = showProgressModal("Generating reading plan", "Designing your reading path…");
   try {
     const start = await api.post("/strategies", { goal, mode: strategyMode, project_keys: keys });
     await runJob(start, { onProgress: (p) => box._update(p) });
@@ -657,7 +713,7 @@ function openStrategy(s) {
     body.append(el("h3", { class: "mt-2", style: "font-family:var(--font-display);font-size:1.05rem" }, "Hold these in mind"),
       el("ul", { style: "color:var(--ink-2);line-height:1.7;padding-left:20px" }, ...plan.synthesis_prompts.map((q) => el("li", {}, q))));
   }
-  openModal(plan.title || "Reading plan", body);
+  openModal(plan.title || "Reading plan", body, "sheet");
 }
 async function deleteStrategy(id) {
   try { await api.del(`/strategies/${id}`); toast("Deleted.", "ok"); await loadStrategies(); }
@@ -785,18 +841,12 @@ function confirmAnalyzeSpec(specId) {
       "Depending on how many papers you have, this can take a while — from under a minute for a small library to several minutes for a large one. You can keep using the app while it runs."),
     el("div", { class: "spread mt-3", style: "justify-content:flex-end;gap:10px" },
       el("button", { type: "button", class: "btn btn-ghost", onclick: closeModal }, "Cancel"),
-      el("button", { type: "button", class: "btn btn-primary", onclick: () => { closeModal(); runAnalyzeSpec(specId); } }, "Find relevant papers")));
-  openModal("Find relevant papers?", body);
+      el("button", { type: "button", class: "btn btn-primary", onclick: () => runAnalyzeSpec(specId) }, "Find relevant papers")));
+  openModal("Find relevant papers?", body, "dialog");
 }
 
 async function runAnalyzeSpec(specId) {
-  openModal("Finding relevant papers", (() => {
-    const bar = progressBlock("Screening your library against the project spec…");
-    const box = el("div", {}, bar.node);
-    box._update = bar.update;
-    return box;
-  })());
-  const box = $(".modal-body > div");
+  const box = showProgressModal("Finding relevant papers", "Screening your library against the project spec…");
   try {
     const start = await api.post(`/specs/${specId}/analyze`, {});
     const result = await runJob(start, { onProgress: (p) => box._update(p) });

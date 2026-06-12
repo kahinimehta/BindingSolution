@@ -116,7 +116,9 @@ appear first. Click **Refresh suggestions** to re-screen after syncing new paper
 ## Tips
 
 - Every analysis runs as a background job with a **live progress bar** — you
-  can keep working while it runs.
+  can keep working while it runs. Confirmations and progress (spec screening,
+  reading plans, connections, bulk categorization) open in the same centered
+  dialog so the page does not jump or rescroll behind you.
 - Switching to a different `ANTHROPIC_MODEL` in `.env` (e.g. a faster model for
   paper screening) only needs a server restart.
 - Refreshing suggestions re-screens against the current library, so it's worth

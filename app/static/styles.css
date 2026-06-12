@@ -636,21 +636,55 @@ select.input, .input {
 .row-item .muted { font-size: .8rem; color: var(--ink-3); }
 
 /* ── modal ──────────────────────────────────────────────────── */
-.modal-host { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; padding: 20px; }
-.modal-host[hidden] { display: none; }
+.modal-host {
+  position: fixed; inset: 0; z-index: 60;
+  display: flex; align-items: center; justify-content: center;
+  padding: max(24px, env(safe-area-inset-top, 0px)) 24px max(24px, env(safe-area-inset-bottom, 0px));
+  overflow-y: auto; overscroll-behavior: contain;
+}
+.modal-host[hidden] { display: none !important; }
 .modal-host::before {
-  content: ""; position: absolute; inset: 0;
+  content: ""; position: fixed; inset: 0;
   background: rgba(20,17,10,.48); backdrop-filter: blur(4px);
+  pointer-events: none;
 }
 .modal {
-  position: relative; background: var(--surface); border-radius: var(--radius);
-  box-shadow: var(--shadow-lg); width: min(720px, 100%); max-height: 86vh; overflow: auto;
-  border: 1px solid var(--line); animation: pop .22s ease;
+  position: relative; z-index: 1;
+  flex-shrink: 0; margin: auto;
+  background: var(--surface); border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--line);
+  animation: modal-in .2s ease;
+  display: flex; flex-direction: column;
+  overflow: hidden;
 }
-@keyframes pop { from { transform: translateY(12px) scale(.98); opacity: 0; } }
+@keyframes modal-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.modal-dialog {
+  width: min(520px, calc(100vw - 48px));
+  min-height: 280px;
+  max-height: min(72vh, 560px);
+}
+.modal-dialog .modal-body {
+  flex: 1; display: flex; flex-direction: column; justify-content: center;
+}
+.modal-sheet {
+  width: min(720px, calc(100vw - 48px));
+  max-height: min(86vh, 880px);
+}
+.modal-sheet .modal-body {
+  overflow-y: auto; flex: 1; min-height: 0;
+}
+.modal-progress {
+  width: 100%; min-height: 132px;
+  display: flex; flex-direction: column; justify-content: center;
+}
+.modal-skeleton { height: 200px; min-height: 200px; }
 .modal-head {
   display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
-  padding: 22px 24px 8px;
+  padding: 22px 24px 8px; flex-shrink: 0;
   border-bottom: 1px solid var(--line);
   background: linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 100%);
 }
