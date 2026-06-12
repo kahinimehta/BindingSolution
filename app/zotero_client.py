@@ -5,6 +5,9 @@ Zotero 7 HTTP API (`ZOTERO_LOCAL=true`, no key needed — Zotero must be
 running with "Allow other applications…" enabled in Settings → Advanced).
 
 Each Zotero *collection* (folder) becomes a BindingSolution *project*.
+Items in subcollections are rolled up into ancestor collections so parent
+folders show the full paper count. Items not in any collection are grouped
+under a synthetic "Library (unfiled)" project.
 """
 from __future__ import annotations
 
@@ -15,7 +18,9 @@ from .config import Settings
 
 ProgressFn = Callable[[int, int, str], None]
 
-_SKIP_ITEM_TYPES = {"attachment", "note", "annotation"}
+_SKIP_ITEM_TYPES = {"note", "annotation"}
+_UNFILED_KEY = "__unfiled__"
+_UNFILED_NAME = "Library (unfiled)"
 
 
 def _connect(settings: Settings):
@@ -49,14 +54,38 @@ def _year(raw: dict) -> str:
     return match.group(1) if match else ""
 
 
+def _item_key(raw: dict) -> str:
+    data = raw.get("data", {})
+    return (data.get("key") or raw.get("key") or "").strip()
+
+
+def _keep_item(raw: dict) -> bool:
+    """Return True for bibliographic entries and standalone files worth showing."""
+    data = raw.get("data", {})
+    item_type = data.get("itemType", "")
+    if item_type in _SKIP_ITEM_TYPES:
+        return False
+    if item_type == "attachment":
+        # Child PDFs/notes under a paper are fetched via the parent entry.
+        if data.get("parentItem"):
+            return False
+        title = (data.get("title") or data.get("filename") or "").strip()
+        return bool(title)
+    return bool(item_type)
+
+
 def map_item(raw: dict) -> dict:
     data = raw.get("data", {})
+    item_type = data.get("itemType", "")
+    title = (data.get("title") or "").strip()
+    if item_type == "attachment" and not title:
+        title = (data.get("filename") or "(untitled file)").strip()
     return {
-        "key": data.get("key", ""),
-        "title": (data.get("title") or "(untitled)").strip(),
+        "key": _item_key(raw),
+        "title": title or "(untitled)",
         "creators": _format_creators(data.get("creators")),
         "year": _year(raw),
-        "item_type": data.get("itemType", ""),
+        "item_type": item_type,
         "abstract": (data.get("abstractNote") or "").strip(),
         "doi": (data.get("DOI") or "").strip(),
         "url": (data.get("url") or "").strip(),
@@ -71,8 +100,61 @@ def map_item(raw: dict) -> dict:
     }
 
 
+def _collection_tree_keys(zot, collection_key: str) -> list[str]:
+    """Collection key plus every descendant subcollection key."""
+    try:
+        tree = zot.all_collections(collection_key)
+    except Exception:
+        return [collection_key]
+    if not tree:
+        return [collection_key]
+    keys: list[str] = []
+    seen: set[str] = set()
+    for col in tree:
+        key = col.get("key") if isinstance(col, dict) else None
+        if key and key not in seen:
+            seen.add(key)
+            keys.append(key)
+    return keys or [collection_key]
+
+
+def _fetch_collection_items(zot, collection_key: str) -> list[dict]:
+    """Bibliographic items in a collection and all of its subcollections."""
+    seen: set[str] = set()
+    items: list[dict] = []
+    for ck in _collection_tree_keys(zot, collection_key):
+        raw_items = zot.everything(zot.collection_items_top(ck))
+        for raw in raw_items:
+            if not _keep_item(raw):
+                continue
+            mapped = map_item(raw)
+            if not mapped["key"] or mapped["key"] in seen:
+                continue
+            seen.add(mapped["key"])
+            items.append(mapped)
+    items.sort(key=lambda it: (it["year"] or "0000", it["title"]))
+    return items
+
+
+def _fetch_unfiled_items(zot) -> list[dict]:
+    """Top-level library items that belong to no collection."""
+    items: list[dict] = []
+    raw_items = zot.everything(zot.top())
+    for raw in raw_items:
+        data = raw.get("data", {})
+        if data.get("collections"):
+            continue
+        if not _keep_item(raw):
+            continue
+        mapped = map_item(raw)
+        if mapped["key"]:
+            items.append(mapped)
+    items.sort(key=lambda it: (it["year"] or "0000", it["title"]))
+    return items
+
+
 def fetch_projects(settings: Settings, progress: ProgressFn | None = None) -> dict[str, dict]:
-    """Fetch every collection and its top-level items. Returns {key: project}."""
+    """Fetch every collection and its items. Returns {key: project}."""
     zot = _connect(settings)
     collections = zot.everything(zot.collections())
     by_key = {c["key"]: c["data"] for c in collections}
@@ -97,10 +179,7 @@ def fetch_projects(settings: Settings, progress: ProgressFn | None = None) -> di
         name = by_key[key].get("name", "")
         if progress:
             progress(index, total, name)
-        raw_items = zot.everything(zot.collection_items_top(key))
-        items = [map_item(it) for it in raw_items]
-        items = [it for it in items if it["item_type"] not in _SKIP_ITEM_TYPES]
-        items.sort(key=lambda it: (it["year"] or "0000", it["title"]))
+        items = _fetch_collection_items(zot, key)
         projects[key] = {
             "key": key,
             "name": full_name(key) or name,
@@ -109,4 +188,16 @@ def fetch_projects(settings: Settings, progress: ProgressFn | None = None) -> di
             "num_items": len(items),
             "items": items,
         }
+
+    unfiled = _fetch_unfiled_items(zot)
+    if unfiled:
+        projects[_UNFILED_KEY] = {
+            "key": _UNFILED_KEY,
+            "name": _UNFILED_NAME,
+            "short_name": _UNFILED_NAME,
+            "parent": None,
+            "num_items": len(unfiled),
+            "items": unfiled,
+        }
+
     return projects

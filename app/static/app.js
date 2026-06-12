@@ -342,9 +342,10 @@ async function openProject(key) {
       body.append(el("button", { class: "btn btn-brass btn-sm", style: "margin-bottom:14px",
         onclick: async (e) => { e.currentTarget.disabled = true; await categorizeOne(key); closeModal(); openProject(key); } }, "✦ Categorize this project"));
     }
-    body.append(el("h3", { class: "mt-2", style: "font-family:var(--font-display);font-size:1.05rem" }, `${p.items.length} papers`));
+    const papers = p.items || [];
+    body.append(el("h3", { class: "mt-2", style: "font-family:var(--font-display);font-size:1.05rem" }, `${papers.length} papers`));
     const list = el("div", {});
-    for (const it of p.items) {
+    for (const it of papers) {
       list.append(el("div", { class: "paper-line" },
         el("div", { class: "pt" }, it.title),
         el("div", { class: "pm" }, [it.creators, it.year, it.publication].filter(Boolean).join(" · "))));
