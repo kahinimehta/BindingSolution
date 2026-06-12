@@ -940,7 +940,7 @@ const dropKindLabel = {
 function renderPaperGroups(g) {
   const root = el("div", {});
   root.append(el("div", { class: "card panel view-hero", style: "padding:22px;margin-bottom:22px;border-left-width:4px" },
-    g._mock ? el("span", { class: "mock-note", style: "margin-bottom:10px" }, "demo AI — connect a Claude key for real analysis") : null,
+    state.status?.using_mock_llm ? el("span", { class: "mock-note", style: "margin-bottom:10px" }, "demo AI — connect a Claude key for real analysis") : null,
     el("p", { class: "lead", style: "margin:0;font-size:1.02rem" }, g.overview)));
 
   const stats = g.stats || {};
@@ -967,12 +967,17 @@ function renderPaperGroups(g) {
       "Thematic sets may span collections. Each paper is in at most one set."));
     for (const grp of g.groups) {
       const n = grp.num_papers ?? grp.paper_keys?.length ?? grp.papers?.length ?? 0;
-      const card = el("div", { class: "card spine cluster" },
+      const setSummary = (grp.summary || grp.rationale || "").trim();
+      const cardKids = [
         el("div", { class: "spread", style: "align-items:baseline;gap:10px;flex-wrap:wrap" },
           el("h4", { style: "margin:0" }, grp.name),
           el("span", { class: "pill ink" }, `${n} paper${n === 1 ? "" : "s"}`)),
         el("div", { class: "links tag-row" }, ...grp.project_keys.map((k) => el("span", { class: "pill green" }, projName(k)))),
-        el("p", { class: "muted", style: "margin:6px 0 12px;font-size:.88rem;line-height:1.5" }, grp.rationale));
+      ];
+      if (setSummary) {
+        cardKids.push(el("p", { class: "group-set-summary", style: "margin:8px 0 12px;font-size:.9rem;line-height:1.55;color:var(--ink-2)" }, setSummary));
+      }
+      const card = el("div", { class: "card spine cluster" }, ...cardKids);
       const list = el("div", { class: "group-paper-lines" });
       for (const p of grp.papers || []) {
         list.append(el("div", { class: "paper-line" },

@@ -52,6 +52,30 @@ def test_groups_do_not_duplicate_papers():
         assert len(grp["papers"]) == len(grp["paper_keys"])
 
 
+def test_complete_paper_groups_preserves_summary():
+    projects = _projects()
+    raw = {
+        "overview": "Test overview.",
+        "groups": [{
+            "name": "Set",
+            "paper_keys": ["P2"],
+            "project_keys": ["A"],
+            "summary": "Shared fairness theme. Methods overlap. Read together for audit patterns.",
+        }],
+        "drops": [],
+    }
+    out = complete_paper_groups(raw, projects)
+    assert "fairness theme" in out["groups"][0]["summary"]
+    assert out["groups"][0]["summary"] == out["groups"][0]["rationale"]
+
+
+def test_heuristic_groups_include_multi_sentence_summary():
+    result = heuristic_paper_groups(_projects())
+    for grp in result["groups"]:
+        assert grp.get("summary")
+        assert len(grp["summary"].split(".")) >= 2
+
+
 def test_complete_paper_groups_enriches_papers():
     projects = _projects()
     raw = {

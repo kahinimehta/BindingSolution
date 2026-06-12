@@ -21,6 +21,16 @@ def norm_title(title: str) -> str:
     return re.sub(r"\s+", " ", (title or "").lower()).strip()
 
 
+def _group_summary(raw: dict) -> str:
+    text = (raw.get("summary") or raw.get("rationale") or "").strip()
+    if text:
+        return text
+    return (
+        "These papers share a coherent theme on your shelf. "
+        "Reading them together should surface shared methods or questions without overlapping other sets."
+    )
+
+
 def _paper_index(projects: list[dict]) -> dict[str, dict]:
     out: dict[str, dict] = {}
     for proj in projects:
@@ -62,14 +72,15 @@ def complete_paper_groups(result: dict, projects: list[dict]) -> dict:
             }
             for key in keys
         ]
+        summary = _group_summary(raw)
         groups.append({
             "name": raw.get("name") or "Reading set",
             "paper_keys": keys,
             "papers": papers,
             "num_papers": len(keys),
             "project_keys": sorted(projects_in),
-            "rationale": (raw.get("rationale") or "").strip()
-            or "Papers that belong together without overlapping other groups.",
+            "summary": summary,
+            "rationale": summary,
         })
 
     drops: list[dict] = []
@@ -302,14 +313,24 @@ def heuristic_paper_groups(projects: list[dict]) -> dict:
         keys = [r["paper_key"] for r in candidates[:10]]
         for key in keys:
             assigned.add(key)
+        label = tag.replace("-", " ").title()
+        sample = ", ".join(f"\"{r['title']}\"" for r in candidates[:2])
+        proj_note = (
+            f"{len(project_keys)} collections"
+            if len(project_keys) != 1
+            else "multiple papers in one collection"
+        )
+        summary = (
+            f"This set groups {len(keys)} papers on {label} drawn from {proj_note}. "
+            f"They connect through the \"{tag}\" thread — including {sample}. "
+            f"Read them as one arc to compare how the theme shows up across your shelf."
+        )
         groups.append({
-            "name": f"{tag.replace('-', ' ').title()} set",
+            "name": f"{label} set",
             "paper_keys": keys,
             "project_keys": project_keys,
-            "rationale": (
-                f"Papers linked by \"{tag}\" across {len(project_keys)} project"
-                f"{'s' if len(project_keys) != 1 else ''} — each paper appears once."
-            ),
+            "summary": summary,
+            "rationale": summary,
         })
         if len(groups) >= 6:
             break

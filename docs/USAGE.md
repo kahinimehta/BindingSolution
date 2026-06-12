@@ -92,8 +92,10 @@ whole shelf, not one API call per paper. Track it in the dialog or **Running**
 panel. It returns:
 
 - **Optimal paper sets** — thematic reading groups that may span multiple
-  Zotero collections. Each set shows a **paper count** and a flat list (no
-  bullets). A paper appears in **at most one** set.
+  Zotero collections. Each set shows a **2–3 sentence summary**, a **paper count**,
+  and a flat list (no bullets). A paper appears in **at most one** set. The
+  **demo AI** badge only appears when no Claude key is configured (re-run grouping
+  after adding a key).
 - **Papers** — same KPI as **Library** (`184` in the screenshot), with smaller
   subtitle *(including standalone papers)*. Below the overview, a summary line
   splits **unique** Zotero items (`N unique papers — … in sets · … standalone · …

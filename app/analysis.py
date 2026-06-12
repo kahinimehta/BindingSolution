@@ -109,15 +109,23 @@ class Analyzer:
 
     # ── 3. cross-project paper groups (no duplication) ───────────────
     def find_paper_groups(self, projects: list[dict]) -> dict:
+        used_mock = False
         if self.use_mock:
-            return heuristic_paper_groups(projects)
-        try:
-            prompt = _paper_groups_prompt(projects)
-            result: PaperGroupingMap = self._parse(prompt, PaperGroupingMap, heavy=True)
-            data = complete_paper_groups(result.model_dump(), projects)
-            return data
-        except AnalysisError:
-            return heuristic_paper_groups(projects)
+            data = heuristic_paper_groups(projects)
+            used_mock = True
+        else:
+            try:
+                prompt = _paper_groups_prompt(projects)
+                result: PaperGroupingMap = self._parse(prompt, PaperGroupingMap, heavy=True)
+                data = complete_paper_groups(result.model_dump(), projects)
+            except AnalysisError:
+                data = heuristic_paper_groups(projects)
+                used_mock = True
+        if used_mock:
+            data["_mock"] = True
+        else:
+            data.pop("_mock", None)
+        return data
 
     # ── 4. reading strategy over chosen projects ─────────────────────
     def reading_strategy(self, projects: list[dict], goal: str) -> dict:
@@ -199,6 +207,8 @@ def _paper_groups_prompt(projects: list[dict]) -> str:
         "- Include every paper you can place in a coherent thematic set — list ALL "
         "paper_keys for each group, not just examples.\n"
         "- Do not duplicate the same paper across groups.\n"
+        "- For each group, write a `summary` of **2-3 sentences**: the shared theme, "
+        "what the papers cover, and why they belong in one reading set.\n"
         "- Papers you do not group or drop will appear as standalone on the shelf.\n"
         "- In `drops`, flag papers to remove or archive: duplicates filed in multiple "
         "collections, redundant surveys superseded by newer work, weak fits, or outdated "

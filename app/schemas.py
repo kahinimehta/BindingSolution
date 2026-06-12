@@ -76,7 +76,13 @@ class PaperGroup(BaseModel):
         description="Optional display refs; the server fills these from paper_keys when missing.",
     )
     project_keys: list[str] = Field(description="Project keys the papers come from.")
-    rationale: str = Field(description="Why these papers belong together without duplicating work.")
+    summary: str = Field(
+        description="2-3 sentences on the shared theme, what the papers cover, and why read them together.",
+    )
+    rationale: str = Field(
+        default="",
+        description="Optional short tagline; prefer `summary` for the main blurb.",
+    )
 
 
 class PaperDropSuggestion(BaseModel):

@@ -133,8 +133,8 @@ The **Groups** view calls `POST /api/groups` (`app/grouping.py`):
    appears in at most one group, computes `ungrouped` + `stats` (`total_papers`,
    `papers_grouped`, `num_ungrouped`, `num_drops`, `unique_papers`,
    `collection_entries`, `duplicate_filings`, `papers_accounted`), enriches
-   groups with `papers` display refs and
-   `num_papers`, and tags standalone rows with `source` (`single_paper_collection`,
+   groups with `papers` display refs, `num_papers`, and a 2–3 sentence `summary`
+   per set, and tags standalone rows with `source` (`single_paper_collection`,
    `unfiled`, or `active`).
 3. **Persist** — saved in `paper_groups` on the store until purge.
 
