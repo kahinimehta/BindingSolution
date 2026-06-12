@@ -97,6 +97,16 @@ _PROJECTS = {
         "short_name": "Empty folder (demo)",
         "items": [],
     },
+    "DEMOSINGLE": {
+        "name": "Single paper (demo)",
+        "short_name": "Single paper (demo)",
+        "items": [
+            _item("S1", "A Lone Survey on Graph Representation Learning",
+                  "Chen", "2024",
+                  "A single-paper collection used to illustrate excluded projects in the UI.",
+                  "arXiv preprint", ["GNN", "survey"]),
+        ],
+    },
     "DEMOLLM": {
         "name": "LLM Evaluation",
         "short_name": "LLM Evaluation",

@@ -97,8 +97,9 @@ def create_app() -> FastAPI:
         if not is_usable_project(proj):
             raise HTTPException(
                 400,
-                "This collection cannot be categorized — empty folders and unfiled "
-                "papers are excluded. Move papers into a collection to analyze them.",
+                "This collection cannot be categorized — empty folders, single-paper "
+                "collections, and unfiled papers are excluded. Add another paper or "
+                "merge collections, then re-sync.",
             )
         analyzer = get_analyzer(get_settings())
 
@@ -116,7 +117,10 @@ def create_app() -> FastAPI:
         store = get_store()
         projects = usable_projects(store.get_projects())
         if not projects:
-            raise HTTPException(400, "No projects with papers to categorize.")
+            raise HTTPException(
+                400,
+                "No projects with enough papers to categorize (need at least 2 per collection).",
+            )
         analyzer = get_analyzer(get_settings())
 
         def work(job: jobs.Job) -> dict:
@@ -140,8 +144,8 @@ def create_app() -> FastAPI:
         if len(projects) < 2:
             raise HTTPException(
                 400,
-                "Need at least 2 collections with papers to find connections "
-                "(empty folders and unfiled papers are excluded).",
+                "Need at least 2 collections with 2+ papers each to find connections "
+                "(empty, single-paper, and unfiled collections are excluded).",
             )
         analyzer = get_analyzer(get_settings())
 
@@ -178,7 +182,7 @@ def create_app() -> FastAPI:
         if not projects:
             raise HTTPException(
                 400,
-                "No valid projects selected (empty folders and unfiled papers cannot be used).",
+                "No valid projects selected (empty, single-paper, and unfiled collections cannot be used).",
             )
         analyzer = get_analyzer(get_settings())
 

@@ -3,6 +3,7 @@ from __future__ import annotations
 
 UNFILED_KEY = "__unfiled__"
 UNFILED_NAME = "Library (unfiled)"
+MIN_USABLE_PAPERS = 2
 
 
 def item_count(proj: dict) -> int:
@@ -13,8 +14,11 @@ def inactive_reason(proj: dict) -> str | None:
     """Why a project is excluded from analysis, or None if it is usable."""
     if proj.get("key") == UNFILED_KEY:
         return "unfiled"
-    if item_count(proj) == 0:
+    n = item_count(proj)
+    if n == 0:
         return "empty"
+    if n < MIN_USABLE_PAPERS:
+        return "single"
     return None
 
 

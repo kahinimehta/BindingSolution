@@ -214,7 +214,7 @@ async function renderKpiStrip(route) {
       kpiItem(totalPapers(true), "Papers", "In active collections"),
       kpiItem(categorizedCount(), "Categorized", categorizedCount() ? "AI-tagged" : "Run categorize"),
     );
-    if (inactive.length) items.push(kpiItem(inactive.length, "Excluded", "Empty folders & unfiled"));
+    if (inactive.length) items.push(kpiItem(inactive.length, "Excluded", "Empty, single & unfiled"));
     const src = state.status?.zotero_mode || (state.projects.length ? "loaded" : "—");
     items.push(kpiItem(src, "Source", state.status?.using_mock_llm ? "demo AI" : "library sync"));
   } else if (route === "connections") {
@@ -282,8 +282,8 @@ async function renderLibrary() {
     parts.push(
       el("div", { class: "section-head mt-3" },
         el("div", {},
-          el("h2", {}, "Empty folders & unfiled papers"),
-          el("p", {}, "Shown for reference only. These cannot be categorized or included in connections, reading plans, or spec analysis."))),
+          el("h2", {}, "Excluded collections"),
+          el("p", {}, "Empty folders, single-paper collections, and unfiled papers — shown for reference only, not used in analysis."))),
       el("div", { class: "grid grid-projects grid-inactive" }, ...inactive.map((p) => projectCard(p, true))));
   }
   view().replaceChildren(...parts);
@@ -295,14 +295,17 @@ function projectCard(p, inactive = false) {
     el("div", { class: "muted" }, `${p.num_items} ${p.num_items === 1 ? "paper" : "papers"}`),
   ];
   if (inactive) {
-    const label = p.inactive_reason === "unfiled" ? "Unfiled" : "Empty folder";
+    const labels = { unfiled: "Unfiled", empty: "Empty folder", single: "Single paper" };
+    const hints = {
+      unfiled: "Papers not in any collection — move them into a collection with 2+ papers.",
+      empty: "No papers in this folder — add papers in Zotero or ignore this collection.",
+      single: "Only one paper — add another to this collection or merge with a related folder.",
+    };
+    const reason = p.inactive_reason || "empty";
     body.push(
-      el("div", { class: "project-meta" }, el("span", { class: "pill ink" }, label)),
-      el("p", { class: "inactive-hint" },
-        p.inactive_reason === "unfiled"
-          ? "Papers not in any collection — move them into a collection to analyze."
-          : "No papers in this folder — add papers in Zotero or ignore this collection."));
-    const canView = p.inactive_reason === "unfiled" && p.num_items > 0;
+      el("div", { class: "project-meta" }, el("span", { class: "pill ink" }, labels[reason] || "Excluded")),
+      el("p", { class: "inactive-hint" }, hints[reason] || hints.empty));
+    const canView = p.num_items > 0;
     return el("div", {
       class: `card spine project-card inactive${canView ? " viewable" : ""}`,
       ...(canView ? { onclick: () => openProject(p.key, { readOnly: true }) } : {}),
@@ -367,7 +370,7 @@ async function openProject(key, { readOnly = false } = {}) {
     const body = el("div", {});
     if (readOnly) {
       body.append(el("p", { class: "inactive-hint", style: "margin:0 0 12px" },
-        "This collection is excluded from analysis. Move papers into a Zotero collection to use them."));
+        "This collection is excluded from analysis. Collections need at least 2 papers to be used."));
     }
     if (p.category) {
       body.append(
@@ -413,7 +416,7 @@ async function renderConnections() {
     view().replaceChildren(el("div", { class: "empty" },
       el("div", { class: "emoji" }, "⁂"),
       el("h3", {}, "Connections need active projects"),
-      el("p", {}, "Sync at least two collections that contain papers. Empty folders and unfiled papers are excluded."),
+      el("p", {}, "Sync at least two collections with 2+ papers each. Empty, single-paper, and unfiled collections are excluded."),
       el("div", { class: "row" }, el("button", { class: "btn btn-brass", onclick: () => doSync("demo") }, "Load demo library"))));
     return;
   }
@@ -504,7 +507,7 @@ function buildStrategyForm() {
     return el("div", { class: "empty" },
       el("div", { class: "emoji" }, "↯"),
       el("h3", {}, "Plans need projects"),
-      el("p", {}, "Sync or load a library with at least one collection that contains papers (empty folders and unfiled papers are excluded)."),
+      el("p", {}, "Sync or load a library with collections that have at least 2 papers each (excluded collections do not count)."),
       el("div", { class: "row" }, el("button", { class: "btn btn-brass", onclick: () => doSync("demo") }, "Load demo library")));
   }
   const card = el("div", { class: "card panel", style: "padding:24px" });

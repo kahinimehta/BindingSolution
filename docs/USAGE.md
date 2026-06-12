@@ -18,10 +18,16 @@ state). Each Zotero **collection** becomes a **project**; nested collections
 keep their full path as the name. Re-syncing refreshes papers while keeping
 any categorization you've already generated.
 
+**Active vs excluded:** only collections with **at least 2 papers** are active.
+Empty folders, single-paper collections, and **Library (unfiled)** appear in a
+separate **Excluded collections** section — visible for reference but left out
+of categorization, connections, reading plans, and spec analysis. Add papers or
+merge collections in Zotero, then re-sync.
+
 ## 2. 📂 Categorize projects — *Library*
 
-Open the **Library** view. Click **✦ Categorize** on a card (or **Categorize
-all** in the top bar). For each project Claude returns:
+Open the **Library** view. Click **✦ Categorize** on an active card (or
+**Categorize all** in the top bar). For each project Claude returns:
 
 - a **discipline** and a specific **topic label**
 - a 2–3 sentence **summary**
