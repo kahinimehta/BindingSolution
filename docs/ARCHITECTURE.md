@@ -149,8 +149,9 @@ The **Groups** view calls `POST /api/groups` (`app/grouping.py`):
    the analyze step is **indeterminate** because it is a single Claude call.
 2. **Validate** — `complete_paper_groups` drops invalid keys, ensures each paper
    appears in at most one group, computes `ungrouped` + `stats` (`total_papers`,
-   `papers_grouped`, `num_ungrouped`, `num_drops`, `unique_papers`,
-   `collection_entries`, `duplicate_filings`, `papers_accounted`), enriches
+   `papers_grouped`, `num_ungrouped`, `num_drops`, `groupable_papers`,
+   `grouping_coverage`, `unique_papers`, `collection_entries`, `duplicate_filings`,
+   `papers_accounted`), enriches
    groups with `papers` display refs, `num_papers`, and a 2–3 sentence `summary`
    per set, and tags standalone rows with `source` (`single_paper_collection`,
    `unfiled`, or `active`).

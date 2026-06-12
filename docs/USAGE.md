@@ -112,9 +112,11 @@ panel. It returns:
   subtitle *(including standalone papers)*. Below the overview, a summary line
   splits **unique** Zotero items (`N unique papers — … in sets · … standalone · …
   to drop`) because grouping deduplicates by item key.
-- **Standalone papers** — unique papers not placed in any thematic set (plus
-  single-paper collections and unfiled items, which skip grouping). An **All
-  accounted for** badge means every unique paper is in a set, standalone, or drop.
+- **Standalone papers** — at most ~10% of groupable papers stay ungrouped; the
+  rest land in varied thematic sets. Single-paper collections and unfiled items
+  also appear here (they skip grouping). An **All accounted for** badge means
+  every unique paper is in a set, standalone, or drop. The overview line shows
+  coverage (e.g. *Grouped 104 of 115 papers (90%)*).
 - **Suggested drops** — papers to remove or archive: duplicates filed in more
   than one collection, redundant surveys, weak fits, or entries that no longer
   match your shelf.

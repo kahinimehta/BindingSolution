@@ -85,7 +85,7 @@ papers will be screened — use it.
 | Action | Re-run when… |
 | --- | --- |
 | Connections | You added/merged projects or want a fresh cross-library read |
-| Group papers | You synced new papers or reorganized collections |
+| Group papers | You synced new papers or reorganized collections (re-run to refresh ≥90% coverage) |
 | Reading strategy | Your goal or project set changed |
 | Build reading plan (spec) | You re-screened library matches or want a new ordering |
 | Find in library | You synced new papers or changed the spec text |

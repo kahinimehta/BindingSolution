@@ -92,7 +92,9 @@ jobs. Use the sidebar **Running** panel to monitor progress after closing the
 progress window or reloading the page. Only stopping the server (e.g. Ctrl+C)
 cancels in-flight jobs. **Group papers** uses phase-based progress (prepare →
 analyze → apply) with an indeterminate bar during the single Claude call; per-paper
-jobs (sync, spec screening) show `current/total` counts instead.
+jobs (sync, spec screening) show `current/total` counts instead. After a run,
+the server enforces **≥90% grouped** (minimum 10 papers per set, no maximum,
+varied set sizes — not uniform chunks or mega-sets).
 
 Nothing is sent anywhere except the Anthropic API (for analysis) and Zotero
 (to read your library). The server binds to `127.0.0.1` by default, so it's

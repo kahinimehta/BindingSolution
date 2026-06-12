@@ -504,7 +504,7 @@ const viewMeta = {
   },
   groups: {
     title: "Groups",
-    subtitle: "Optimal paper sets across projects — no duplicates — plus papers to drop.",
+    subtitle: "≥90% of papers in varied thematic sets (min 10 per set) — plus papers to drop.",
   },
   chat: {
     title: "Chat",
@@ -1016,7 +1016,7 @@ async function renderGroups() {
 
   view().replaceChildren(
     viewHero("Shelf organization",
-      "Same Papers count as Library. Summary below splits unique items into sets, standalone, and drops."),
+      "≥90% of papers grouped into varied sets (min 10 each). Summary below splits unique items into sets, standalone, and drops."),
     el("div", { id: "groups-body" }, el("div", { class: "muted" }, "Loading…")));
 
   try {
