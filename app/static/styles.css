@@ -327,6 +327,10 @@ a { color: inherit; text-decoration: none; }
 
 /* ── modal ──────────────────────────────────────────────────── */
 .modal-host { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; padding: 20px; }
+/* `display:grid` above would otherwise beat the UA `[hidden]{display:none}`
+   rule (equal specificity, author wins), leaving the dark backdrop painted
+   over the whole page when no modal is open. Restore hidden explicitly. */
+.modal-host[hidden] { display: none; }
 .modal-host::before { content: ""; position: absolute; inset: 0; background: rgba(20,17,10,.45); backdrop-filter: blur(3px); }
 .modal {
   position: relative; background: var(--surface); border-radius: var(--radius);
