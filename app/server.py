@@ -15,6 +15,7 @@ from fastapi.staticfiles import StaticFiles
 from . import __version__, jobs
 from .analysis import AnalysisError, get_analyzer
 from .config import STATIC_DIR, get_settings
+from .projects import is_usable_project, summary_fields, usable_projects
 from .specs import extract_text
 from .store import Store
 
@@ -50,6 +51,7 @@ def create_app() -> FastAPI:
                 "source": meta.get("source"),
                 "last_synced": meta.get("last_synced"),
                 "num_projects": len(get_store().get_projects()),
+                "num_usable_projects": len(usable_projects(get_store().get_projects())),
             },
         }
 
@@ -73,8 +75,9 @@ def create_app() -> FastAPI:
                 "short_name": proj.get("short_name"),
                 "num_items": proj.get("num_items", len(proj.get("items", []))),
                 "category": proj.get("category"),
+                **summary_fields(proj),
             })
-        summary.sort(key=lambda p: p["name"].lower())
+        summary.sort(key=lambda p: (not p["usable"], p["name"].lower()))
         return {"projects": summary, "meta": get_store().get_meta()}
 
     @app.get("/api/projects/{key}")
@@ -91,6 +94,12 @@ def create_app() -> FastAPI:
         proj = store.get_project(key)
         if proj is None:
             raise HTTPException(404, "Project not found")
+        if not is_usable_project(proj):
+            raise HTTPException(
+                400,
+                "This collection cannot be categorized — empty folders and unfiled "
+                "papers are excluded. Move papers into a collection to analyze them.",
+            )
         analyzer = get_analyzer(get_settings())
 
         def work(job: jobs.Job) -> dict:
@@ -105,7 +114,9 @@ def create_app() -> FastAPI:
     @app.post("/api/projects/categorize-all")
     def categorize_all() -> dict:
         store = get_store()
-        projects = list(store.get_projects().values())
+        projects = usable_projects(store.get_projects())
+        if not projects:
+            raise HTTPException(400, "No projects with papers to categorize.")
         analyzer = get_analyzer(get_settings())
 
         def work(job: jobs.Job) -> dict:
@@ -125,9 +136,13 @@ def create_app() -> FastAPI:
     @app.post("/api/connections")
     def connections() -> dict:
         store = get_store()
-        projects = list(store.get_projects().values())
+        projects = usable_projects(store.get_projects())
         if len(projects) < 2:
-            raise HTTPException(400, "Need at least 2 projects to find connections.")
+            raise HTTPException(
+                400,
+                "Need at least 2 collections with papers to find connections "
+                "(empty folders and unfiled papers are excluded).",
+            )
         analyzer = get_analyzer(get_settings())
 
         def work(job: jobs.Job) -> dict:
@@ -151,16 +166,20 @@ def create_app() -> FastAPI:
         mode = (payload or {}).get("mode", "manual")
         keys = (payload or {}).get("project_keys", [])
         all_projects = store.get_projects()
+        usable = {k: p for k, p in all_projects.items() if is_usable_project(p)}
 
         if mode == "auto" or not keys:
             # Let the agent decide: use the suggested combination if we have
-            # one, else everything.
+            # one, else everything usable.
             conn = store.get_connections()
-            keys = (conn or {}).get("suggested_combination") or list(all_projects.keys())
+            keys = (conn or {}).get("suggested_combination") or list(usable.keys())
 
-        projects = [all_projects[k] for k in keys if k in all_projects]
+        projects = [usable[k] for k in keys if k in usable]
         if not projects:
-            raise HTTPException(400, "No valid projects selected.")
+            raise HTTPException(
+                400,
+                "No valid projects selected (empty folders and unfiled papers cannot be used).",
+            )
         analyzer = get_analyzer(get_settings())
 
         def work(job: jobs.Job) -> dict:
@@ -251,11 +270,11 @@ def create_app() -> FastAPI:
         keys = (payload or {}).get("project_keys") or []
         all_projects = store.get_projects()
         if keys:
-            projects = [all_projects[k] for k in keys if k in all_projects]
+            projects = [all_projects[k] for k in keys if k in all_projects and is_usable_project(all_projects[k])]
         else:
-            projects = list(all_projects.values())
+            projects = usable_projects(all_projects)
 
-        papers = [(p["key"], it) for p in projects for it in p["items"]]
+        papers = [(p["key"], it) for p in projects for it in p.get("items") or []]
         if not papers:
             raise HTTPException(400, "No papers to analyze. Sync a library first.")
 

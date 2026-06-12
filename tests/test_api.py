@@ -15,10 +15,22 @@ def test_status_reports_mock_mode(client):
 
 def test_demo_sync_loads_projects(client):
     result = _load_demo(client)
-    assert result["num_projects"] == 4
+    assert result["num_projects"] == 5
     projects = client.get("/api/projects").json()["projects"]
-    assert len(projects) == 4
+    assert len(projects) == 5
     assert {p["name"] for p in projects} >= {"Graph Neural Networks", "Fairness in ML"}
+    usable = [p for p in projects if p["usable"]]
+    inactive = [p for p in projects if not p["usable"]]
+    assert len(usable) == 4
+    assert len(inactive) == 1
+    assert inactive[0]["inactive_reason"] == "empty"
+
+
+def test_categorize_rejects_empty_collection(client):
+    _load_demo(client)
+    empty = next(p for p in client.get("/api/projects").json()["projects"] if not p["usable"])
+    resp = client.post(f"/api/projects/{empty['key']}/categorize")
+    assert resp.status_code == 400
 
 
 def test_categorize_project(client):

@@ -1,8 +1,8 @@
 """Unit tests for Zotero item mapping and collection roll-up logic."""
 from __future__ import annotations
 
+from app.projects import UNFILED_KEY
 from app.zotero_client import (
-    _UNFILED_KEY,
     _fetch_collection_items,
     _fetch_unfiled_items,
     _keep_item,
@@ -92,4 +92,4 @@ def test_fetch_unfiled_items():
 
 
 def test_unfiled_key_constant():
-    assert _UNFILED_KEY == "__unfiled__"
+    assert UNFILED_KEY == "__unfiled__"

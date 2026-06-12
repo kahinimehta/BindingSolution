@@ -73,6 +73,20 @@ connection maps, reading strategies, and project-spec analyses.
 Override the data location with `BINDING_DATA_DIR` in `.env` if you want the
 store somewhere other than `./data/`. See [docs/CONFIGURATION.md](docs/CONFIGURATION.md).
 
+## Empty folders & unfiled papers
+
+After syncing Zotero, BindingSolution splits your library into two groups:
+
+| Group | What it is | Can be analyzed? |
+| --- | --- | --- |
+| **Active projects** | Zotero collections that contain at least one paper | Yes — categorize, connections, reading plans, spec scoring |
+| **Excluded** | Empty collections (folders with no papers) and **Library (unfiled)** (papers not in any collection) | No — shown separately for reference only |
+
+Empty folders and unfiled papers appear in their own section at the bottom of the
+**Library** view. They cannot be categorized and are left out of connections,
+reading strategies, and project-spec analysis. To include a paper in analysis,
+move it into a Zotero collection and re-sync.
+
 ## Features
 
 - **📂 Project categorization** — each Zotero collection is labeled with its

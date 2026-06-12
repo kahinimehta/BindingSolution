@@ -15,12 +15,11 @@ import re
 from typing import Callable
 
 from .config import Settings
+from .projects import UNFILED_KEY, UNFILED_NAME
 
 ProgressFn = Callable[[int, int, str], None]
 
 _SKIP_ITEM_TYPES = {"note", "annotation"}
-_UNFILED_KEY = "__unfiled__"
-_UNFILED_NAME = "Library (unfiled)"
 
 
 def _connect(settings: Settings):

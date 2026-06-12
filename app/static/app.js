@@ -83,13 +83,16 @@ document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal
 /* ── global state ─────────────────────────────────────────────── */
 const state = { status: null, projects: [], busy: false };
 const fmtTime = (t) => t ? new Date(t * 1000).toLocaleString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }) : "—";
+const isUsable = (p) => p.usable !== false;
+const usableProjects = () => state.projects.filter(isUsable);
+const inactiveProjects = () => state.projects.filter((p) => !isUsable(p));
 
 /* ── status / sidebar ─────────────────────────────────────────── */
 async function refreshStatus() {
   try {
     state.status = await api.get("/status");
     renderStatusChips();
-    setCount("projects", state.status.library.num_projects);
+    setCount("projects", state.status.library.num_usable_projects ?? state.status.library.num_projects);
   } catch (e) { /* server not up yet */ }
 }
 function setCount(name, n) {
@@ -133,8 +136,11 @@ async function doSync(source) {
 }
 
 async function loadProjects() {
-  try { const data = await api.get("/projects"); state.projects = data.projects; setCount("projects", state.projects.length); }
-  catch { state.projects = []; }
+  try {
+    const data = await api.get("/projects");
+    state.projects = data.projects;
+    setCount("projects", usableProjects().length);
+  } catch { state.projects = []; }
 }
 
 /* ════════════════════════════════════════════════════════════════
@@ -186,12 +192,13 @@ function kpiItem(val, lbl, sub = "", accent = false) {
   return el("div", { class: `kpi-item${accent ? " accent" : ""}` }, ...kids);
 }
 
-function totalPapers() {
-  return state.projects.reduce((n, p) => n + (p.num_items || 0), 0);
+function totalPapers(onlyUsable = false) {
+  const list = onlyUsable ? usableProjects() : state.projects;
+  return list.reduce((n, p) => n + (p.num_items || 0), 0);
 }
 
 function categorizedCount() {
-  return state.projects.filter((p) => p.category).length;
+  return usableProjects().filter((p) => p.category).length;
 }
 
 async function renderKpiStrip(route) {
@@ -200,17 +207,21 @@ async function renderKpiStrip(route) {
   const items = [];
 
   if (route === "library") {
+    const active = usableProjects();
+    const inactive = inactiveProjects();
     items.push(
-      kpiItem(state.projects.length, "Projects", "Zotero collections", true),
-      kpiItem(totalPapers(), "Papers", "Across all projects"),
+      kpiItem(active.length, "Active projects", "Collections with papers", true),
+      kpiItem(totalPapers(true), "Papers", "In active collections"),
       kpiItem(categorizedCount(), "Categorized", categorizedCount() ? "AI-tagged" : "Run categorize"),
     );
+    if (inactive.length) items.push(kpiItem(inactive.length, "Excluded", "Empty folders & unfiled"));
     const src = state.status?.zotero_mode || (state.projects.length ? "loaded" : "—");
     items.push(kpiItem(src, "Source", state.status?.using_mock_llm ? "demo AI" : "library sync"));
   } else if (route === "connections") {
+    const active = usableProjects();
     items.push(
-      kpiItem(state.projects.length, "Projects", "In library", true),
-      kpiItem(state.projects.length >= 2 ? "Ready" : "Need 2+", "Status", "Minimum for analysis"),
+      kpiItem(active.length, "Active projects", "Used for analysis", true),
+      kpiItem(active.length >= 2 ? "Ready" : "Need 2+", "Status", "Minimum for connections"),
     );
     try {
       const { connections } = await api.get("/connections");
@@ -230,7 +241,7 @@ async function renderKpiStrip(route) {
     try { n = (await api.get("/strategies")).strategies.length; } catch { /* ignore */ }
     items.push(
       kpiItem(n, "Saved plans", "Reading strategies", true),
-      kpiItem(state.projects.length, "Projects", "Available to combine"),
+      kpiItem(usableProjects().length, "Active projects", "Available to combine"),
       kpiItem(strategyMode === "auto" ? "Agent" : "Manual", "Mode", "Project selection"),
     );
   } else if (route === "specs") {
@@ -240,7 +251,7 @@ async function renderKpiStrip(route) {
     items.push(
       kpiItem(specs.length, "Specs", "Uploaded descriptions", true),
       kpiItem(analyzed, "Analyzed", "Scored against library"),
-      kpiItem(state.projects.length ? totalPapers() : "—", "Papers", "Available to score"),
+      kpiItem(usableProjects().length ? totalPapers(true) : "—", "Papers", "Available to score"),
     );
   }
 
@@ -250,7 +261,8 @@ async function renderKpiStrip(route) {
 /* ── 1. LIBRARY ───────────────────────────────────────────────── */
 async function renderLibrary() {
   await loadProjects();
-  const actions = state.projects.length
+  const active = usableProjects();
+  const actions = active.length
     ? [el("button", { class: "btn btn-brass btn-sm", onclick: categorizeAll }, "✦ Categorize all")]
     : [];
   setView("library", actions);
@@ -261,19 +273,43 @@ async function renderLibrary() {
     return;
   }
 
-  const grid = el("div", { class: "grid grid-projects" },
-    ...state.projects.map(projectCard));
-  view().replaceChildren(
-    viewHero("Your projects", "Each Zotero collection is a project. Categorize one to see its discipline, themes, and methods — or categorize the whole shelf at once."),
-    grid);
+  const inactive = inactiveProjects();
+  const parts = [
+    viewHero("Your projects", "Each Zotero collection with papers is a project. Categorize one to see its discipline, themes, and methods — or categorize the whole shelf at once."),
+    el("div", { class: "grid grid-projects" }, ...active.map((p) => projectCard(p))),
+  ];
+  if (inactive.length) {
+    parts.push(
+      el("div", { class: "section-head mt-3" },
+        el("div", {},
+          el("h2", {}, "Empty folders & unfiled papers"),
+          el("p", {}, "Shown for reference only. These cannot be categorized or included in connections, reading plans, or spec analysis."))),
+      el("div", { class: "grid grid-projects grid-inactive" }, ...inactive.map((p) => projectCard(p, true))));
+  }
+  view().replaceChildren(...parts);
 }
 
-function projectCard(p) {
-  const cat = p.category;
+function projectCard(p, inactive = false) {
   const body = [
     el("h3", {}, p.name),
     el("div", { class: "muted" }, `${p.num_items} ${p.num_items === 1 ? "paper" : "papers"}`),
   ];
+  if (inactive) {
+    const label = p.inactive_reason === "unfiled" ? "Unfiled" : "Empty folder";
+    body.push(
+      el("div", { class: "project-meta" }, el("span", { class: "pill ink" }, label)),
+      el("p", { class: "inactive-hint" },
+        p.inactive_reason === "unfiled"
+          ? "Papers not in any collection — move them into a collection to analyze."
+          : "No papers in this folder — add papers in Zotero or ignore this collection."));
+    const canView = p.inactive_reason === "unfiled" && p.num_items > 0;
+    return el("div", {
+      class: `card spine project-card inactive${canView ? " viewable" : ""}`,
+      ...(canView ? { onclick: () => openProject(p.key, { readOnly: true }) } : {}),
+    }, ...body);
+  }
+
+  const cat = p.category;
   if (cat) {
     body.push(el("p", { class: "lead", style: "margin:12px 0 0;font-size:.88rem" }, cat.summary));
     const meta = el("div", { class: "project-meta" },
@@ -324,11 +360,15 @@ async function categorizeAll(e) {
   } catch (err) { toast(err.message, "err"); bar.node.remove(); if (btn) btn.disabled = false; }
 }
 
-async function openProject(key) {
+async function openProject(key, { readOnly = false } = {}) {
   openModal("Loading…", el("div", { class: "skeleton", style: "height:200px" }));
   try {
     const p = await api.get(`/projects/${key}`);
     const body = el("div", {});
+    if (readOnly) {
+      body.append(el("p", { class: "inactive-hint", style: "margin:0 0 12px" },
+        "This collection is excluded from analysis. Move papers into a Zotero collection to use them."));
+    }
     if (p.category) {
       body.append(
         el("div", { class: "spread", style: "flex-wrap:wrap;gap:8px;margin-bottom:6px" },
@@ -338,7 +378,7 @@ async function openProject(key) {
         el("p", { class: "lead", style: "margin:12px 0" }, p.category.summary),
         labeledTags("Themes", p.category.themes),
         labeledTags("Methods", p.category.methods));
-    } else {
+    } else if (!readOnly) {
       body.append(el("button", { class: "btn btn-brass btn-sm", style: "margin-bottom:14px",
         onclick: async (e) => { e.currentTarget.disabled = true; await categorizeOne(key); closeModal(); openProject(key); } }, "✦ Categorize this project"));
     }
@@ -364,15 +404,16 @@ function labeledTags(label, items) {
 /* ── 2. CONNECTIONS ───────────────────────────────────────────── */
 async function renderConnections() {
   await loadProjects();
-  setView("connections", state.projects.length >= 2
+  const active = usableProjects();
+  setView("connections", active.length >= 2
     ? [el("button", { class: "btn btn-primary btn-sm", onclick: findConnections }, "⁂ Find connections")] : []);
   await renderKpiStrip("connections");
 
-  if (state.projects.length < 2) {
+  if (active.length < 2) {
     view().replaceChildren(el("div", { class: "empty" },
       el("div", { class: "emoji" }, "⁂"),
-      el("h3", {}, "Connections need a library"),
-      el("p", {}, "Sync at least two projects and BindingSolution will surface the themes, methods, and authors that thread through them."),
+      el("h3", {}, "Connections need active projects"),
+      el("p", {}, "Sync at least two collections that contain papers. Empty folders and unfiled papers are excluded."),
       el("div", { class: "row" }, el("button", { class: "btn btn-brass", onclick: () => doSync("demo") }, "Load demo library"))));
     return;
   }
@@ -458,11 +499,12 @@ async function renderStrategies() {
 }
 
 function buildStrategyForm() {
-  if (!state.projects.length) {
+  const active = usableProjects();
+  if (!active.length) {
     return el("div", { class: "empty" },
       el("div", { class: "emoji" }, "↯"),
       el("h3", {}, "Plans need projects"),
-      el("p", {}, "Sync or load a library, then pick the projects you want to read together — or let the agent decide."),
+      el("p", {}, "Sync or load a library with at least one collection that contains papers (empty folders and unfiled papers are excluded)."),
       el("div", { class: "row" }, el("button", { class: "btn btn-brass", onclick: () => doSync("demo") }, "Load demo library")));
   }
   const card = el("div", { class: "card panel", style: "padding:24px" });
@@ -471,7 +513,7 @@ function buildStrategyForm() {
     el("button", { class: strategyMode === "auto" ? "on" : "", onclick: () => setMode("auto") }, "Let the agent decide"));
 
   const chooser = el("div", { class: "choose-grid", id: "strat-choose" },
-    ...state.projects.map((p) => choiceTile(p)));
+    ...active.map((p) => choiceTile(p)));
 
   const goal = el("textarea", { id: "strat-goal", rows: "3", placeholder: "e.g. I'm writing a related-work section connecting fairness and causal inference — what should I read and in what order?" });
 
@@ -648,12 +690,12 @@ function specRow(s) {
       el("button", { class: "btn btn-ghost btn-sm btn-danger", onclick: () => deleteSpec(s.id) }, "Delete")));
 }
 function offerAnalyze(spec) {
-  if (!state.projects.length) { toast("Saved — sync a library to analyze it against your papers.", ""); return; }
+  if (!usableProjects().length) { toast("Saved — sync a library with categorized collections to analyze.", ""); return; }
   analyzeSpec(spec.id);
 }
 
 async function analyzeSpec(specId) {
-  if (!state.projects.length) { toast("Sync a library first.", "err"); return; }
+  if (!usableProjects().length) { toast("Sync a library with papers in collections first.", "err"); return; }
   openModal("Analyzing spec", (() => {
     const bar = progressBlock("Assessing each paper against your project…");
     const box = el("div", {}, bar.node);

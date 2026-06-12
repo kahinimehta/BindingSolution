@@ -92,6 +92,11 @@ _PROJECTS = {
                   "Proc. WWW", ["causal", "instrumental variables", "recommenders"]),
         ],
     },
+    "DEMOEMPTY": {
+        "name": "Empty folder (demo)",
+        "short_name": "Empty folder (demo)",
+        "items": [],
+    },
     "DEMOLLM": {
         "name": "LLM Evaluation",
         "short_name": "LLM Evaluation",

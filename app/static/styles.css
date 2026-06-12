@@ -369,6 +369,31 @@ a { color: inherit; text-decoration: none; }
 .project-card .muted { color: var(--ink-3); font-size: .82rem; }
 .project-meta { display: flex; align-items: center; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
 
+.project-card.inactive {
+  background: var(--surface-2);
+  border-style: dashed;
+  border-color: var(--line-2);
+  box-shadow: none;
+  opacity: .92;
+}
+.project-card.inactive.spine::before {
+  background: linear-gradient(180deg, var(--line-2), var(--line));
+  opacity: .7;
+}
+.project-card.inactive.viewable { cursor: pointer; }
+.project-card.inactive.viewable:hover {
+  border-color: var(--line-2);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+.inactive-hint {
+  margin: 10px 0 0;
+  font-size: .82rem;
+  line-height: 1.5;
+  color: var(--ink-3);
+}
+.grid-inactive { margin-top: 4px; }
+
 .pill {
   font-size: .73rem; font-weight: 600; padding: 3px 10px; border-radius: 20px;
   background: var(--surface-2); border: 1px solid var(--line); color: var(--ink-2);
