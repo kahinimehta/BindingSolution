@@ -597,20 +597,11 @@ async function renderKpiStrip(route) {
     }
   } else if (route === "groups") {
     const active = usableProjects();
-    const entries = totalPapers();
-    const unique = uniquePaperCount();
-    const entrySub = unique !== entries ? `${unique} unique papers` : "Across collections";
-    items.push(kpiItem(entries, "Collection entries", entrySub, true));
+    items.push(kpiItem(totalPapers(true), "Papers", "(including standalone papers)", true));
     items.push(kpiItem(active.length, "Active projects", "Used for grouping"));
     try {
       const { paper_groups: g } = await api.get("/groups");
       if (g?.stats) {
-        const gEntries = g.stats.collection_entries ?? entries;
-        const gUnique = g.stats.unique_papers ?? g.stats.shelf_papers ?? unique;
-        const gSub = g.stats.duplicate_filings
-          ? `${gUnique} unique · ${g.stats.duplicate_filings} extra filings`
-          : `${gUnique} unique papers`;
-        items[0] = kpiItem(gEntries, "Collection entries", gSub, true);
         items.push(
           kpiItem(g.stats.num_groups || 0, "Paper sets", "Non-overlapping"),
           kpiItem(g.stats.num_ungrouped ?? 0, "Standalone", "Not in a set"),

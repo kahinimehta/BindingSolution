@@ -94,12 +94,10 @@ panel. It returns:
 - **Optimal paper sets** — thematic reading groups that may span multiple
   Zotero collections. Each set shows a **paper count** and a flat list (no
   bullets). A paper appears in **at most one** set.
-- **Collection entries vs unique papers** — the top KPI **Collection entries**
-  sums every row in every folder (the same Zotero item filed in three collections
-  counts three times). Grouping deduplicates by item key, so the summary line
-  uses **unique papers** (`N unique papers — … in sets · … standalone · … to
-  drop`). If you see 184 entries but ~115 unique, the gap is duplicate filings
-  across folders — not missing papers.
+- **Papers** — the top KPI matches **Library** (papers in active collections),
+  with a note that standalone papers are included in the grouping view. The
+  summary line below uses **unique papers** (`N unique papers — … in sets · …
+  standalone · … to drop`) because grouping deduplicates by Zotero item key.
 - **Standalone papers** — unique papers not placed in any thematic set (plus
   single-paper collections and unfiled items, which skip grouping). An **All
   accounted for** badge means every unique paper is in a set, standalone, or drop.
