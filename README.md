@@ -41,7 +41,7 @@ Use any view in any order.
 
 - **Large-type layout** — 3× scaled typography and spacing for ultrawide / high-DPI displays; project cards show full summaries (no inner scroll)
 - **Zotero sync** — Web API or local Zotero 7; bundled demo library; **Sync library** / **Purge library** in the hero toolbar
-- **Running** — sidebar panel tracks background jobs; **indeterminate** bars for single-shot Claude steps (reading plans, categorize) and the **analyze** phase of connections/groups; close the progress window or switch views without stopping work
+- **Running** — sidebar dropdown tracks background jobs (opens upward, opaque over nav); **indeterminate** bars for single-shot Claude steps (reading plans, categorize) and the **analyze** phase of connections/groups; close the progress window or switch views without stopping work
 - **Active vs excluded** — only folders with 2+ papers are analyzed; empty, single-paper, and unfiled collections are reference-only
 - **Categorize** — discipline, themes, methods, keywords, summary per collection
 - **Connections** — shared threads and suggested groupings across projects; phase-based progress (prepare → analyze → apply)
@@ -54,15 +54,15 @@ Use any view in any order.
 - **Purge library** — wipe local data without touching Zotero (hero toolbar)
 
 <p align="center">
-  <img src="docs/screenshots/library.svg" alt="Library view with six sidebar tabs, full-height project cards, hero toolbar, and Running panel (categorize-all 3/13)" width="1000" />
+  <img src="docs/screenshots/library.svg" alt="Library view with six sidebar tabs, full-height project cards, hero toolbar, and Running dropdown (categorize-all 3/13)" width="1000" />
 </p>
 
 <p align="center">
-  <img src="docs/screenshots/connections.svg" alt="Connections view with shared threads, suggested groupings, and Running panel at Step 2 of 3 indeterminate analyze" width="1000" />
+  <img src="docs/screenshots/connections.svg" alt="Connections view with shared threads, suggested groupings, and Running dropdown at Step 2 of 3 indeterminate analyze" width="1000" />
 </p>
 
 <p align="center">
-  <img src="docs/screenshots/groups.svg" alt="Groups view with 90% grouped coverage, varied set sizes, set summaries, and Running panel at Step 2 of 3 indeterminate analyze" width="1000" />
+  <img src="docs/screenshots/groups.svg" alt="Groups view with 90% grouped coverage, varied set sizes, set summaries, and Running dropdown at Step 2 of 3 indeterminate analyze" width="1000" />
 </p>
 
 <p align="center">
@@ -70,11 +70,11 @@ Use any view in any order.
 </p>
 
 <p align="center">
-  <img src="docs/screenshots/strategies.svg" alt="Reading strategies compose form, saved plans with schedule estimates, and Running panel with indeterminate plan generation" width="1000" />
+  <img src="docs/screenshots/strategies.svg" alt="Reading strategies compose form, saved plans with schedule estimates, and Running dropdown with indeterminate plan generation" width="1000" />
 </p>
 
 <p align="center">
-  <img src="docs/screenshots/specs-upload.svg" alt="Spec upload with large-type layout, library matches, and incremental re-screen" width="1000" />
+  <img src="docs/screenshots/specs-upload.svg" alt="Spec upload with screen-library confirm dialog, library matches, and incremental re-screen" width="1000" />
   <br /><br />
   <img src="docs/screenshots/specs.svg" alt="Suggested papers with large-type layout, PubMed discovery tab" width="1000" />
 </p>

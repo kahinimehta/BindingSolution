@@ -6,8 +6,11 @@ has six views — use them in any order. On wide screens the whole interface
 and spacing tuned for ultrawide and high-DPI displays (see
 [CONFIGURATION.md](CONFIGURATION.md#display)). **Sync library** and **Purge
 library** live in the **hero toolbar** (top right). At the bottom of the sidebar,
-**Running** lists background tasks (sync, categorization, spec screening, and
-similar). Status chips below that show whether Claude and Zotero are connected.
+click **Running** to open an **opaque dropdown** of background tasks (sync,
+categorization, spec screening, and similar). The list opens **upward** over the
+nav so multiple jobs never overlap sidebar tabs. Click outside the dropdown,
+press Escape, or click **Running** again to close it. Status chips below show
+whether Claude and Zotero are connected.
 
 **Background jobs:** long tasks (sync, categorize, connections, groups, reading
 plans, spec screening, PubMed discovery) start a server-side job and return
@@ -62,7 +65,7 @@ anything in Zotero. With no Zotero credentials, use **Load demo library** on the
 empty state instead (same sync endpoint, bundled sample data).
 
 <p align="center">
-  <img src="screenshots/library.svg" alt="Library view with six sidebar tabs, full-height project cards, hero toolbar, and Running panel (categorize-all 3/13)" width="1000" />
+  <img src="screenshots/library.svg" alt="Library view with six sidebar tabs, full-height project cards, hero toolbar, and Running dropdown (categorize-all 3/13)" width="1000" />
 </p>
 
 ## 2. 📂 Categorize projects — *Library*
@@ -97,7 +100,7 @@ collection. Claude reads across all projects and surfaces:
 Connections need at least two projects.
 
 <p align="center">
-  <img src="screenshots/connections.svg" alt="Connections view with shared threads, suggested groupings, and Running panel showing Step 2 of 3 indeterminate analyze" width="1000" />
+  <img src="screenshots/connections.svg" alt="Connections view with shared threads, suggested groupings, and Running dropdown showing Step 2 of 3 indeterminate analyze" width="1000" />
 </p>
 
 ## 4. ◎ Group papers — *Groups*
@@ -109,7 +112,7 @@ unique papers (184 collection entries in 13 active projects)*) with an
 **indeterminate** bar during the analyze step because grouping is one Claude pass
 over the whole shelf, not one API call per paper. Large shelves may take several
 minutes — the server **streams** the structured response so long runs are allowed.
-Track progress in the dialog or **Running** panel. It returns:
+Track progress in the dialog or **Running** dropdown. It returns:
 
 - **Optimal paper sets** — thematic reading groups that may span multiple
   Zotero collections. The grouper places **at least 90%** of papers into sets
@@ -144,7 +147,7 @@ tag clustering, and coverage balancing); with a Claude key the same schema is
 filled by the model.
 
 <p align="center">
-  <img src="screenshots/groups.svg" alt="Groups view with 90% grouped coverage, varied set sizes, set summaries, and Running panel at Step 2 of 3 indeterminate analyze" width="1000" />
+  <img src="screenshots/groups.svg" alt="Groups view with 90% grouped coverage, varied set sizes, set summaries, and Running dropdown at Step 2 of 3 indeterminate analyze" width="1000" />
 </p>
 
 ## 5. 💬 Chat — *Chat*
@@ -213,7 +216,7 @@ Estimates assume a **medium academic reading pace**:
 These are planning hints, not deadlines. Skim faster or read deeper and your real time will differ. The schedule banner on each plan states the assumptions used.
 
 <p align="center">
-  <img src="screenshots/strategies.svg" alt="Reading strategies compose form, saved plans with schedule estimates, and Running panel with indeterminate plan generation" width="1000" />
+  <img src="screenshots/strategies.svg" alt="Reading strategies compose form, saved plans with schedule estimates, and Running dropdown with indeterminate plan generation" width="1000" />
 </p>
 
 ## 7. ✦ Spec — upload, screen library, discover on PubMed
@@ -232,17 +235,19 @@ Open **Spec** in the sidebar. The view has two tabs with different jobs:
 2. Click **Save spec**. Irrelevant uploads (shopping lists, filler text, published
    papers, admin docs) are rejected with a short explanation of what to upload
    instead.
-3. Click **Find in library** on a saved spec. A confirmation explains how many
-   papers will be screened and that runtime scales with library size. **Re-screen
+3. Click **Find in library** on a saved spec. A compact confirmation dialog
+   explains how many papers will be screened, that runtime scales with library
+   size, and that you can track the job under **Running** — Cancel and **Find in
+   library** stay pinned at the bottom so nothing is clipped. **Re-screen
    library** is incremental: after a sync, only papers you have not screened yet
-   are sent to Claude; existing library matches are kept. Track progress under
-   **Running** in the sidebar — the spec row no longer shows an “analyzing” badge.
+   are sent to Claude; existing library matches are kept. Track progress in the
+   **Running** dropdown — the spec row no longer shows an “analyzing” badge.
 4. Scroll to **Library matches** on the same tab. Pick a spec, review core /
    supporting hits with **why it's relevant** notes, and click **↯ Build reading
    plan** to turn them into an ordered path in **Strategies**.
 
 <p align="center">
-  <img src="screenshots/specs-upload.svg" alt="Spec upload with large-type layout, library matches, and incremental re-screen" width="1000" />
+  <img src="screenshots/specs-upload.svg" alt="Spec upload with screen-library confirm dialog, library matches, and incremental re-screen" width="1000" />
 </p>
 
 ### Suggested papers (PubMed)
@@ -275,7 +280,7 @@ the flow offline.
 
 - Every analysis runs as a **background job**. Progress opens in a centered
   dialog; you can close it (✕), switch views, or refresh — work continues until
-  done. Track jobs in the sidebar **Running** panel (badge shows active count).
+  done. Track jobs in the sidebar **Running** dropdown (badge shows active count).
 - **Find in library** saves results after the first run. **Re-screen library**
   only assesses **new** papers added since the last screen (e.g. after a Zotero
   sync) — already-screened papers are skipped (see [BILLING.md](BILLING.md)).

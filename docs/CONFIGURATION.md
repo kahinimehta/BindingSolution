@@ -88,9 +88,10 @@ To start fresh:
 - **`make setup` again** only reinstalls dependencies — it does not delete your library
 
 Long-running work (sync, categorization, spec screening, etc.) runs as background
-jobs. Use the sidebar **Running** panel to monitor progress after closing the
-progress window or reloading the page. Only stopping the server (e.g. Ctrl+C)
-cancels in-flight jobs. Progress bars are **indeterminate** when a step is one
+jobs. Use the sidebar **Running** dropdown to monitor progress after closing the
+progress window or reloading the page. The dropdown opens upward with an opaque
+background so multiple jobs stay readable. Only stopping the server (e.g.
+Ctrl+C) cancels in-flight jobs. Progress bars are **indeterminate** when a step is one
 long operation that cannot be split (single Claude call or PubMed search):
 categorize one project, design a reading plan, discover on PubMed, load demo
 library, and the **analyze** step of **Find connections** and **Group papers**

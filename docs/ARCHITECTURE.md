@@ -89,9 +89,10 @@ one call per job or per project. See [BILLING.md](BILLING.md).
 Analyses and syncs can take a while, so write endpoints return a `job_id`
 immediately (`app/jobs.py` runs the work in a daemon thread) and the frontend
 polls `GET /api/jobs/{id}` for live progress. `GET /api/jobs` lists in-flight
-and recent jobs (optional `?active=true`). The sidebar **Running** panel tracks
+and recent jobs (optional `?active=true`). The sidebar **Running** dropdown tracks
 active job ids in `sessionStorage` so a refresh reconnects to server threads
-still in the registry.
+still in the registry. The dropdown is an opaque popover anchored above the
+**Running** tab so concurrent jobs do not overlap nav items.
 
 Closing a progress modal, navigating between views, or reloading the page does
 **not** cancel a job — only stopping the Python process (e.g. Ctrl+C in the
@@ -117,8 +118,9 @@ The **Spec** view is a two-tab SPA panel (`Upload & manage` · `Suggested papers
    active library but only persists **core** and **supporting** hits in
    `spec.analysis`. Re-runs are **incremental**: `screened_keys` tracks assessed
    paper keys so only new shelf items are sent to Claude; removed papers are
-   pruned from saved matches. Progress appears in the sidebar **Running** panel,
-   not an “analyzing” badge on the spec row.
+   pruned from saved matches. Progress appears in the sidebar **Running**
+   dropdown, not an “analyzing” badge on the spec row. **Find in library** uses
+   a compact confirm modal with a scrollable body and pinned action footer.
 3. **Discover on PubMed** — `POST /api/specs/{id}/discover` (`app/discovery.py`)
    builds a query from spec text and categorized keywords, fetches candidates via
    NCBI eutils, excludes titles already in the library, scores each hit by keyword
