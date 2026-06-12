@@ -1,5 +1,5 @@
 /* BindingSolution frontend — vanilla JS SPA, no build step.
-   Views: Library · Connections · Groups · Strategies · Spec.
+   Views: Library · Connections · Groups · Chat · Strategies · Spec.
    Long tasks run as server jobs; we poll /api/jobs/{id} for live progress. */
 
 const $ = (sel, root = document) => root.querySelector(sel);
@@ -374,7 +374,7 @@ document.addEventListener("keydown", (e) => {
 });
 
 /* ── global state ─────────────────────────────────────────────── */
-const state = { status: null, projects: [], busy: false };
+const state = { status: null, projects: [], busy: false, chatThreadId: null };
 const fmtTime = (t) => t ? new Date(t * 1000).toLocaleString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }) : "—";
 const fmtReadMinutes = (m) => {
   if (!m) return "";
@@ -506,6 +506,10 @@ const viewMeta = {
     title: "Groups",
     subtitle: "Optimal paper sets across projects — no duplicates — plus papers to drop.",
   },
+  chat: {
+    title: "Chat",
+    subtitle: "Ask Claude about your synced library — papers, connections, groups, plans, and specs.",
+  },
   strategies: {
     title: "Reading strategies",
     subtitle: "Compose ordered reading paths across projects for a specific goal.",
@@ -623,6 +627,15 @@ async function renderKpiStrip(route) {
     } catch {
       items.push(kpiItem("—", "Paper sets", "—"), kpiItem("—", "To drop", "—"));
     }
+  } else if (route === "chat") {
+    const active = usableProjects();
+    let threads = 0;
+    try { threads = (await api.get("/chat/threads")).threads.length; } catch { /* ignore */ }
+    items.push(
+      kpiItem(uniquePaperCount(true), "Papers", "In local store", true),
+      kpiItem(active.length, "Active projects", "Available to reference"),
+      kpiItem(threads, "Chats", "Saved threads"),
+    );
   } else if (route === "strategies") {
     let n = 0;
     try { n = (await api.get("/strategies")).strategies.length; } catch { /* ignore */ }
@@ -880,7 +893,111 @@ function renderConnectionMap(c) {
   $("#conn-body").replaceChildren(root);
 }
 
-/* ── 2b. GROUPS ───────────────────────────────────────────────── */
+/* ── 2b. CHAT ─────────────────────────────────────────────────── */
+function chatBubble(role, text) {
+  return el("div", { class: `chat-msg ${role}` },
+    el("div", { class: "chat-msg-role" }, role === "user" ? "You" : "Assistant"),
+    el("div", { class: "chat-msg-body" }, text));
+}
+
+function renderChatMessages(messages) {
+  const host = $("#chat-messages");
+  if (!host) return;
+  if (!messages?.length) {
+    host.replaceChildren(el("div", { class: "chat-welcome muted" },
+      "Ask about your synced collections, paper themes, saved connections, reading sets, "
+      + "strategies, or specs. Context comes from your local library — nothing to re-upload."));
+    return;
+  }
+  host.replaceChildren(...messages.map((m) => chatBubble(m.role, m.content)));
+  host.scrollTop = host.scrollHeight;
+}
+
+async function sendChatMessage() {
+  const input = $("#chat-input");
+  const text = (input?.value || "").trim();
+  if (!text || state.busy) return;
+  state.busy = true;
+  const btn = $("#chat-send");
+  if (btn) btn.disabled = true;
+  try {
+    const data = await api.post("/chat", { message: text, thread_id: state.chatThreadId });
+    state.chatThreadId = data.thread_id;
+    input.value = "";
+    renderChatMessages(data.messages);
+    if (data._mock) {
+      const note = $("#chat-mock-note");
+      if (note) note.hidden = false;
+    }
+    await renderKpiStrip("chat");
+  } catch (e) {
+    toast(e.message, "err");
+  } finally {
+    state.busy = false;
+    if (btn) btn.disabled = false;
+    input?.focus();
+  }
+}
+
+function startNewChat() {
+  state.chatThreadId = null;
+  renderChatMessages([]);
+  $("#chat-input")?.focus();
+}
+
+async function renderChat() {
+  await loadProjects();
+  setView("chat", [
+    el("button", { class: "btn btn-sm", onclick: startNewChat }, "New chat"),
+  ]);
+  await renderKpiStrip("chat");
+
+  if (!state.projects.length) {
+    view().replaceChildren(el("div", { class: "empty" },
+      el("div", { class: "emoji" }, "💬"),
+      el("h3", {}, "Load your library first"),
+      el("p", {}, "Sync Zotero or load the demo library. Chat reads from your local shelf — papers, categorizations, connections, groups, plans, and specs."),
+      el("div", { class: "row" }, el("button", { class: "btn btn-brass", onclick: () => doSync("demo") }, "Load demo library"))));
+    return;
+  }
+
+  view().replaceChildren(
+    viewHero("Your research assistant",
+      "Questions are answered using your synced BindingSolution store. No files to re-upload."),
+    state.status?.using_mock_llm
+      ? el("p", { class: "mock-note", id: "chat-mock-note", style: "margin:0 0 36px" },
+        "demo AI — connect a Claude API key for full answers")
+      : el("p", { id: "chat-mock-note", hidden: true }),
+    el("div", { class: "chat-panel card panel" },
+      el("div", { class: "chat-messages", id: "chat-messages" }),
+      el("div", { class: "chat-compose" },
+        el("textarea", {
+          id: "chat-input",
+          class: "chat-input",
+          rows: "3",
+          placeholder: "e.g. How do fairness and causal inference papers connect? Which collection should I read first?",
+          onkeydown: (e) => {
+            if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendChatMessage(); }
+          },
+        }),
+        el("div", { class: "chat-compose-actions" },
+          el("span", { class: "muted chat-hint" }, "Enter to send · Shift+Enter for newline"),
+          el("button", { class: "btn btn-primary", id: "chat-send", onclick: sendChatMessage }, "Send")))));
+
+  if (state.chatThreadId) {
+    try {
+      const { thread } = await api.get(`/chat/threads/${state.chatThreadId}`);
+      renderChatMessages(thread.messages);
+    } catch {
+      state.chatThreadId = null;
+      renderChatMessages([]);
+    }
+  } else {
+    renderChatMessages([]);
+  }
+}
+
+/* ── 2c. GROUPS ───────────────────────────────────────────────── */
 async function renderGroups() {
   await loadProjects();
   const active = usableProjects();
@@ -1586,6 +1703,7 @@ const routes = {
   library: renderLibrary,
   connections: renderConnections,
   groups: renderGroups,
+  chat: renderChat,
   strategies: renderStrategies,
   specs: renderSpecs,
 };

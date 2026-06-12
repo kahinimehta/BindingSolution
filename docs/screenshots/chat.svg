@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 640" width="1000" height="640" role="img" aria-label="Chat view asking about synced library materials">
+  <defs>
+    <linearGradient id="green" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1f4636"/>
+      <stop offset="1" stop-color="#2c5d49"/>
+    </linearGradient>
+    <linearGradient id="hero" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1f4636"/>
+      <stop offset="1" stop-color="#254f3f"/>
+    </linearGradient>
+    <filter id="shellShadow" x="-4%" y="-2%" width="108%" height="104%">
+      <feDropShadow dx="0" dy="8" stdDeviation="14" flood-color="#1f4636" flood-opacity="0.12"/>
+    </filter>
+    <filter id="shadow" x="-8%" y="-8%" width="116%" height="116%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#1f4636" flood-opacity="0.1"/>
+    </filter>
+  </defs>
+
+  <rect width="1000" height="640" fill="#f4efe4"/>
+
+  <g filter="url(#shellShadow)">
+    <rect x="50" y="0" width="900" height="640" fill="#f4efe4"/>
+    <rect x="50" y="0" width="322" height="640" fill="url(#green)"/>
+    <line x1="372" y1="0" x2="372" y2="640" stroke="#caa14a" stroke-width="2" stroke-opacity="0.42"/>
+
+    <g transform="translate(50, 0)">
+      <text x="58" y="30" fill="#eef3ee" font-family="Montserrat, system-ui, sans-serif" font-size="17.9" font-weight="700">BindingSolution</text>
+      <rect x="18" y="208" width="252" height="38" rx="11" fill="rgba(255,255,255,0.14)" stroke="#caa14a" stroke-width="1.5"/>
+      <text x="30" y="224" fill="#fff" font-family="system-ui, sans-serif" font-size="14.1" font-weight="600">Chat</text>
+      <text x="30" y="237" fill="#b8cfc4" font-family="system-ui, sans-serif" font-size="9.6">Ask about your shelf</text>
+    </g>
+
+    <rect x="372" y="0" width="578" height="84" fill="url(#hero)"/>
+    <text x="382" y="42" fill="#fff" font-family="Montserrat, system-ui, sans-serif" font-size="32.0" font-weight="600">Chat</text>
+    <text x="382" y="62" fill="#b8cfc4" font-family="system-ui, sans-serif" font-size="12.8">Claude reads your local library  no re-upload.</text>
+    <rect x="488" y="24" width="88" height="26" rx="8" fill="rgba(255,255,255,0.16)" stroke="rgba(255,255,255,0.38)"/>
+    <text x="532" y="41" fill="#fff" font-family="system-ui, sans-serif" font-size="11.5" font-weight="600" text-anchor="middle">New chat</text>
+
+    <g transform="translate(382, 96)">
+      <rect x="0" y="0" width="68" height="44" rx="8" fill="#eef4f0" stroke="#cfe0d6" filter="url(#shadow)"/>
+      <text x="34" y="17" fill="#1f4636" font-size="20.5" font-weight="700" text-anchor="middle" font-family="Montserrat, system-ui, sans-serif">115</text>
+      <text x="34" y="29" fill="#8a8478" font-size="6.4" text-anchor="middle" font-family="system-ui, sans-serif">PAPERS</text>
+      <text x="34" y="39" fill="#8a8478" font-size="5.8" text-anchor="middle" font-family="system-ui, sans-serif">in local store</text>
+      <rect x="76" y="0" width="68" height="40" rx="8" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
+      <text x="110" y="19" fill="#1f4636" font-size="20.5" font-weight="700" text-anchor="middle" font-family="Montserrat, system-ui, sans-serif">13</text>
+      <text x="110" y="33" fill="#8a8478" font-size="7.7" text-anchor="middle" font-family="system-ui, sans-serif">ACTIVE PROJECTS</text>
+      <rect x="152" y="0" width="68" height="40" rx="8" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
+      <text x="186" y="19" fill="#1f4636" font-size="20.5" font-weight="700" text-anchor="middle" font-family="Montserrat, system-ui, sans-serif">3</text>
+      <text x="186" y="33" fill="#8a8478" font-size="7.7" text-anchor="middle" font-family="system-ui, sans-serif">CHATS</text>
+
+      <rect x="0" y="56" width="552" height="56" rx="10" fill="#f6edd6" stroke="#e2d9c6"/>
+      <text x="14" y="78" fill="#1f4636" font-family="Montserrat, system-ui, sans-serif" font-size="14.7" font-weight="600">Your research assistant</text>
+      <text x="14" y="96" fill="#5a564c" font-family="system-ui, sans-serif" font-size="10.9">Context from synced papers, categorizations, connections, groups, plans, and specs.</text>
+
+      <rect x="0" y="128" width="552" height="340" rx="10" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
+      <rect x="220" y="148" width="318" height="72" rx="12" fill="#eef4f0" stroke="#cfe0d6"/>
+      <text x="236" y="172" fill="#8a8478" font-size="8.5" font-family="system-ui, sans-serif" font-weight="600">YOU</text>
+      <text x="236" y="192" fill="#211f1a" font-size="11.2" font-family="system-ui, sans-serif">How do fairness and causal inference papers on my shelf connect?</text>
+
+      <rect x="14" y="236" width="400" height="108" rx="12" fill="#fffdf8" stroke="#e2d9c6"/>
+      <text x="30" y="260" fill="#8a8478" font-size="8.5" font-family="system-ui, sans-serif" font-weight="600">ASSISTANT</text>
+      <text x="30" y="280" fill="#5a564c" font-size="10.2" font-family="system-ui, sans-serif">From your saved Connections map, both collections share recommender auditing and counterfactual themes  see F2 and F3 in Fairness in ML and C1C3 in Causal Inference.</text>
+      <text x="30" y="300" fill="#5a564c" font-size="10.2" font-family="system-ui, sans-serif">Run Groups for 1030 paper reading sets if you want a batch sized for one pass.</text>
+
+      <rect x="14" y="360" width="524" height="56" rx="10" fill="#fff" stroke="#e2d9c6"/>
+      <text x="26" y="392" fill="#8a8478" font-size="10.5" font-family="system-ui, sans-serif">Ask about collections, themes, reading order, or spec matches&</text>
+      <rect x="450" y="372" width="76" height="32" rx="8" fill="#1f4636"/>
+      <text x="488" y="393" fill="#fff" font-size="11.2" font-weight="600" text-anchor="middle" font-family="system-ui, sans-serif">Send</text>
+    </g>
+  </g>
+
+  <text x="500" y="628" fill="#8a8478" font-family="system-ui, sans-serif" font-size="10" text-anchor="middle">Illustrative UI mock  Chat references your local BindingSolution store; no file re-upload.</text>
+</svg>

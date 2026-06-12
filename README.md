@@ -46,6 +46,7 @@ Use any view in any order.
 - **Categorize** — discipline, themes, methods, keywords, summary per collection
 - **Connections** — shared threads and suggested groupings across projects
 - **Groups** — thematic paper sets (**10–30 papers** each, sized to minimize standalone), **2–3 sentence summaries** per set, drop suggestions; **Papers** KPI matches Library *(including standalone papers)*; summary line shows unique-item split
+- **Chat** — ask Claude about your synced shelf (papers, connections, groups, plans, specs) using the **local store** — no re-upload
 - **Reading strategies** — ordered path + synthesis prompts; **schedule with estimated hours/days** (medium pace, ~12 pages/h at 2 h/day — see [docs/USAGE.md](docs/USAGE.md#reading-time-assumptions))
 - **Spec** — upload a brief (PDF/Word/MD/text); **Find in library** screens your Zotero shelf (core/supporting only); **Re-screen library** is incremental (new papers only after sync); **Suggested papers** returns up to five ranked PubMed hits *not* in your library, with summaries and relevance notes
 - **Spec → reading plan** — **Build reading plan** from library matches; steps keep relevance notes; plan links back to the spec
@@ -57,6 +58,10 @@ Use any view in any order.
 
 <p align="center">
   <img src="docs/screenshots/groups.svg" alt="Groups view with large-type layout, 10–30 papers per set, Papers KPI matching Library, set summaries, standalone papers, and drop suggestions" width="1000" />
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/chat.svg" alt="Chat view with Claude answering questions using the local synced library store" width="1000" />
 </p>
 
 <p align="center">
@@ -75,7 +80,7 @@ Data: `./data/library.json` (gitignored). `make run` resumes where you left off.
 
 | Action | Effect |
 | --- | --- |
-| **Purge library** (in-app) | Clears projects, analyses, plans, specs — not Zotero |
+| **Purge library** (in-app) | Clears projects, analyses, plans, specs, chats — not Zotero |
 | **Sync library** (in-app) | Pulls collections and papers from Zotero into `./data/library.json`; keeps categorizations for matching collections — not Zotero, no Claude |
 | `make clean` | Full dev reset (`data/`, venv, caches); keeps `.env` |
 | `make setup` again | Reinstalls deps only — does **not** wipe your library |

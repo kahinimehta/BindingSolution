@@ -157,6 +157,23 @@ whole-collection sets when a project has 10–30 papers (chunked at 30); tag/tit
 clustering into cross-project sets of 10–30; `normalize_group_sizes` enforces the
 same bounds on Claude output. Papers that cannot join a valid set remain standalone.
 
+### Chat (local shelf assistant)
+
+The **Chat** view calls `POST /api/chat` (`app/chat_context.py`, `app/analysis.py`):
+
+1. **Context** — `assemble_chat_context` reads the local store (projects +
+   categorizations, saved connections, paper groups, strategies, specs, and
+   papers ranked by keyword overlap with the user's message). Optional `scope`
+   (`project_keys`, `spec_id`) narrows the shelf. Context is capped (~14k chars)
+   so large libraries stay within token budget.
+2. **Reply** — `Analyzer.chat` sends multi-turn history (last 12 turns) plus the
+   assembled context in the system prompt. Uses `messages.create` (free-form text,
+   not structured output). Offline: `mock.chat_reply` heuristics.
+3. **Persist** — threads live in `chat_threads` on the store (`id`, `title`,
+   `messages[]`) until purge. `GET /api/chat/threads` lists saved conversations.
+
+No file re-upload: everything comes from `library.json` already on disk.
+
 ### Reading schedule
 
 After a plan is finalized, `reading_schedule.attach_reading_schedule` estimates
@@ -177,7 +194,7 @@ a corrupt file is set aside rather than crashing. No database to run.
 |---|---|---|
 | `GET` | `/api/status` | Config + library summary |
 | `POST` | `/api/library/sync` | Sync Zotero (`{"source":"zotero"}`) or load demo (`{"source":"demo"}`) → job |
-| `DELETE` | `/api/library` | Purge all local data (projects, analyses, plans, specs) |
+| `DELETE` | `/api/library` | Purge all local data (projects, analyses, plans, specs, chats) |
 | `GET` | `/api/projects` | List projects (summaries) |
 | `GET` | `/api/projects/{key}` | One project with its papers |
 | `POST` | `/api/projects/{key}/categorize` | Categorize one project → job |
@@ -186,6 +203,9 @@ a corrupt file is set aside rather than crashing. No database to run.
 | `GET` | `/api/connections` | Latest connection map |
 | `POST` | `/api/groups` | Group papers across projects (no duplication) + drop suggestions → job |
 | `GET` | `/api/groups` | Latest paper grouping map |
+| `POST` | `/api/chat` | Ask about the synced shelf (`message`, optional `thread_id`, `scope`) |
+| `GET` | `/api/chat/threads` | List chat threads |
+| `GET` / `DELETE` | `/api/chat/threads/{id}` | Fetch / delete a thread |
 | `POST` | `/api/strategies` | Generate a reading plan (`mode`, `goal`, `project_keys`, optional `spec_id`) → job |
 | `GET` / `DELETE` | `/api/strategies[/{id}]` | List / delete saved plans |
 | `POST` | `/api/specs` | Upload a spec (file or `text`) |
@@ -221,6 +241,7 @@ app/
   specs.py         spec text extraction
   discovery.py     PubMed query + external paper discovery
   grouping.py      cross-project paper sets + drop suggestions
+  chat_context.py  assemble shelf context for chat
   spec_strategy.py spec-relevant project filter + plan mapping
   reading_schedule.py per-paper estimates and day schedule
   static/          the single-page UI

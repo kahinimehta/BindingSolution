@@ -301,3 +301,81 @@ def assess_paper(spec_text: str, paper: dict) -> dict:
         "use_for": [f"Reference for {t}" for t in shared] or ["Background context"],
         "_mock": True,
     }
+
+
+def chat_reply(message: str, context: str, history: list[dict]) -> str:
+    """Offline assistant — grounds answers in the assembled shelf context."""
+    msg = (message or "").lower()
+    ctx = context or ""
+    if not ctx.strip():
+        return (
+            "Your local library is empty. Load the demo library or sync Zotero, "
+            "then ask again — I'll read from your saved shelf without re-uploading anything."
+        )
+
+    if any(w in msg for w in ("connection", "thread", "overlap", "relate")):
+        if "## Connections" in ctx:
+            return (
+                "From your saved **Connections** analysis, the strongest cross-collection "
+                "threads are in the context above — look for shared tags like fairness, "
+                "causal inference, or GNNs. Run **Find connections** again after a sync "
+                "if your shelf changed."
+            )
+        return (
+            "I don't see a saved connections map yet. Open **Connections** and run "
+            "**Find connections** — then ask me how projects overlap."
+        )
+
+    if any(w in msg for w in ("group", "set", "standalone", "prune", "drop")):
+        if "## Paper groups" in ctx:
+            return (
+                "Your saved **Groups** run proposes 10–30 paper reading sets and flags "
+                "duplicates to drop. Check the group summaries in the context for themes; "
+                "re-run **◎ Group papers** after adding collections."
+            )
+        return (
+            "No paper groups saved yet. With at least two active collections, run "
+            "**◎ Group papers** — I'll reference those sets here afterward."
+        )
+
+    if any(w in msg for w in ("read", "strategy", "plan", "order")):
+        if "## Reading strategies" in ctx:
+            return (
+                "You have reading strategies saved locally. Open **Strategies** for the "
+                "full ordered path and schedule — I can summarize goals here, but the "
+                "step-by-step sequence lives in that view."
+            )
+        return (
+            "No reading plan saved yet. Pick projects in **Strategies** or build from a "
+            "spec match, then ask me to compare paths."
+        )
+
+    if any(w in msg for w in ("spec", "grant", "aim", "proposal")):
+        if "## Project specs" in ctx:
+            return (
+                "Your uploaded specs and library screening results are in the context. "
+                "Core and supporting matches are listed per spec — use **Spec → Find in "
+                "library** to refresh after a sync."
+            )
+        return (
+            "No project spec uploaded yet. Add one under **Spec**; I'll reference the "
+            "saved text and screening results here without re-uploading."
+        )
+
+    # Default: point at collections named in context.
+    collections = []
+    for line in ctx.splitlines():
+        if line.startswith("### ["):
+            collections.append(line.split("] ", 1)[-1].split(" (", 1)[0])
+    names = ", ".join(collections[:4])
+    if names:
+        return (
+            f"I can see your synced shelf ({names}{'…' if len(collections) > 4 else ''}). "
+            "Ask about a collection, paper theme, connections between projects, reading "
+            "order, or how a spec matches your library — everything comes from your "
+            "local store."
+        )
+    return (
+        "Ask me about your synced collections, papers, connections, groups, reading "
+        "plans, or specs. I read from your local BindingSolution store — no re-upload needed."
+    )

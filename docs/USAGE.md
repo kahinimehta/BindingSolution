@@ -1,7 +1,7 @@
 # Usage
 
 Start the app with `make run` and open <http://127.0.0.1:8765>. The **sidebar**
-has five views — use them in any order. On wide screens the whole interface
+has six views — use them in any order. On wide screens the whole interface
 (sidebar + content) is **centered** as one panel with **large-type** typography
 and spacing tuned for ultrawide and high-DPI displays (see
 [CONFIGURATION.md](CONFIGURATION.md#display)). **Sync library** and **Purge
@@ -39,7 +39,7 @@ merge collections in Zotero, then re-sync.
 
 **Purge library:** to wipe everything locally and start over, click **Purge
 library** in the top toolbar (next to **Sync library**). This deletes synced projects,
-categorizations, connections, paper groups, saved reading plans, and project specs from
+categorizations, connections, paper groups, chat threads, saved reading plans, and project specs from
 `./data/library.json`. It does **not** change your Zotero library. Confirm in
 the dialog, then sync again or load the demo library. The button is hidden when
 the shelf is already empty.
@@ -128,7 +128,30 @@ Claude key the same 10–30 paper schema is filled by the model.
   <img src="screenshots/groups.svg" alt="Groups view with large-type layout, 10–30 papers per set, Papers KPI matching Library, set summaries, standalone papers, and drop suggestions" width="1000" />
 </p>
 
-## 5. ↯ Plan your reading — *Strategies*
+## 5. 💬 Chat — *Chat*
+
+Open **Chat** after syncing your library. Type a question and press **Enter**
+(or **Send**). BindingSolution assembles context from your **local store** —
+synced papers, categorizations, saved connections, paper groups, reading
+strategies, and spec screenings — and sends it to Claude with your message.
+**Nothing is re-uploaded**; the server reads what is already in
+`./data/library.json`.
+
+- **Multi-turn** — replies stay in one thread until you click **New chat**.
+- **Grounded answers** — the assistant is instructed to cite only what is in
+  your shelf context and to suggest running a view (categorize, connections,
+  groups, spec screening) when data is missing.
+- **Cost** — one Claude call per message (lightweight compared to per-paper
+  spec screening). Demo mode uses heuristic replies when no API key is set.
+
+Example questions: *How do my fairness and causal collections overlap?* · *What
+should I read first for population coding?* · *Which papers matched my spec?*
+
+<p align="center">
+  <img src="screenshots/chat.svg" alt="Chat view with Claude answering questions using the local synced library store" width="1000" />
+</p>
+
+## 6. ↯ Plan your reading — *Strategies*
 
 Open **Strategies**. Either:
 
@@ -166,7 +189,7 @@ These are planning hints, not deadlines. Skim faster or read deeper and your rea
   <img src="screenshots/strategies.svg" alt="Reading strategies with large-type layout, compose form, and schedule estimates" width="1000" />
 </p>
 
-## 6. ✦ Spec — upload, screen library, discover on PubMed
+## 7. ✦ Spec — upload, screen library, discover on PubMed
 
 Open **Spec** in the sidebar. The view has two tabs with different jobs:
 

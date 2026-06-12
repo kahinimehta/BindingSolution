@@ -15,6 +15,7 @@ from fastapi.staticfiles import StaticFiles
 
 from . import __version__, jobs
 from .analysis import AnalysisError, get_analyzer
+from .chat_context import assemble_chat_context
 from .grouping import enrich_group_summaries, finalize_shelf_coverage
 from .config import STATIC_DIR, get_settings
 from .projects import (
@@ -85,6 +86,7 @@ def create_app() -> FastAPI:
             and not store.list_strategies()
             and not store.get_connections()
             and not store.get_paper_groups()
+            and not store.list_chat_threads()
         ):
             raise HTTPException(400, "Nothing to purge — the library is already empty.")
         store.purge()
@@ -471,6 +473,61 @@ def create_app() -> FastAPI:
             return {"spec_id": spec_id, "discovered": len(hits), "discoveries": hits}
 
         return _start("discover-spec", work)
+
+    # ── AI: chat (local shelf context) ───────────────────────────────
+    @app.get("/api/chat/threads")
+    def list_chat_threads() -> dict:
+        return {"threads": get_store().list_chat_threads()}
+
+    @app.get("/api/chat/threads/{thread_id}")
+    def get_chat_thread(thread_id: str) -> dict:
+        thread = get_store().get_chat_thread(thread_id)
+        if thread is None:
+            raise HTTPException(404, "Chat thread not found")
+        return {"thread": thread}
+
+    @app.delete("/api/chat/threads/{thread_id}")
+    def delete_chat_thread(thread_id: str) -> dict:
+        if not get_store().delete_chat_thread(thread_id):
+            raise HTTPException(404, "Chat thread not found")
+        return {"deleted": True}
+
+    @app.post("/api/chat")
+    def chat(payload: dict = Body(...)) -> dict:
+        message = (payload or {}).get("message", "").strip()
+        if not message:
+            raise HTTPException(400, "Message is required.")
+        store = get_store()
+        if not store.get_projects():
+            raise HTTPException(
+                400,
+                "No library loaded. Sync Zotero or load the demo library first.",
+            )
+
+        thread_id = (payload or {}).get("thread_id")
+        scope = (payload or {}).get("scope") or {}
+        if thread_id:
+            thread = store.get_chat_thread(thread_id)
+            if thread is None:
+                raise HTTPException(404, "Chat thread not found")
+        else:
+            title = message.splitlines()[0][:80]
+            thread = store.create_chat_thread(title, scope=scope)
+
+        context = assemble_chat_context(store, message, scope)
+        analyzer = get_analyzer(get_settings())
+        try:
+            reply = analyzer.chat(message, context, thread.get("messages") or [])
+        except AnalysisError as exc:
+            raise HTTPException(502, str(exc)) from exc
+
+        thread = store.append_chat_messages(thread["id"], message, reply)
+        return {
+            "thread_id": thread["id"],
+            "reply": reply,
+            "messages": thread["messages"],
+            "_mock": analyzer.use_mock,
+        }
 
     # ── jobs ─────────────────────────────────────────────────────────
     @app.get("/api/jobs")

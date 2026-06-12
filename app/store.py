@@ -21,6 +21,7 @@ _EMPTY: dict[str, Any] = {
     "paper_groups": None,  # latest cross-project paper grouping
     "strategies": [],     # newest first
     "specs": [],          # newest first
+    "chat_threads": [],   # assistant conversations (newest first)
     "meta": {},           # library-level info (source, last_synced, ...)
 }
 
@@ -173,6 +174,56 @@ class Store:
             before = len(self._data["specs"])
             self._data["specs"] = [s for s in self._data["specs"] if s["id"] != spec_id]
             if len(self._data["specs"]) != before:
+                self._save()
+                return True
+            return False
+
+    # ── chat ─────────────────────────────────────────────────────────
+    def list_chat_threads(self) -> list[dict]:
+        with self._lock:
+            return copy.deepcopy(self._data.get("chat_threads") or [])
+
+    def get_chat_thread(self, thread_id: str) -> dict | None:
+        with self._lock:
+            for thread in self._data.get("chat_threads") or []:
+                if thread["id"] == thread_id:
+                    return copy.deepcopy(thread)
+            return None
+
+    def create_chat_thread(self, title: str, scope: dict | None = None) -> dict:
+        with self._lock:
+            thread = {
+                "id": uuid.uuid4().hex[:12],
+                "created_at": time.time(),
+                "title": (title or "New chat").strip()[:80],
+                "scope": scope or {},
+                "messages": [],
+            }
+            self._data.setdefault("chat_threads", []).insert(0, thread)
+            self._save()
+            return copy.deepcopy(thread)
+
+    def append_chat_messages(self, thread_id: str, user_msg: str, assistant_msg: str) -> dict:
+        with self._lock:
+            for thread in self._data.get("chat_threads") or []:
+                if thread["id"] == thread_id:
+                    now = time.time()
+                    thread["messages"].append({
+                        "role": "user", "content": user_msg, "at": now,
+                    })
+                    thread["messages"].append({
+                        "role": "assistant", "content": assistant_msg, "at": now,
+                    })
+                    self._save()
+                    return copy.deepcopy(thread)
+            raise KeyError(thread_id)
+
+    def delete_chat_thread(self, thread_id: str) -> bool:
+        with self._lock:
+            threads = self._data.get("chat_threads") or []
+            before = len(threads)
+            self._data["chat_threads"] = [t for t in threads if t["id"] != thread_id]
+            if len(self._data["chat_threads"]) != before:
                 self._save()
                 return True
             return False

@@ -44,12 +44,16 @@
       <text x="32" y="214" fill="#9fb3a8" font-family="system-ui, sans-serif" font-size="9">10&#x2013;30 papers per set</text>
 
       <rect x="18" y="232" width="286" height="44" rx="12" fill="rgba(0,0,0,0.08)"/>
-      <text x="32" y="250" fill="#d6e2db" font-family="system-ui, sans-serif" font-size="12.5" font-weight="600">Strategies</text>
-      <text x="32" y="264" fill="#9fb3a8" font-family="system-ui, sans-serif" font-size="9">Reading plans</text>
+      <text x="32" y="250" fill="#d6e2db" font-family="system-ui, sans-serif" font-size="12.5" font-weight="600">Chat</text>
+      <text x="32" y="264" fill="#9fb3a8" font-family="system-ui, sans-serif" font-size="9">Ask about your shelf</text>
 
       <rect x="18" y="282" width="286" height="44" rx="12" fill="rgba(0,0,0,0.08)"/>
-      <text x="32" y="300" fill="#d6e2db" font-family="system-ui, sans-serif" font-size="12.5" font-weight="600">Spec</text>
-      <text x="32" y="314" fill="#9fb3a8" font-family="system-ui, sans-serif" font-size="9">Upload &amp; screen library</text>
+      <text x="32" y="300" fill="#d6e2db" font-family="system-ui, sans-serif" font-size="12.5" font-weight="600">Strategies</text>
+      <text x="32" y="314" fill="#9fb3a8" font-family="system-ui, sans-serif" font-size="9">Reading plans</text>
+
+      <rect x="18" y="332" width="286" height="44" rx="12" fill="rgba(0,0,0,0.08)"/>
+      <text x="32" y="350" fill="#d6e2db" font-family="system-ui, sans-serif" font-size="12.5" font-weight="600">Spec</text>
+      <text x="32" y="364" fill="#9fb3a8" font-family="system-ui, sans-serif" font-size="9">Upload &amp; screen library</text>
 
       <rect x="18" y="610" width="286" height="30" rx="11" fill="rgba(0,0,0,0.32)" stroke="rgba(202,161,74,0.4)"/>
       <text x="32" y="630" fill="#fff" font-family="system-ui, sans-serif" font-size="9" font-weight="600" letter-spacing="0.6">RUNNING</text>

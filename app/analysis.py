@@ -32,6 +32,7 @@ _MAX_TOKENS_LIGHT = 4000
 _MAX_TOKENS_HEAVY = 16000
 # Paper grouping returns many paper_keys + per-set summaries — avoid parse truncation.
 _MAX_TOKENS_GROUPS = 32000
+_MAX_TOKENS_CHAT = 4096
 
 _SYSTEM = (
     "You are a meticulous research librarian and methodologist helping a "
@@ -41,6 +42,16 @@ _SYSTEM = (
     "titles, abstracts, and tags you are given; never invent papers, "
     "findings, or citations that are not present in the input. When you are "
     "uncertain, say so plainly rather than overstating a connection."
+)
+
+_CHAT_SYSTEM = (
+    "You are BindingSolution's research assistant. The user has already synced "
+    "their Zotero library locally — you receive excerpts from that shelf below "
+    "(collections, categorizations, connections, paper groups, reading plans, "
+    "spec screenings, and paper metadata). Answer questions using ONLY that "
+    "context. Cite paper titles and collection names when helpful. If something "
+    "is missing, say so and suggest running the relevant view (categorize, "
+    "connections, groups, spec screening). Do not invent papers, authors, or findings."
 )
 
 
@@ -105,6 +116,44 @@ class Analyzer:
                 "The model did not return valid structured output (parse overflow or truncated JSON)."
             )
         return response.parsed_output
+
+    def _reply_text(self, response: Any) -> str:
+        parts = [
+            block.text for block in (response.content or [])
+            if getattr(block, "type", None) == "text" and getattr(block, "text", None)
+        ]
+        text = "\n".join(parts).strip()
+        if not text:
+            raise AnalysisError("The model returned an empty reply.")
+        return text
+
+    # ── chat (multi-turn, free-form) ─────────────────────────────────
+    def chat(self, message: str, context: str, history: list[dict]) -> str:
+        if self.use_mock:
+            return mock.chat_reply(message, context, history)
+        import anthropic
+
+        system = f"{_CHAT_SYSTEM}\n\n--- LIBRARY CONTEXT (local store) ---\n{context}"
+        messages = [
+            {"role": turn["role"], "content": turn["content"]}
+            for turn in history[-12:]
+            if turn.get("role") in ("user", "assistant") and turn.get("content")
+        ]
+        messages.append({"role": "user", "content": message})
+        try:
+            response = self._client.messages.create(
+                model=self.model,
+                max_tokens=_MAX_TOKENS_CHAT,
+                system=system,
+                messages=messages,
+            )
+        except anthropic.APIStatusError as exc:
+            raise AnalysisError(f"Claude API error ({exc.status_code}): {exc.message}") from exc
+        except anthropic.APIConnectionError as exc:
+            raise AnalysisError("Could not reach the Claude API. Check your connection.") from exc
+        if response.stop_reason == "refusal":
+            raise AnalysisError("The model declined to answer.")
+        return self._reply_text(response)
 
     # ── 1. categorize one project ────────────────────────────────────
     def categorize_project(self, project: dict) -> dict:
