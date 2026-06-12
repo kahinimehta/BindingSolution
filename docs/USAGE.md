@@ -16,8 +16,11 @@ refresh the page — work continues until it finishes. Open **Running** to see
 live progress; click a row to reopen the progress window. Dismissing a row only
 hides it from the list — it does not stop the job. The only way to stop work is
 to interrupt the server process in your terminal (e.g. Ctrl+C on `make run`).
-**Chat** is synchronous (one request per message) — it does not appear in
-**Running**.
+Progress bars are **indeterminate** (animated) during steps that are one long
+operation — a single Claude call or PubMed search — and **step-based** when work
+can be counted (sync per collection, spec screening per paper, categorize-all
+per project). **Chat** is synchronous (one request per message) — it does not
+appear in **Running**.
 
 > **No keys?** Click **Load demo library** on the Library screen. You get a
 > small synthetic library spanning overlapping research areas (including a
@@ -92,10 +95,11 @@ Connections need at least two projects.
 
 Open **Groups** and click **◎ Group papers**. BindingSolution reads **every**
 active paper across your projects (deduplicated by Zotero item key). Progress is
-**step-based** (e.g. *Step 2 of 3 — Analyzing 115 unique papers (184 collection
-entries in 13 active projects)…*) because grouping is one Claude pass over the
-whole shelf, not one API call per paper. Track it in the dialog or **Running**
-panel. It returns:
+**phase-based** (prepare → analyze → apply; e.g. *Step 2 of 3 — Analyzing 115
+unique papers (184 collection entries in 13 active projects)*) with an
+**indeterminate** bar during the analyze step because grouping is one Claude pass
+over the whole shelf, not one API call per paper. Track it in the dialog or
+**Running** panel. It returns:
 
 - **Optimal paper sets** — thematic reading groups that may span multiple
   Zotero collections. The grouper places **at least 90%** of papers into sets

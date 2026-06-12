@@ -133,7 +133,7 @@ def create_app() -> FastAPI:
         analyzer = get_analyzer(get_settings())
 
         def work(job: jobs.Job) -> dict:
-            job.set_progress(0, 1, f"Categorizing {proj['name']}…")
+            job.set_progress(0, 1, f"Categorizing {proj['name']}", indeterminate=True)
             category = analyzer.categorize_project(proj)
             store.set_project_category(key, category)
             job.set_progress(1, 1, "Done")
@@ -156,7 +156,7 @@ def create_app() -> FastAPI:
             total = len(projects)
             done = []
             for i, proj in enumerate(projects, start=1):
-                job.set_progress(i - 1, total, f"Categorizing {proj['name']}…")
+                job.set_progress(i, total, f"Categorizing {proj['name']}", indeterminate=True)
                 category = analyzer.categorize_project(proj)
                 store.set_project_category(proj["key"], category)
                 done.append(proj["key"])
@@ -179,7 +179,7 @@ def create_app() -> FastAPI:
         analyzer = get_analyzer(get_settings())
 
         def work(job: jobs.Job) -> dict:
-            job.set_progress(0, 1, "Finding connections across projects…")
+            job.set_progress(0, 1, "Finding connections across projects", indeterminate=True)
             result = analyzer.find_connections(projects)
             store.set_connections({**result, "generated_at": _now()})
             job.set_progress(1, 1, "Done")
@@ -214,10 +214,10 @@ def create_app() -> FastAPI:
                 f"{n_unique} unique papers ({n_entries} collection entries "
                 f"in {n_projects} active projects)"
             )
-            job.set_progress(0, steps, f"Preparing {scope}…")
-            job.set_progress(1, steps, f"Analyzing {scope}…", indeterminate=True)
+            job.set_progress(0, steps, f"Preparing {scope}")
+            job.set_progress(1, steps, f"Analyzing {scope}", indeterminate=True)
             result = analyzer.find_paper_groups(projects)
-            job.set_progress(2, steps, "Applying groups…")
+            job.set_progress(2, steps, "Applying groups")
             result = finalize_shelf_coverage(result, all_projects)
             store.set_paper_groups({**result, "generated_at": _now()})
             job.set_progress(steps, steps, "Done")
@@ -276,11 +276,7 @@ def create_app() -> FastAPI:
             plan_goal = f"{goal.strip()}\n\nProject specification:\n{spec_excerpt}"
 
         def work(job: jobs.Job) -> dict:
-            total = max(1, len(projects))
-            job.set_progress(0, total, "Designing a reading strategy…")
-            for i, proj in enumerate(projects):
-                label = proj.get("short_name") or proj["name"]
-                job.set_progress(i, total, f"Sequencing “{label}”…")
+            job.set_progress(0, 1, "Designing reading strategy", indeterminate=True)
             result = analyzer.reading_strategy(projects, plan_goal)
             if spec:
                 result = attach_spec_mapping(result, spec)
@@ -293,7 +289,7 @@ def create_app() -> FastAPI:
                 "spec_title": spec["title"] if spec else None,
                 "plan": result,
             })
-            job.set_progress(total, total, "Done")
+            job.set_progress(1, 1, "Done")
             return saved
 
         return _start("strategy", work)
@@ -418,7 +414,7 @@ def create_app() -> FastAPI:
             store.update_spec(spec_id, status="analyzing", analysis=existing)
             new_results: dict[str, dict] = {}
             for i, (project_key, paper) in enumerate(to_screen, start=1):
-                job.set_progress(i - 1, batch_total, f"Screening “{paper['title'][:60]}”…")
+                job.set_progress(i - 1, batch_total, f"Screening “{paper['title'][:60]}”")
                 assessment = analyzer.assess_paper(spec_text, paper)
                 screened.add(paper["key"])
                 if assessment.get("relevance") in _RELEVANT:
@@ -461,7 +457,7 @@ def create_app() -> FastAPI:
         use_mock = settings.mock_llm or not settings.anthropic_api_key
 
         def work(job: jobs.Job) -> dict:
-            job.set_progress(0, 1, "Searching PubMed for new papers…")
+            job.set_progress(0, 1, "Searching PubMed for new papers", indeterminate=True)
             hits = discover_for_spec(spec, projects, use_mock=use_mock)
             store.update_spec(
                 spec_id,
@@ -583,7 +579,7 @@ def _run_demo_sync() -> dict:
     store = get_store()
 
     def work(job: jobs.Job) -> dict:
-        job.set_progress(0, 1, "Loading demo library…")
+        job.set_progress(0, 1, "Loading demo library", indeterminate=True)
         projects = demo_projects()
         store.replace_projects(projects, source="demo")
         job.set_progress(1, 1, "Done")
@@ -606,7 +602,7 @@ def _run_zotero_sync() -> dict:
         from .zotero_client import fetch_projects
 
         def progress(cur: int, total: int, msg: str) -> None:
-            job.set_progress(cur, total, f"Syncing “{msg}”…")
+            job.set_progress(cur, total, f"Syncing “{msg}”")
 
         try:
             projects = fetch_projects(settings, progress)

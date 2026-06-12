@@ -90,9 +90,13 @@ To start fresh:
 Long-running work (sync, categorization, spec screening, etc.) runs as background
 jobs. Use the sidebar **Running** panel to monitor progress after closing the
 progress window or reloading the page. Only stopping the server (e.g. Ctrl+C)
-cancels in-flight jobs. **Group papers** uses phase-based progress (prepare →
-analyze → apply) with an indeterminate bar during the single Claude call; per-paper
-jobs (sync, spec screening) show `current/total` counts instead. After a run,
+cancels in-flight jobs. Progress bars are **indeterminate** when a step is one
+long operation that cannot be split (single Claude call or PubMed search):
+categorize one project, find connections, design a reading plan, discover on
+PubMed, load demo library, and the **analyze** step of **Group papers**
+(prepare → analyze → apply). **Linear** jobs show `current/total` or *Step N of
+M*: Zotero sync per collection, **Categorize all** per project (indeterminate
+while each project is categorized), and spec screening per paper. After a run,
 the server enforces **≥90% grouped** (minimum 10 papers per set, no maximum,
 varied set sizes — not uniform chunks or mega-sets).
 

@@ -232,7 +232,7 @@ function renderJobRail() {
     const cls = `job-rail-item${entry.status === "done" ? " done" : ""}${entry.status === "error" ? " error" : ""}`;
     const reopen = () => {
       if (entry.status === "queued" || entry.status === "running") {
-        showProgressModal(entry.label, entry.progress?.message || "Working…", entry.id);
+        showProgressModal(entry.label, entry.progress?.message || "Working", entry.id);
       }
     };
     return el("div", { class: cls, style: "cursor:pointer", onclick: reopen },
@@ -240,7 +240,7 @@ function renderJobRail() {
         el("div", { style: "min-width:0;flex:1" },
           el("div", { class: "job-rail-item-label" }, entry.label),
           el("div", { class: "job-rail-item-msg" },
-            entry.error || entry.progress?.message || (entry.status === "done" ? "Finished" : "Working…"))),
+            entry.error || entry.progress?.message || (entry.status === "done" ? "Finished" : "Working"))),
         el("button", {
           type: "button",
           class: "job-rail-dismiss",
@@ -759,7 +759,7 @@ async function categorizeAll(e) {
   if (btn) btn.disabled = true;
   try {
     const start = await api.post("/projects/categorize-all");
-    const box = showProgressModal("Categorizing projects", "Categorizing every project…", start.job_id);
+    const box = showProgressModal("Categorizing projects", "Categorizing every project", start.job_id);
     await runJob(start, { label: "Categorize all", onProgress: (p) => box._update(p) });
     closeModal();
     toast("All projects categorized.", "ok");
@@ -848,7 +848,7 @@ async function renderConnections() {
 async function findConnections() {
   try {
     const start = await api.post("/connections");
-    const box = showProgressModal("Finding connections", "Reading across your projects…", start.job_id);
+    const box = showProgressModal("Finding connections", "Finding connections across projects", start.job_id);
     await runJob(start, { label: "Find connections", onProgress: (p) => box._update(p) });
     closeModal();
     toast("Connections mapped.", "ok");
@@ -1033,7 +1033,7 @@ async function renderGroups() {
 async function findPaperGroups() {
   try {
     const start = await api.post("/groups");
-    const box = showProgressModal("Grouping papers", "Organizing your shelf across projects…", start.job_id);
+    const box = showProgressModal("Grouping papers", "Preparing shelf for grouping", start.job_id);
     await runJob(start, { label: "Group papers", onProgress: (p) => box._update(p) });
     closeModal();
     toast("Paper groups ready.", "ok");
@@ -1228,7 +1228,7 @@ async function submitStrategy(e) {
   btn.disabled = true;
   try {
     const start = await api.post("/strategies", { goal, mode: strategyMode, project_keys: keys });
-    const box = showProgressModal("Generating reading plan", "Designing your reading path…", start.job_id);
+    const box = showProgressModal("Generating reading plan", "Designing reading strategy", start.job_id);
     await runJob(start, { label: "Reading plan", onProgress: (p) => box._update(p) });
     closeModal();
     toast("Reading plan ready.", "ok");
@@ -1477,7 +1477,7 @@ async function confirmAnalyzeSpec(specId) {
 async function runAnalyzeSpec(specId) {
   try {
     const start = await api.post(`/specs/${specId}/analyze`, {});
-    const box = showProgressModal("Screening library", "Checking which synced papers match your spec…", start.job_id);
+    const box = showProgressModal("Screening library", "Screening synced papers against your spec", start.job_id);
     const result = await runJob(start, { label: "Screen library", onProgress: (p) => box._update(p) });
     closeModal();
     const n = result?.relevant ?? 0;
@@ -1601,7 +1601,7 @@ function discoveryRow(r) {
 async function runDiscoverSpec(specId) {
   try {
     const start = await api.post(`/specs/${specId}/discover`, {});
-    const box = showProgressModal("Searching PubMed", "Looking for papers not already in your library…", start.job_id);
+    const box = showProgressModal("Searching PubMed", "Searching PubMed for new papers", start.job_id);
     const result = await runJob(start, { label: "PubMed discovery", onProgress: (p) => box._update(p) });
     closeModal();
     const n = result?.discovered ?? 0;
@@ -1628,7 +1628,7 @@ async function buildReadingPlanFromSpec(specId) {
       goal: `Read the papers most relevant to: ${spec.title}`,
       mode: "spec",
     });
-    const box = showProgressModal("Generating reading plan", "Ordering spec-relevant papers into a reading path…", start.job_id);
+    const box = showProgressModal("Generating reading plan", "Designing reading strategy", start.job_id);
     const saved = await runJob(start, { label: "Reading plan", onProgress: (p) => box._update(p) });
     closeModal();
     toast("Reading plan ready — mapped from your spec.", "ok");

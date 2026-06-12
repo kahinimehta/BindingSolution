@@ -94,6 +94,12 @@ terminal running `make run`) does. Dismissing a row in **Running** hides it from
 the UI only. Spec screening persists relevant hits incrementally, so partial
 progress survives an interruption.
 
+Job progress exposes `current`, `total`, `message`, and `indeterminate`. Steps
+that are a single long API call (or otherwise non-linear) set
+`indeterminate: true` so the UI shows an animated bar instead of a fake
+fraction. Linear jobs advance `current/total` per collection, project, or paper.
+Progress messages omit trailing ellipses.
+
 ### Spec (library screen + PubMed discovery)
 
 The **Spec** view is a two-tab SPA panel (`Upload & manage` · `Suggested papers`):
