@@ -681,7 +681,7 @@ function projectCard(p, inactive = false) {
   const head = el("div", { class: "project-card-head" },
     el("h3", {}, p.name),
     el("div", { class: "muted" }, `${p.num_items} ${p.num_items === 1 ? "paper" : "papers"}`));
-  const scroll = el("div", { class: "project-card-scroll" });
+  const body = el("div", { class: "project-card-body" });
 
   if (inactive) {
     const labels = { unfiled: "Unfiled", empty: "Empty folder", single: "Single paper" };
@@ -691,7 +691,7 @@ function projectCard(p, inactive = false) {
       single: "Only one paper — add another to this collection or merge with a related folder.",
     };
     const reason = p.inactive_reason || "empty";
-    scroll.append(
+    body.append(
       el("div", { class: "project-meta", style: "margin-top:0" },
         el("span", { class: "pill ink" }, labels[reason] || "Excluded")),
       el("p", { class: "inactive-hint" }, hints[reason] || hints.empty));
@@ -699,26 +699,26 @@ function projectCard(p, inactive = false) {
     return el("div", {
       class: `card spine project-card inactive${canView ? " viewable" : ""}`,
       ...(canView ? { onclick: () => openProject(p.key, { readOnly: true }) } : {}),
-    }, head, scroll);
+    }, head, body);
   }
 
   const cat = p.category;
   if (cat) {
-    scroll.append(el("p", { class: "lead" }, cat.summary));
-    scroll.append(el("div", { class: "project-meta", style: "margin-top:0" },
+    body.append(el("p", { class: "lead" }, cat.summary));
+    body.append(el("div", { class: "project-meta", style: "margin-top:0" },
       el("span", { class: "pill green" }, cat.discipline),
       el("span", { class: "pill ink" }, cat.maturity)));
     if (cat.themes?.length) {
-      scroll.append(el("div", { class: "tag-row" }, ...cat.themes.slice(0, 5).map((t) => el("span", { class: "tag" }, t))));
+      body.append(el("div", { class: "tag-row" }, ...cat.themes.slice(0, 5).map((t) => el("span", { class: "tag" }, t))));
     }
   } else {
-    scroll.append(el("div", { class: "project-meta", style: "margin-top:0" },
+    body.append(el("div", { class: "project-meta", style: "margin-top:0" },
       el("button", {
         class: "btn btn-ghost btn-sm",
         onclick: (e) => { e.stopPropagation(); categorizeOne(p.key, e.currentTarget); },
       }, "✦ Categorize")));
   }
-  return el("div", { class: "card spine linkish project-card", onclick: () => openProject(p.key) }, head, scroll);
+  return el("div", { class: "card spine linkish project-card", onclick: () => openProject(p.key) }, head, body);
 }
 
 function emptyLibrary() {

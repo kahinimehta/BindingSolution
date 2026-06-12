@@ -64,7 +64,8 @@ Open the **Library** view. Click **✦ Categorize** on an active card (or
 - recurring **themes** and common **methods**
 - **keywords** used to match it against other projects
 
-Click any card to see its full paper list and categorization.
+Click any card to see its full paper list and categorization. Project cards grow
+to show the full summary — no inner scroll box.
 
 The **Papers** KPI counts papers in **active** collections (same number you will
 see on **Groups**). If the same Zotero item is filed in multiple folders, it can
