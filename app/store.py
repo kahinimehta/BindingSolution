@@ -18,6 +18,7 @@ from typing import Any
 _EMPTY: dict[str, Any] = {
     "projects": {},      # collection key -> project dict (with items)
     "connections": None,  # latest cross-project analysis
+    "paper_groups": None,  # latest cross-project paper grouping
     "strategies": [],     # newest first
     "specs": [],          # newest first
     "meta": {},           # library-level info (source, last_synced, ...)
@@ -88,6 +89,16 @@ class Store:
     def get_connections(self) -> dict | None:
         with self._lock:
             return copy.deepcopy(self._data["connections"])
+
+    # ── paper groups ───────────────────────────────────────────────
+    def set_paper_groups(self, groups: dict) -> None:
+        with self._lock:
+            self._data["paper_groups"] = groups
+            self._save()
+
+    def get_paper_groups(self) -> dict | None:
+        with self._lock:
+            return copy.deepcopy(self._data["paper_groups"])
 
     # ── reading strategies ───────────────────────────────────────────
     def add_strategy(self, strategy: dict) -> dict:

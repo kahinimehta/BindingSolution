@@ -128,6 +128,22 @@ def test_reading_strategy_auto_mode(client):
     assert saved["mode"] == "auto"
 
 
+def test_paper_groups(client):
+    _load_demo(client)
+    start = client.post("/api/groups").json()
+    result = run_job(client, start)
+    assert result["groups"]
+    assert result["overview"]
+    grouped_keys: list[str] = []
+    for grp in result["groups"]:
+        grouped_keys.extend(grp["paper_keys"])
+        assert grp["papers"]
+        assert len(grp["papers"]) == len(grp["paper_keys"])
+    assert len(grouped_keys) == len(set(grouped_keys))
+    stored = client.get("/api/groups").json()["paper_groups"]
+    assert stored["stats"]["num_groups"] == len(result["groups"])
+
+
 def test_spec_discover_pubmed(client):
     _load_demo(client)
     spec = client.post(

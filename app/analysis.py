@@ -15,8 +15,10 @@ from typing import Any, Callable
 
 from .config import Settings
 from .reading_schedule import attach_reading_schedule
+from .grouping import complete_paper_groups, heuristic_paper_groups
 from .schemas import (
     ConnectionMap,
+    PaperGroupingMap,
     PaperRelevance,
     ProjectCategory,
     ReadingStrategy,
@@ -105,7 +107,19 @@ class Analyzer:
         result: ConnectionMap = self._parse(prompt, ConnectionMap, heavy=True)
         return result.model_dump()
 
-    # ── 3. reading strategy over chosen projects ─────────────────────
+    # ── 3. cross-project paper groups (no duplication) ───────────────
+    def find_paper_groups(self, projects: list[dict]) -> dict:
+        if self.use_mock:
+            return heuristic_paper_groups(projects)
+        try:
+            prompt = _paper_groups_prompt(projects)
+            result: PaperGroupingMap = self._parse(prompt, PaperGroupingMap, heavy=True)
+            data = complete_paper_groups(result.model_dump(), projects)
+            return data
+        except AnalysisError:
+            return heuristic_paper_groups(projects)
+
+    # ── 4. reading strategy over chosen projects ─────────────────────
     def reading_strategy(self, projects: list[dict], goal: str) -> dict:
         if self.use_mock:
             data = mock.reading_strategy(projects, goal)
@@ -119,7 +133,7 @@ class Analyzer:
         plan = complete_reading_strategy(data, projects, goal)
         return attach_reading_schedule(plan, projects)
 
-    # ── 4. validate an uploaded project spec ─────────────────────────
+    # ── 5. validate an uploaded project spec ─────────────────────────
     def validate_spec(self, spec_text: str) -> dict:
         if self.use_mock:
             return mock.validate_spec(spec_text)
@@ -127,7 +141,7 @@ class Analyzer:
         result: SpecValidation = self._parse(prompt, SpecValidation, heavy=False)
         return result.model_dump()
 
-    # ── 5. relevance of one paper to a project spec ──────────────────
+    # ── 6. relevance of one paper to a project spec ──────────────────
     def assess_paper(self, spec_text: str, paper: dict) -> dict:
         if self.use_mock:
             return mock.assess_paper(spec_text, paper)
@@ -162,6 +176,28 @@ def _categorize_prompt(project: dict) -> str:
         f"{_render_papers(project['items'])}\n\n"
         "Identify its discipline, a specific topic label, recurring themes, common "
         "methods, and matching keywords. Base everything strictly on the papers shown."
+    )
+
+
+def _paper_groups_prompt(projects: list[dict]) -> str:
+    blocks = []
+    for proj in projects:
+        blocks.append(
+            f"### Project [{proj['key']}] — {proj['name']} ({proj['num_items']} papers)\n"
+            f"{_render_papers(proj['items'], abstracts=True, limit=12)}"
+        )
+    body = "\n\n".join(blocks)
+    return (
+        "Organize this researcher's Zotero shelf across projects.\n\n"
+        f"{body}\n\n"
+        "Propose optimal PAPER groups (not project groups) for reading:\n"
+        "- Each paper_key may appear in AT MOST one group.\n"
+        "- Groups may span multiple projects when papers share themes, methods, or goals.\n"
+        "- Do not duplicate the same paper across groups.\n"
+        "- In `drops`, flag papers to remove or archive: duplicates filed in multiple "
+        "collections, redundant surveys superseded by newer work, weak fits, or outdated "
+        "papers that no longer match the shelf.\n"
+        "Use bracketed paper_key and project_key values exactly as given."
     )
 
 

@@ -4,7 +4,7 @@
 
 **Point it at your Zotero library and it makes sense of it.**
 
-*Categorize collections, find cross-project threads, plan what to read, and match papers to a project spec — locally, with Claude.*
+*Categorize collections, find cross-project threads, group papers without duplication, plan what to read, and match papers to a project spec — locally, with Claude.*
 
 </div>
 
@@ -29,7 +29,7 @@ Claude usage bills to **your** Anthropic account (per token). Zotero sync and re
 | Heavy | Light |
 | --- | --- |
 | **Find in library** (spec screen) — one call **per active paper** | Categorize one project, upload spec validation, **PubMed discovery** |
-| Re-screening after every small sync | One reading plan, one connections pass |
+| Re-screening after every small sync | One reading plan, connections, or paper groups pass |
 
 **Tips:** try demo mode first; tidy Zotero (only collections with **2+ papers** are active); read the spec-screening confirmation before starting; set a [spend limit](https://console.anthropic.com/settings/billing). Full detail: [docs/BILLING.md](docs/BILLING.md).
 
@@ -41,6 +41,7 @@ Use any view in any order.
 - **Active vs excluded** — only folders with 2+ papers are analyzed; empty, single-paper, and unfiled collections are reference-only
 - **Categorize** — discipline, themes, methods, keywords, summary per collection
 - **Connections** — shared threads and suggested groupings across projects
+- **Groups** — optimal non-overlapping paper sets across collections; flags duplicates and weak fits to drop
 - **Reading strategies** — ordered path + synthesis prompts; **schedule with estimated hours/days** (medium pace, ~12 pages/h at 2 h/day — see [docs/USAGE.md](docs/USAGE.md#reading-time-assumptions))
 - **Spec** — upload a brief (PDF/Word/MD/text); **Find in library** screens your Zotero shelf (core/supporting only); **Suggested papers** returns up to five ranked PubMed hits *not* in your library, with summaries and relevance notes
 - **Spec → reading plan** — **Build reading plan** from library matches; steps keep relevance notes; plan links back to the spec
@@ -48,6 +49,10 @@ Use any view in any order.
 
 <p align="center">
   <img src="docs/screenshots/library.svg" alt="Library view" width="920" />
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/groups.svg" alt="Groups view with paper sets and prune suggestions" width="920" />
 </p>
 
 <p align="center">

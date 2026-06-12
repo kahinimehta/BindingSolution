@@ -27,17 +27,21 @@
   <rect x="254" y="88" width="30" height="18" rx="9" fill="rgba(179,137,47,0.35)"/>
   <text x="269" y="100" fill="#fff8e8" font-size="8" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="700">4</text>
 
-  <rect x="16" y="128" width="280" height="48" rx="11" fill="rgba(0,0,0,0.08)"/>
-  <text x="28" y="148" fill="#d6e2db" font-family="system-ui, sans-serif" font-size="12" font-weight="600">Connections</text>
-  <text x="28" y="164" fill="#9fb3a8" font-family="system-ui, sans-serif" font-size="8.5">Cross-project threads</text>
+  <rect x="16" y="122" width="280" height="42" rx="11" fill="rgba(0,0,0,0.08)"/>
+  <text x="28" y="140" fill="#d6e2db" font-family="system-ui, sans-serif" font-size="11.5" font-weight="600">Connections</text>
+  <text x="28" y="154" fill="#9fb3a8" font-family="system-ui, sans-serif" font-size="8">Cross-project threads</text>
 
-  <rect x="16" y="184" width="280" height="48" rx="11" fill="rgba(0,0,0,0.08)"/>
-  <text x="28" y="204" fill="#d6e2db" font-family="system-ui, sans-serif" font-size="12" font-weight="600">Strategies</text>
-  <text x="28" y="220" fill="#9fb3a8" font-family="system-ui, sans-serif" font-size="8.5">Reading plans</text>
+  <rect x="16" y="170" width="280" height="42" rx="11" fill="rgba(0,0,0,0.08)"/>
+  <text x="28" y="188" fill="#d6e2db" font-family="system-ui, sans-serif" font-size="11.5" font-weight="600">Groups</text>
+  <text x="28" y="202" fill="#9fb3a8" font-family="system-ui, sans-serif" font-size="8">Paper sets &amp; prune</text>
 
-  <rect x="16" y="240" width="280" height="48" rx="11" fill="rgba(0,0,0,0.08)"/>
-  <text x="28" y="260" fill="#d6e2db" font-family="system-ui, sans-serif" font-size="12" font-weight="600">Spec</text>
-  <text x="28" y="276" fill="#9fb3a8" font-family="system-ui, sans-serif" font-size="8.5">Upload &amp; screen library</text>
+  <rect x="16" y="218" width="280" height="42" rx="11" fill="rgba(0,0,0,0.08)"/>
+  <text x="28" y="236" fill="#d6e2db" font-family="system-ui, sans-serif" font-size="11.5" font-weight="600">Strategies</text>
+  <text x="28" y="250" fill="#9fb3a8" font-family="system-ui, sans-serif" font-size="8">Reading plans</text>
+
+  <rect x="16" y="266" width="280" height="42" rx="11" fill="rgba(0,0,0,0.08)"/>
+  <text x="28" y="284" fill="#d6e2db" font-family="system-ui, sans-serif" font-size="11.5" font-weight="600">Spec</text>
+  <text x="28" y="298" fill="#9fb3a8" font-family="system-ui, sans-serif" font-size="8">Upload &amp; screen library</text>
 
   <rect x="312" y="0" width="608" height="96" fill="url(#hero)"/>
   <text x="332" y="44" fill="#fff" font-family="Georgia, serif" font-size="26" font-weight="600">Library</text>

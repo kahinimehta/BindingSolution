@@ -20,6 +20,7 @@ Pricing depends on the model you set in `ANTHROPIC_MODEL` — see
 | **Categorize one project** | 1 per project | Low | One structured call per collection. |
 | **Categorize all** | 1 per active project | Low–medium | Same as clicking every card. |
 | **Find connections** | 1 | Medium | One heavy cross-library call (adaptive thinking). |
+| **Group papers** | 1 | Medium | One cross-library call; non-overlapping paper sets + drop list. |
 | **Reading strategy** | 1 per plan | Medium | One heavy call; grows with papers in chosen projects. |
 | **Build reading plan** (from spec) | 1 per plan | Medium | Same as a manual strategy, but only spec-relevant papers are included — not a per-paper screen. |
 | **Upload spec** (validation) | 1 per upload | Low | Checks the text is a real project brief. |
@@ -36,7 +37,7 @@ call Claude. Neither does **demo AI mode** (no key, or `MOCK_LLM=true`).
 Results are saved in `./data/library.json`:
 
 - **Categorizations** survive a Zotero re-sync (for collections that still exist).
-- **Connections**, **reading plans**, **library matches**, and **PubMed discoveries**
+- **Connections**, **paper groups**, **reading plans**, **library matches**, and **PubMed discoveries**
   stay until you delete them or **Purge library**.
 - Opening a saved plan or spec tab does **not** call the API again.
 
@@ -81,6 +82,7 @@ papers will be screened — use it.
 | Action | Re-run when… |
 | --- | --- |
 | Connections | You added/merged projects or want a fresh cross-library read |
+| Group papers | You synced new papers or reorganized collections |
 | Reading strategy | Your goal or project set changed |
 | Build reading plan (spec) | You re-screened library matches or want a new ordering |
 | Find in library | You synced new papers or changed the spec text |

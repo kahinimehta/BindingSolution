@@ -75,6 +75,7 @@ def create_app() -> FastAPI:
             and not store.list_specs()
             and not store.list_strategies()
             and not store.get_connections()
+            and not store.get_paper_groups()
         ):
             raise HTTPException(400, "Nothing to purge — the library is already empty.")
         store.purge()
@@ -178,6 +179,32 @@ def create_app() -> FastAPI:
     @app.get("/api/connections")
     def get_connections() -> dict:
         return {"connections": get_store().get_connections()}
+
+    # ── AI: paper groups ─────────────────────────────────────────────
+    @app.post("/api/groups")
+    def paper_groups() -> dict:
+        store = get_store()
+        projects = usable_projects(store.get_projects())
+        if len(projects) < 2:
+            raise HTTPException(
+                400,
+                "Need at least 2 collections with 2+ papers each to group papers across projects.",
+            )
+
+        analyzer = get_analyzer(get_settings())
+
+        def work(job: jobs.Job) -> dict:
+            job.set_progress(0, 1, "Grouping papers across projects…")
+            result = analyzer.find_paper_groups(projects)
+            store.set_paper_groups({**result, "generated_at": _now()})
+            job.set_progress(1, 1, "Done")
+            return result
+
+        return _start("paper-groups", work)
+
+    @app.get("/api/groups")
+    def get_paper_groups() -> dict:
+        return {"paper_groups": get_store().get_paper_groups()}
 
     # ── AI: reading strategy ─────────────────────────────────────────
     @app.post("/api/strategies")

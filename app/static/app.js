@@ -1,5 +1,5 @@
 /* BindingSolution frontend — vanilla JS SPA, no build step.
-   Views: Library · Connections · Strategies · Spec.
+   Views: Library · Connections · Groups · Strategies · Spec.
    Long tasks run as server jobs; we poll /api/jobs/{id} for live progress. */
 
 const $ = (sel, root = document) => root.querySelector(sel);
@@ -220,7 +220,7 @@ async function loadProjects() {
 function confirmPurgeLibrary() {
   const body = el("div", {},
     el("p", { class: "lead" },
-      "This removes everything stored locally: synced projects, categorizations, connections, reading plans, and project specs."),
+      "This removes everything stored locally: synced projects, categorizations, connections, paper groups, reading plans, and project specs."),
     el("p", { class: "muted", style: "margin-top:12px;font-size:.9rem" },
       "Your Zotero library is not changed. After purging, sync again or load the demo library to start fresh."),
     el("div", { class: "spread mt-3", style: "justify-content:flex-end;gap:10px" },
@@ -261,6 +261,10 @@ const viewMeta = {
   connections: {
     title: "Connections",
     subtitle: "Where your projects overlap — shared themes, methods, and authors.",
+  },
+  groups: {
+    title: "Groups",
+    subtitle: "Optimal paper sets across projects — no duplicates — plus papers to drop.",
   },
   strategies: {
     title: "Reading strategies",
@@ -335,6 +339,30 @@ async function renderKpiStrip(route) {
       }
     } catch {
       items.push(kpiItem("—", "Threads", "—"), kpiItem("—", "Groupings", "—"));
+    }
+  } else if (route === "groups") {
+    const active = usableProjects();
+    items.push(
+      kpiItem(active.length, "Active projects", "Used for grouping", true),
+      kpiItem(active.length >= 2 ? "Ready" : "Need 2+", "Status", "Minimum for groups"),
+    );
+    try {
+      const { paper_groups: g } = await api.get("/groups");
+      if (g?.stats) {
+        items.push(
+          kpiItem(g.stats.num_groups || 0, "Paper sets", "Non-overlapping"),
+          kpiItem(g.stats.num_drops || 0, "To drop", "Duplicates & weak fits"),
+        );
+      } else if (g) {
+        items.push(
+          kpiItem(g.groups?.length || 0, "Paper sets", "Non-overlapping"),
+          kpiItem(g.drops?.length || 0, "To drop", "Duplicates & weak fits"),
+        );
+      } else {
+        items.push(kpiItem("—", "Paper sets", "Run analysis"), kpiItem("—", "To drop", "Run analysis"));
+      }
+    } catch {
+      items.push(kpiItem("—", "Paper sets", "—"), kpiItem("—", "To drop", "—"));
     }
   } else if (route === "strategies") {
     let n = 0;
@@ -591,6 +619,106 @@ function renderConnectionMap(c) {
     }
   }
   $("#conn-body").replaceChildren(root);
+}
+
+/* ── 2b. GROUPS ───────────────────────────────────────────────── */
+async function renderGroups() {
+  await loadProjects();
+  const active = usableProjects();
+  setView("groups", active.length >= 2
+    ? [el("button", { class: "btn btn-primary btn-sm", onclick: findPaperGroups }, "◎ Group papers")] : []);
+  await renderKpiStrip("groups");
+
+  if (active.length < 2) {
+    view().replaceChildren(el("div", { class: "empty" },
+      el("div", { class: "emoji" }, "◎"),
+      el("h3", {}, "Groups need active projects"),
+      el("p", {}, "Sync at least two collections with 2+ papers each. Empty, single-paper, and unfiled collections are excluded."),
+      el("div", { class: "row" }, el("button", { class: "btn btn-brass", onclick: () => doSync("demo") }, "Load demo library"))));
+    return;
+  }
+
+  view().replaceChildren(
+    viewHero("Shelf organization",
+      "Each paper appears in at most one reading set. Duplicates filed in multiple Zotero collections are flagged to drop."),
+    el("div", { id: "groups-body" }, el("div", { class: "muted" }, "Loading…")));
+
+  try {
+    const { paper_groups: g } = await api.get("/groups");
+    if (g) renderPaperGroups(g);
+    else $("#groups-body").replaceChildren(el("div", { class: "empty" },
+      el("div", { class: "emoji" }, "◎"),
+      el("h3", {}, "No grouping yet"),
+      el("p", {}, "Run the analysis to propose non-overlapping paper sets and prune suggestions."),
+      el("div", { class: "row" }, el("button", { class: "btn btn-primary", onclick: findPaperGroups }, "◎ Group papers"))));
+  } catch (e) { $("#groups-body").replaceChildren(el("div", { class: "muted" }, e.message)); }
+}
+
+async function findPaperGroups() {
+  const box = showProgressModal("Grouping papers", "Organizing your shelf across projects…");
+  try {
+    const start = await api.post("/groups");
+    await runJob(start, { onProgress: (p) => box._update(p) });
+    closeModal();
+    toast("Paper groups ready.", "ok");
+    const { paper_groups: g } = await api.get("/groups");
+    renderPaperGroups(g);
+  } catch (e) {
+    closeModal();
+    toast(e.message, "err");
+    renderGroups();
+  }
+}
+
+const dropKindLabel = {
+  duplicate: "duplicate",
+  redundant: "redundant",
+  weak_fit: "weak fit",
+  outdated: "outdated",
+};
+
+function renderPaperGroups(g) {
+  const root = el("div", {});
+  root.append(el("div", { class: "card panel view-hero", style: "padding:22px;margin-bottom:22px;border-left-width:4px" },
+    g._mock ? el("span", { class: "mock-note", style: "margin-bottom:10px" }, "demo AI — connect a Claude key for real analysis") : null,
+    el("p", { class: "lead", style: "margin:0;font-size:1.02rem" }, g.overview)));
+
+  if (g.groups?.length) {
+    root.append(el("h3", { style: "font-family:var(--font-display);margin:6px 0 12px" }, "Optimal paper sets"));
+    root.append(el("p", { class: "muted", style: "margin:-6px 0 14px;font-size:.88rem" },
+      "Each paper appears once. Sets may span multiple Zotero collections."));
+    for (const grp of g.groups) {
+      const card = el("div", { class: "card spine cluster" },
+        el("h4", {}, grp.name),
+        el("div", { class: "links tag-row" }, ...grp.project_keys.map((k) => el("span", { class: "pill green" }, projName(k)))),
+        el("p", { class: "muted", style: "margin:6px 0 12px;font-size:.88rem;line-height:1.5" }, grp.rationale));
+      const list = el("ul", { class: "paper-list", style: "margin:0;padding-left:18px;font-size:.88rem" });
+      for (const p of grp.papers || []) {
+        list.append(el("li", { style: "margin-bottom:6px" },
+          el("span", { style: "font-weight:600" }, p.title || p.paper_key),
+          el("span", { class: "muted" }, ` · ${projName(p.project_key)}`)));
+      }
+      card.append(list);
+      root.append(card);
+    }
+  }
+
+  if (g.drops?.length) {
+    root.append(el("h3", { style: "font-family:var(--font-display);margin:22px 0 12px" }, "Suggested drops"));
+    root.append(el("p", { class: "muted", style: "margin:-6px 0 14px;font-size:.88rem" },
+      "Consider removing or archiving these in Zotero — duplicates, weak fits, or redundant entries."));
+    for (const d of g.drops) {
+      root.append(el("div", { class: "relevance-row relevance-row--suggest" },
+        el("div", {},
+          el("div", { class: "rel-title" }, d.title || "Untitled"),
+          el("div", { class: "muted", style: "font-size:.76rem" }, projName(d.project_key)),
+          el("div", { class: "rel-why" }, d.reason || "Consider dropping from your shelf.")),
+        el("span", { class: `rel-flag rel-${d.drop_kind === "duplicate" ? "not_relevant" : "tangential"}` },
+          dropKindLabel[d.drop_kind] || d.drop_kind || "drop")));
+    }
+  }
+
+  $("#groups-body").replaceChildren(root);
 }
 
 /* ── 3. STRATEGIES ────────────────────────────────────────────── */
@@ -1111,7 +1239,13 @@ function progressBlock(initial) {
 }
 
 /* ── router ───────────────────────────────────────────────────── */
-const routes = { library: renderLibrary, connections: renderConnections, strategies: renderStrategies, specs: renderSpecs };
+const routes = {
+  library: renderLibrary,
+  connections: renderConnections,
+  groups: renderGroups,
+  strategies: renderStrategies,
+  specs: renderSpecs,
+};
 async function route() {
   const name = (location.hash.replace("#/", "") || "library");
   $$(".nav-item").forEach((n) => n.classList.toggle("active", n.dataset.route === name));

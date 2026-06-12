@@ -1,7 +1,7 @@
 # Usage
 
 Start the app with `make run` and open <http://127.0.0.1:8765>. The sidebar
-has four views — use them in any order; the status chips (bottom-left) show
+has five views — use them in any order; the status chips (bottom-left) show
 whether Claude and Zotero are connected.
 
 > **No keys?** Click **Load demo library** on the Library screen. You get a
@@ -21,12 +21,12 @@ any categorization you've already generated.
 **Active vs excluded:** only collections with **at least 2 papers** are active.
 Empty folders, single-paper collections, and **Library (unfiled)** appear in a
 separate **Excluded collections** section — visible for reference but left out
-of categorization, connections, reading plans, and paper suggestions. Add papers or
+of categorization, connections, paper groups, reading plans, and spec screening. Add papers or
 merge collections in Zotero, then re-sync.
 
 **Purge library:** to wipe everything locally and start over, click **Purge
 library** in the sidebar (below **Sync library**). This deletes synced projects,
-categorizations, connections, saved reading plans, and project specs from
+categorizations, connections, paper groups, saved reading plans, and project specs from
 `./data/library.json`. It does **not** change your Zotero library. Confirm in
 the dialog, then sync again or load the demo library. The button is hidden when
 the shelf is already empty.
@@ -55,7 +55,30 @@ projects and surfaces:
 
 Connections need at least two projects.
 
-## 4. ↯ Plan your reading — *Strategies*
+## 4. ◎ Group papers — *Groups*
+
+Open **Groups** and click **◎ Group papers**. BindingSolution reads across all
+active projects and proposes:
+
+- **Optimal paper sets** — non-overlapping reading groups that may span multiple
+  Zotero collections. Each paper appears in **at most one** set, so you are not
+  asked to read the same work twice under different folders.
+- **Suggested drops** — papers to remove or archive: duplicates filed in more
+  than one collection, redundant surveys, weak fits, or entries that no longer
+  match your shelf.
+
+**Connections vs Groups:** *Connections* links **projects** (shared threads and
+which collections to combine). *Groups* organizes **individual papers** without
+duplication and tells you what to prune.
+
+Demo mode uses deterministic heuristics (title deduping and tag clustering); with
+a Claude key the same schema is filled by the model.
+
+<p align="center">
+  <img src="screenshots/groups.svg" alt="Groups view with paper sets and drop suggestions" width="720" />
+</p>
+
+## 5. ↯ Plan your reading — *Strategies*
 
 Open **Strategies**. Either:
 
@@ -93,7 +116,7 @@ These are planning hints, not deadlines. Skim faster or read deeper and your rea
   <img src="screenshots/strategies.svg" alt="Reading strategies compose form and spec-mapped plan" width="920" />
 </p>
 
-## 5. ✦ Spec — upload, screen library, discover on PubMed
+## 6. ✦ Spec — upload, screen library, discover on PubMed
 
 Open **Spec** in the sidebar. The view has two tabs with different jobs:
 

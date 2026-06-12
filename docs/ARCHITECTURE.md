@@ -7,7 +7,7 @@ human-readable JSON store, no build step) over scale.
 ```
 ┌────────────────────────────────────────────────────────────┐
 │ Browser SPA  (app/static: index.html · styles.css · app.js) │
-│   Library · Connections · Strategies · Specs                │
+│   Library · Connections · Groups · Strategies · Specs       │
 └───────────────┬────────────────────────────────────────────┘
                 │  fetch /api/*   +   poll /api/jobs/{id}
 ┌───────────────▼────────────────────────────────────────────┐
@@ -118,6 +118,8 @@ a corrupt file is set aside rather than crashing. No database to run.
 | `POST` | `/api/projects/categorize-all` | Categorize every project → job |
 | `POST` | `/api/connections` | Find cross-project connections → job |
 | `GET` | `/api/connections` | Latest connection map |
+| `POST` | `/api/groups` | Group papers across projects (no duplication) + drop suggestions → job |
+| `GET` | `/api/groups` | Latest paper grouping map |
 | `POST` | `/api/strategies` | Generate a reading plan (`mode`, `goal`, `project_keys`, optional `spec_id`) → job |
 | `GET` / `DELETE` | `/api/strategies[/{id}]` | List / delete saved plans |
 | `POST` | `/api/specs` | Upload a spec (file or `text`) |
@@ -151,6 +153,7 @@ app/
   demo_data.py     bundled sample library
   specs.py         spec text extraction
   discovery.py     PubMed query + external paper discovery
+  grouping.py      cross-project paper sets + drop suggestions
   spec_strategy.py spec-relevant project filter + plan mapping
   reading_schedule.py per-paper estimates and day schedule
   static/          the single-page UI

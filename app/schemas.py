@@ -58,6 +58,53 @@ class ConnectionMap(BaseModel):
     )
 
 
+class GroupedPaperRef(BaseModel):
+    paper_key: str = Field(description="Key of the paper in this group.")
+    title: str = Field(description="Paper title for display.")
+    project_key: str = Field(description="Project the paper belongs to.")
+
+
+class PaperGroup(BaseModel):
+    """A non-overlapping set of papers worth reading together across projects."""
+
+    name: str = Field(description="Short name for this reading set.")
+    paper_keys: list[str] = Field(
+        description="Paper keys in this group. Each paper_key may appear in at most one group."
+    )
+    papers: list[GroupedPaperRef] = Field(
+        default_factory=list,
+        description="Optional display refs; the server fills these from paper_keys when missing.",
+    )
+    project_keys: list[str] = Field(description="Project keys the papers come from.")
+    rationale: str = Field(description="Why these papers belong together without duplicating work.")
+
+
+class PaperDropSuggestion(BaseModel):
+    """A paper the user may want to remove or archive from their shelf."""
+
+    paper_key: str = Field(description="Key of the paper to consider dropping.")
+    title: str = Field(description="Paper title for display.")
+    project_key: str = Field(description="Project/collection the paper currently lives in.")
+    drop_kind: str = Field(
+        description="One of: 'duplicate', 'redundant', 'weak_fit', 'outdated'."
+    )
+    reason: str = Field(description="1-2 sentences explaining why to drop or archive it.")
+
+
+class PaperGroupingMap(BaseModel):
+    """Optimal cross-project paper groups with no duplication plus prune suggestions."""
+
+    overview: str = Field(
+        description="2-4 sentences summarizing how the shelf was organized and what to prune."
+    )
+    groups: list[PaperGroup] = Field(
+        description="Non-overlapping paper sets across projects; each paper appears at most once."
+    )
+    drops: list[PaperDropSuggestion] = Field(
+        description="Papers to consider removing — duplicates across collections, redundant surveys, or weak fits."
+    )
+
+
 class ReadingStep(BaseModel):
     paper_key: str = Field(description="The key of the paper to read at this step.")
     title: str = Field(description="The paper's title (copied for display).")
