@@ -7,7 +7,7 @@ human-readable JSON store, no build step) over scale.
 ```
 ┌────────────────────────────────────────────────────────────┐
 │ Browser SPA  (app/static: index.html · styles.css · app.js) │
-│   Library · Connections · Groups · Strategies · Specs       │
+│   Library · Connections · Groups · Chat · Strategies · Spec │
 └───────────────┬────────────────────────────────────────────┘
                 │  fetch /api/*   +   poll /api/jobs/{id}
 ┌───────────────▼────────────────────────────────────────────┐
@@ -26,12 +26,15 @@ human-readable JSON store, no build step) over scale.
 
 ## Frontend layout
 
-The SPA (`app/static/`) is a hash router with five views. CSS centers the whole
-shell (`max-width: 19200px` via `--app-max`, `margin: 0 auto`) so the green sidebar and main pane
-move together on ultrawide monitors. The sidebar (`--rail-w: 864px`) holds
-navigation and status chips; **Sync library** / **Purge library** and per-view
-actions sit in the hero toolbar. Main content fills the remaining width without
-a separate max-width offset (no sidebar/content gap on large displays).
+The SPA (`app/static/`) is a hash router with **six views** (Library, Connections,
+Groups, Chat, Strategies, Spec). CSS centers the whole shell (`max-width: 19200px`
+via `--app-max`, `margin: 0 auto`) so the green sidebar and main pane move
+together on ultrawide monitors. The sidebar (`--rail-w: 864px`) holds navigation
+and status chips; the **BindingSolution** brand is inset from the divider
+(extra right margin on `.brand`) so it does not crowd the main pane. **Sync
+library** / **Purge library** and per-view actions sit in the hero toolbar. Main
+content fills the remaining width without a separate max-width offset (no
+sidebar/content gap on large displays).
 
 Typography and layout spacing are scaled **3×** from a conventional baseline:
 `html` root font-size clamps to roughly **54–66px** (viewport-responsive), and

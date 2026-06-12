@@ -20,7 +20,8 @@ Pricing depends on the model you set in `ANTHROPIC_MODEL` — see
 | **Categorize one project** | 1 per project | Low | One structured call per collection. |
 | **Categorize all** | 1 per active project | Low–medium | Same as clicking every card. |
 | **Find connections** | 1 | Medium | One heavy cross-library call (adaptive thinking). |
-| **Group papers** | 1 | Medium | One cross-library call over unique item keys; non-overlapping paper sets + drop list. Progress is phase-based, not per-paper. |
+| **Group papers** | 1 | Medium | One cross-library call over unique item keys; non-overlapping 10–30 paper sets + drop list. Progress is phase-based, not per-paper. |
+| **Chat** | 1 per message | Low–medium | One call per send; context is assembled from your local store (no re-upload). Grows with shelf size and thread length. |
 | **Reading strategy** | 1 per plan | Medium | One heavy call; grows with papers in chosen projects. |
 | **Build reading plan** (from spec) | 1 per plan | Medium | Same as a manual strategy, but only spec-relevant papers are included — not a per-paper screen. |
 | **Upload spec** (validation) | 1 per upload | Low | Checks the text is a real project brief. |
@@ -38,7 +39,7 @@ call Claude. Neither does **demo AI mode** (no key, or `MOCK_LLM=true`).
 Results are saved in `./data/library.json`:
 
 - **Categorizations** survive a Zotero re-sync (for collections that still exist).
-- **Connections**, **paper groups**, **reading plans**, **library matches**, and **PubMed discoveries**
+- **Connections**, **paper groups**, **chat threads**, **reading plans**, **library matches**, and **PubMed discoveries**
   stay until you delete them or **Purge library**.
 - Opening a saved plan or spec tab does **not** call the API again.
 

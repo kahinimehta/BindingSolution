@@ -16,8 +16,9 @@ After changing `.env`, restart the server (`Ctrl-C`, then `make run`).
 
 ### Claude API key (`ANTHROPIC_API_KEY`)
 
-Powers AI features (categorization, connections, strategies, **Find in library**
-spec screening). Without it the app runs in a deterministic demo mode.
+Powers AI features (categorization, connections, groups, **Chat**, strategies,
+**Find in library** spec screening). Without it the app runs in a deterministic
+demo mode.
 
 **Billing:** usage is charged to **your Anthropic account** (input + output
 tokens per API call). BindingSolution itself is free. Library spec screening is

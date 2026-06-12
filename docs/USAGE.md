@@ -16,10 +16,13 @@ refresh the page — work continues until it finishes. Open **Running** to see
 live progress; click a row to reopen the progress window. Dismissing a row only
 hides it from the list — it does not stop the job. The only way to stop work is
 to interrupt the server process in your terminal (e.g. Ctrl+C on `make run`).
+**Chat** is synchronous (one request per message) — it does not appear in
+**Running**.
 
 > **No keys?** Click **Load demo library** on the Library screen. You get a
-> small synthetic library spanning four overlapping research areas so every
-> feature is explorable. AI features run in heuristic "demo AI" mode (marked
+> small synthetic library spanning overlapping research areas (including a
+> 12-paper neural population dynamics collection for Groups) so every feature
+> is explorable. AI features run in heuristic "demo AI" mode (marked
 > with a small badge) until you add a Claude key.
 
 ---
@@ -53,7 +56,7 @@ anything in Zotero. With no Zotero credentials, use **Load demo library** on the
 empty state instead (same sync endpoint, bundled sample data).
 
 <p align="center">
-  <img src="screenshots/library.svg" alt="Library view with large-type layout, full-height project cards, Running panel, and hero toolbar" width="1000" />
+  <img src="screenshots/library.svg" alt="Library view with six sidebar tabs, large-type layout, full-height project cards, Running panel, and hero toolbar" width="1000" />
 </p>
 
 ## 2. 📂 Categorize projects — *Library*

@@ -31,7 +31,7 @@ Claude usage bills to **your** Anthropic account (per token). Zotero sync and re
 | Heavy | Light |
 | --- | --- |
 | **Find in library** (first run) — one call **per active paper** | Categorize one project, upload spec validation, **PubMed discovery** |
-| **Re-screen library** after sync — **new papers only** | One reading plan, connections, or paper groups pass |
+| **Re-screen library** after sync — **new papers only** | One reading plan, connections, paper groups, or **Chat** message |
 
 **Tips:** try demo mode first; tidy Zotero (only collections with **2+ papers** are active); read the spec-screening confirmation before starting; set a [spend limit](https://console.anthropic.com/settings/billing). Full detail: [docs/BILLING.md](docs/BILLING.md).
 
@@ -53,7 +53,7 @@ Use any view in any order.
 - **Purge library** — wipe local data without touching Zotero (hero toolbar)
 
 <p align="center">
-  <img src="docs/screenshots/library.svg" alt="Library view with large-type layout, full-height project cards, Running panel, and hero toolbar" width="1000" />
+  <img src="docs/screenshots/library.svg" alt="Library view with six sidebar tabs, large-type layout, full-height project cards, Running panel, and hero toolbar" width="1000" />
 </p>
 
 <p align="center">
