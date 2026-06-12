@@ -152,45 +152,6 @@ a { color: inherit; text-decoration: none; }
 .nav-count:empty { display: none; }
 .nav-item.active .nav-count { background: rgba(179,137,47,.35); color: #fff8e8; }
 
-.rail-actions {
-  display: flex; flex-direction: column; gap: 8px;
-  margin-top: 12px; padding-top: 14px;
-  border-top: 1px solid rgba(255,255,255,.1);
-}
-.btn-rail {
-  width: 100%; justify-content: center; gap: 8px;
-  padding: 10px 14px; border-radius: 10px;
-  font-weight: 600; font-size: .86rem;
-  background: rgba(255,255,255,.1);
-  color: #f4f8f5;
-  border: 1px solid rgba(255,255,255,.28);
-  transition: background .16s, border-color .16s, color .16s;
-}
-.btn-rail:hover {
-  background: rgba(255,255,255,.16);
-  border-color: rgba(202,161,74,.55);
-  color: #fff;
-}
-.btn-rail-suggest {
-  background: linear-gradient(135deg, rgba(179,137,47,.38), rgba(202,161,74,.28));
-  border-color: rgba(202,161,74,.55);
-  color: #fff8e8;
-}
-.btn-rail-suggest:hover {
-  background: linear-gradient(135deg, rgba(179,137,47,.52), rgba(202,161,74,.38));
-  color: #fff;
-}
-.btn-rail-purge {
-  font-size: .8rem;
-  color: #e6ece8;
-  border-color: rgba(255,255,255,.2);
-  background: rgba(0,0,0,.12);
-}
-.btn-rail-purge:hover {
-  color: #fff;
-  background: rgba(138,59,50,.32);
-  border-color: rgba(240,190,180,.45);
-}
 .rail-foot { margin-top: auto; padding-top: 14px; }
 .btn-danger {
   background: var(--oxblood); color: #fff;
@@ -203,7 +164,7 @@ a { color: inherit; text-decoration: none; }
   border: 2px solid rgba(255,255,255,.35); border-top-color: var(--brass-2);
   display: none;
 }
-.btn-rail.busy .sync-spin { display: inline-block; animation: spin .8s linear infinite; }
+.btn-chrome.busy .sync-spin { display: inline-block; animation: spin .8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
 .status-chips { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -252,7 +213,50 @@ a { color: inherit; text-decoration: none; }
   max-width: 48ch;
   line-height: 1.45;
 }
-.hero-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; padding-top: 2px; }
+.hero-toolbar {
+  display: flex; flex-direction: column; align-items: flex-end;
+  gap: 8px; flex-shrink: 0;
+}
+.chrome-actions {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  align-items: center; justify-content: flex-end;
+}
+.btn-chrome {
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  padding: 8px 14px; border-radius: 9px;
+  font-weight: 600; font-size: .86rem; line-height: 1.2;
+  border: 1px solid rgba(255,255,255,.38);
+  background: rgba(255,255,255,.16);
+  color: #fff;
+  white-space: nowrap;
+  transition: background .16s, border-color .16s, filter .16s;
+}
+.btn-chrome:hover {
+  background: rgba(255,255,255,.24);
+  border-color: rgba(202,161,74,.65);
+}
+.btn-chrome-suggest {
+  background: linear-gradient(135deg, var(--brass), var(--brass-2));
+  color: #2b2410;
+  border-color: rgba(255,230,160,.55);
+  box-shadow: 0 2px 10px rgba(0,0,0,.18);
+}
+.btn-chrome-suggest:hover { filter: brightness(1.06); background: linear-gradient(135deg, var(--brass), var(--brass-2)); }
+.btn-chrome-purge {
+  font-size: .82rem;
+  background: rgba(0,0,0,.18);
+  color: #f2ebe9;
+  border-color: rgba(255,255,255,.22);
+}
+.btn-chrome-purge:hover {
+  background: rgba(138,59,50,.45);
+  border-color: rgba(255,200,190,.4);
+  color: #fff;
+}
+.hero-actions {
+  display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+  justify-content: flex-end;
+}
 .hero-actions .btn-primary {
   background: linear-gradient(135deg, var(--brass), var(--brass-2));
   color: #2b2410;
@@ -829,11 +833,9 @@ select.input, .input {
   .nav-item { flex: 1 1 140px; padding: 10px 12px; }
   .nav-desc { display: none; }
   .nav-count { display: none; }
-  .rail-actions {
-    flex-direction: row; flex-wrap: wrap; width: 100%;
-    margin: 0; padding: 10px 0 0; border: none;
-  }
-  .btn-rail { width: auto; flex: 1 1 140px; }
+  .hero-toolbar { align-items: stretch; width: 100%; }
+  .chrome-actions { justify-content: flex-start; }
+  .hero-actions { justify-content: flex-start; }
   .rail-foot { margin: 0; padding: 8px 0 0; width: 100%; }
   .status-chips { margin: 0; }
   .hero-bar { padding: 0.95rem 1.15rem 0.85rem; }

@@ -266,8 +266,8 @@ const viewMeta = {
     subtitle: "Compose ordered reading paths across projects for a specific goal.",
   },
   specs: {
-    title: "Project specs",
-    subtitle: "Upload a project description and see which library papers are relevant, with why.",
+    title: "Suggest new papers",
+    subtitle: "Upload a project spec, screen your library, and see which papers match — with why each one matters.",
   },
 };
 
@@ -777,7 +777,10 @@ let selectedSpecId = null;
 
 async function renderSpecs() {
   await loadProjects();
-  setView("specs");
+  const specActions = specsTab === "upload"
+    ? [el("button", { type: "button", class: "btn btn-primary btn-sm", onclick: () => switchSpecsTab("suggestions") }, "View suggestions")]
+    : [el("button", { type: "button", class: "btn btn-primary btn-sm", onclick: () => switchSpecsTab("upload") }, "Upload spec")];
+  setView("specs", specActions);
   await renderKpiStrip("specs");
   const wrap = el("div", {});
   wrap.append(el("div", { class: "sub-tabs" },
@@ -1035,8 +1038,13 @@ async function route() {
 }
 
 /* ── boot ─────────────────────────────────────────────────────── */
-function goSuggestPapers() {
-  specsTab = "suggestions";
+async function goSuggestPapers() {
+  try {
+    const { specs } = await api.get("/specs");
+    specsTab = specs.some((s) => s.status === "analyzed") ? "suggestions" : "upload";
+  } catch {
+    specsTab = "upload";
+  }
   location.hash = "#/specs";
 }
 

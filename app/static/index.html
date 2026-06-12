@@ -51,21 +51,12 @@
         </a>
         <a class="nav-item" data-route="specs" href="#/specs">
           <span class="nav-body">
-            <span class="nav-label">Project specs</span>
-            <span class="nav-desc">Upload spec · suggest papers</span>
+            <span class="nav-label">Suggest papers</span>
+            <span class="nav-desc">New papers for your spec</span>
           </span>
           <span class="nav-count" data-count="specs"></span>
         </a>
       </nav>
-
-      <div class="rail-actions">
-        <button type="button" class="btn btn-rail btn-rail-suggest" id="suggest-btn">✦ Suggest papers</button>
-        <button type="button" class="btn btn-rail" id="sync-btn">
-          <span class="sync-spin" aria-hidden="true"></span>
-          <span class="sync-label">Sync library</span>
-        </button>
-        <button type="button" class="btn btn-rail btn-rail-purge hidden" id="purge-btn">Purge library</button>
-      </div>
 
       <div class="rail-foot">
         <div class="status-chips" id="status-chips"></div>
@@ -80,7 +71,17 @@
             <h1 class="hero-title" id="view-title">Library</h1>
             <p class="hero-sub" id="view-subtitle">Your Zotero collections, categorized and ready to explore.</p>
           </div>
-          <div class="hero-actions" id="view-actions"></div>
+          <div class="hero-toolbar">
+            <div class="chrome-actions">
+              <button type="button" class="btn btn-chrome btn-chrome-suggest" id="suggest-btn">✦ Suggest new papers</button>
+              <button type="button" class="btn btn-chrome" id="sync-btn">
+                <span class="sync-spin" aria-hidden="true"></span>
+                <span class="sync-label">Sync library</span>
+              </button>
+              <button type="button" class="btn btn-chrome btn-chrome-purge hidden" id="purge-btn">Purge library</button>
+            </div>
+            <div class="hero-actions" id="view-actions"></div>
+          </div>
         </div>
       </header>
 
