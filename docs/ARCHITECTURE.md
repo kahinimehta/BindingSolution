@@ -66,18 +66,21 @@ immediately (`app/jobs.py` runs the work in a daemon thread) and the frontend
 polls `GET /api/jobs/{id}` for live progress. Spec screening persists relevant
 hits incrementally, so partial progress survives an interruption.
 
-### Project specs (paper suggestions)
+### Spec (library screen + PubMed discovery)
 
-The **Project specs** view is a two-tab SPA panel (`Upload & manage` ·
-`Suggested papers`):
+The **Spec** view is a two-tab SPA panel (`Upload & manage` · `Suggested papers`):
 
 1. **Upload** — `POST /api/specs` extracts text (PDF/Word/MD/txt), validates
    that the content is a real project brief (`SpecValidation`), and stores it.
-2. **Screen** — `POST /api/specs/{id}/analyze` assesses each paper in the
+2. **Screen library** — `POST /api/specs/{id}/analyze` assesses each paper in the
    active library but only persists **core** and **supporting** hits in
-   `spec.analysis`. The UI lists those in the **Suggested papers** tab with
-   `relevance_explanation` and optional `use_for` tags.
-3. **Map to reading plan** — `POST /api/strategies` with optional `spec_id`
+   `spec.analysis`. The UI lists those under **Library matches** on the upload tab.
+3. **Discover on PubMed** — `POST /api/specs/{id}/discover` (`app/discovery.py`)
+   builds a query from spec text and categorized keywords, fetches hits via NCBI
+   eutils, excludes titles already in the library, and stores ranked rows in
+   `spec.discoveries`. No Claude call — mock hits when `MOCK_LLM=true` or if
+   PubMed is unreachable.
+4. **Map to reading plan** — `POST /api/strategies` with optional `spec_id`
    filters projects to spec-relevant papers (`spec_strategy.projects_from_spec`),
    generates one reading strategy, then merges relevance onto each step
    (`attach_spec_mapping`: `spec_relevance`, `spec_score`, `spec_why`; core
@@ -116,6 +119,7 @@ a corrupt file is set aside rather than crashing. No database to run.
 | `POST` | `/api/specs` | Upload a spec (file or `text`) |
 | `GET` / `DELETE` | `/api/specs[/{id}]` | List / fetch / delete specs |
 | `POST` | `/api/specs/{id}/analyze` | Screen library; store only relevant papers → job |
+| `POST` | `/api/specs/{id}/discover` | PubMed discovery; papers not in library → job |
 | `GET` | `/api/jobs/{id}` | Poll a background job |
 
 Endpoints that return `{"job_id": ...}` are asynchronous — poll `/api/jobs/{id}`
@@ -142,6 +146,7 @@ app/
   zotero_client.py Zotero ingest (optional pyzotero)
   demo_data.py     bundled sample library
   specs.py         spec text extraction
+  discovery.py     PubMed query + external paper discovery
   spec_strategy.py spec-relevant project filter + plan mapping
   reading_schedule.py per-paper estimates and day schedule
   static/          the single-page UI

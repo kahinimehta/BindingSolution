@@ -118,6 +118,8 @@ class Store:
                 "created_at": time.time(),
                 "status": "new",
                 "analysis": {},
+                "discoveries": [],
+                "discover_status": "idle",
                 **spec,
             }
             self._data["specs"].insert(0, spec)

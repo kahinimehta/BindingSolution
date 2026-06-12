@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 500" width="920" height="500" role="img" aria-label="Project specs Upload and manage tab">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 560" width="920" height="560" role="img" aria-label="Spec upload and library matches tab">
   <defs>
     <linearGradient id="green" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#1f4636"/>
@@ -14,39 +14,56 @@
     </filter>
   </defs>
 
-  <rect width="920" height="500" fill="#f4efe4"/>
-  <rect x="0" y="0" width="228" height="500" fill="url(#green)"/>
-  <line x1="228" y1="0" x2="228" y2="500" stroke="#caa14a" stroke-width="2" stroke-opacity="0.42"/>
+  <rect width="920" height="560" fill="#f4efe4"/>
+  <rect x="0" y="0" width="312" height="560" fill="url(#green)"/>
+  <line x1="312" y1="0" x2="312" y2="560" stroke="#caa14a" stroke-width="2" stroke-opacity="0.42"/>
 
-  <text x="20" y="40" fill="#eef3ee" font-family="Georgia, serif" font-size="17" font-weight="700">BindingSolution</text>
-  <rect x="16" y="252" width="196" height="50" rx="11" fill="rgba(255,255,255,0.14)" stroke="#caa14a" stroke-width="1.5"/>
-  <text x="28" y="274" fill="#fff" font-family="system-ui, sans-serif" font-size="12" font-weight="600">Project specs</text>
-  <text x="28" y="290" fill="#b8cfc4" font-family="system-ui, sans-serif" font-size="8.5">Paper suggestions</text>
+  <text x="20" y="38" fill="#eef3ee" font-family="Georgia, serif" font-size="15" font-weight="700">BindingSolution</text>
+  <rect x="16" y="240" width="280" height="48" rx="11" fill="rgba(255,255,255,0.14)" stroke="#caa14a" stroke-width="1.5"/>
+  <text x="28" y="260" fill="#fff" font-family="system-ui, sans-serif" font-size="12" font-weight="600">Spec</text>
+  <text x="28" y="276" fill="#b8cfc4" font-family="system-ui, sans-serif" font-size="8.5">Upload &amp; screen library</text>
 
-  <rect x="228" y="0" width="692" height="84" fill="url(#hero)"/>
-  <text x="248" y="48" fill="#fff" font-family="Georgia, serif" font-size="28" font-weight="600">Project specs</text>
-  <text x="248" y="68" fill="#b8cfc4" font-family="system-ui, sans-serif" font-size="11">Upload a project description and see which library papers are relevant.</text>
+  <rect x="312" y="0" width="608" height="84" fill="url(#hero)"/>
+  <text x="332" y="44" fill="#fff" font-family="Georgia, serif" font-size="26" font-weight="600">Spec</text>
+  <text x="332" y="64" fill="#b8cfc4" font-family="system-ui, sans-serif" font-size="10.5">Upload a brief, screen your library, or discover new papers on PubMed.</text>
 
-  <g transform="translate(248, 100)">
-    <rect x="0" y="0" width="156" height="32" rx="16" fill="#1f4636"/>
-    <text x="78" y="20" fill="#fff" font-family="system-ui, sans-serif" font-size="9.5" font-weight="600" text-anchor="middle">Upload &amp; manage</text>
-    <rect x="164" y="0" width="140" height="32" rx="16" fill="#fffdf8" stroke="#d3c8b0"/>
-    <text x="234" y="20" fill="#5a564c" font-family="system-ui, sans-serif" font-size="9.5" font-weight="600" text-anchor="middle">Suggested papers</text>
+  <g transform="translate(332, 96)">
+    <rect x="0" y="0" width="156" height="30" rx="15" fill="#1f4636"/>
+    <text x="78" y="19" fill="#fff" font-family="system-ui, sans-serif" font-size="9.5" font-weight="600" text-anchor="middle">Upload &amp; manage</text>
+    <rect x="164" y="0" width="140" height="30" rx="15" fill="#fffdf8" stroke="#d3c8b0"/>
+    <text x="234" y="19" fill="#5a564c" font-family="system-ui, sans-serif" font-size="9.5" font-weight="600" text-anchor="middle">Suggested papers</text>
 
-    <rect x="0" y="48" width="652" height="150" rx="12" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
-    <rect x="18" y="66" width="616" height="68" rx="10" fill="#faf6ec" stroke="#d3c8b0" stroke-dasharray="6 4"/>
-    <text x="326" y="98" fill="#211f1a" font-family="system-ui, sans-serif" font-size="12" font-weight="600" text-anchor="middle">Drop a PDF, Word, Markdown, or text file</text>
-    <text x="326" y="116" fill="#8a8478" font-family="system-ui, sans-serif" font-size="9.5" text-anchor="middle">.pdf &#xB7; .doc &#xB7; .docx &#xB7; .md &#xB7; .txt &#x2014; or paste below</text>
-    <rect x="18" y="148" width="120" height="32" rx="8" fill="#1f4636"/>
-    <text x="78" y="168" fill="#f2f7f3" font-family="system-ui, sans-serif" font-size="9.5" font-weight="600" text-anchor="middle">Save spec</text>
+    <rect x="0" y="40" width="568" height="56" rx="10" fill="#f6edd6" stroke="#e2d9c6"/>
+    <text x="14" y="60" fill="#1f4636" font-family="Georgia, serif" font-size="12" font-weight="600">Upload &amp; screen your library</text>
+    <text x="14" y="78" fill="#5a564c" font-family="system-ui, sans-serif" font-size="8.5">Save a grant aim, then use Find in library to see which papers you already have.</text>
 
-    <text x="0" y="224" fill="#1f4636" font-family="Georgia, serif" font-size="14" font-weight="600">Your specs</text>
-    <rect x="0" y="234" width="652" height="56" rx="10" fill="#fffdf8" stroke="#e2d9c6"/>
-    <text x="16" y="258" fill="#211f1a" font-family="system-ui, sans-serif" font-size="11" font-weight="600">Fairness grant aim</text>
-    <text x="16" y="274" fill="#8a8478" font-family="system-ui, sans-serif" font-size="9">We study fairness and calibration in recommender systems&#x2026;</text>
-    <rect x="524" y="246" width="116" height="28" rx="8" fill="#1f4636"/>
-    <text x="582" y="264" fill="#fff" font-family="system-ui, sans-serif" font-size="8.5" font-weight="600" text-anchor="middle">Find relevant papers</text>
+    <rect x="0" y="108" width="568" height="108" rx="10" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
+    <rect x="16" y="124" width="536" height="52" rx="8" fill="#faf6ec" stroke="#d3c8b0" stroke-dasharray="6 4"/>
+    <text x="284" y="148" fill="#211f1a" font-family="system-ui, sans-serif" font-size="11" font-weight="600" text-anchor="middle">Drop a PDF, Word, Markdown, or text file</text>
+    <text x="284" y="164" fill="#8a8478" font-family="system-ui, sans-serif" font-size="9" text-anchor="middle">.pdf &#xB7; .doc &#xB7; .docx &#xB7; .md &#xB7; .txt</text>
+    <rect x="16" y="184" width="108" height="26" rx="7" fill="#1f4636"/>
+    <text x="70" y="201" fill="#f2f7f3" font-family="system-ui, sans-serif" font-size="9" font-weight="600" text-anchor="middle">&#x2726; Save spec</text>
+
+    <text x="0" y="238" fill="#1f4636" font-family="Georgia, serif" font-size="13" font-weight="600">Your specs</text>
+    <rect x="0" y="246" width="568" height="50" rx="9" fill="#fffdf8" stroke="#e2d9c6"/>
+    <text x="14" y="268" fill="#211f1a" font-family="system-ui, sans-serif" font-size="10.5" font-weight="600">Fairness grant aim</text>
+    <text x="14" y="284" fill="#8a8478" font-family="system-ui, sans-serif" font-size="8.5">We study fairness and calibration in recommender systems&#x2026;</text>
+    <rect x="448" y="256" width="108" height="26" rx="7" fill="#1f4636"/>
+    <text x="502" y="273" fill="#fff" font-family="system-ui, sans-serif" font-size="8.5" font-weight="600" text-anchor="middle">Find in library</text>
+
+    <text x="0" y="320" fill="#1f4636" font-family="Georgia, serif" font-size="13" font-weight="600">Library matches</text>
+    <text x="0" y="336" fill="#8a8478" font-family="system-ui, sans-serif" font-size="8.5">4 relevant of 13 screened</text>
+    <rect x="430" y="308" width="138" height="26" rx="7" fill="#1f4636"/>
+    <text x="499" y="325" fill="#f2f7f3" font-family="system-ui, sans-serif" font-size="8.5" font-weight="600" text-anchor="middle">&#x21AF; Build reading plan</text>
+
+    <rect x="0" y="348" width="568" height="68" rx="9" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
+    <text x="14" y="370" fill="#1f4636" font-family="system-ui, sans-serif" font-size="10.5" font-weight="600">Auditing Recommender Systems for Demographic Skew</text>
+    <text x="14" y="384" fill="#8a8478" font-family="system-ui, sans-serif" font-size="8.5">Fairness in ML</text>
+    <rect x="14" y="390" width="420" height="20" rx="5" fill="#eef4f0" stroke="#cfe0d6"/>
+    <text x="22" y="404" fill="#1f4636" font-family="system-ui, sans-serif" font-size="8">Shares fairness and recommender focus with your grant aim.</text>
+    <rect x="488" y="364" width="64" height="18" rx="9" fill="#1f4636"/>
+    <text x="520" y="376" fill="#fff" font-family="system-ui, sans-serif" font-size="7.5" font-weight="700" text-anchor="middle">CORE</text>
   </g>
 
-  <text x="248" y="484" fill="#8a8478" font-family="system-ui, sans-serif" font-size="9">Illustrative UI mock &#x2014; Upload &amp; manage tab.</text>
+  <text x="332" y="544" fill="#8a8478" font-family="system-ui, sans-serif" font-size="9">Illustrative UI mock &#x2014; Spec upload tab with library matches and Build reading plan.</text>
 </svg>

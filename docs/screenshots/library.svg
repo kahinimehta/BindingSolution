@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 600" width="920" height="600" role="img" aria-label="BindingSolution library view">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 580" width="920" height="580" role="img" aria-label="BindingSolution library view">
   <defs>
     <linearGradient id="green" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#1f4636"/>
@@ -14,103 +14,93 @@
     </filter>
   </defs>
 
-  <rect width="920" height="600" fill="#f4efe4"/>
-  <rect x="0" y="0" width="228" height="600" fill="url(#green)"/>
-  <line x1="228" y1="0" x2="228" y2="600" stroke="#caa14a" stroke-width="2" stroke-opacity="0.42"/>
+  <rect width="920" height="580" fill="#f4efe4"/>
+  <rect x="0" y="0" width="312" height="580" fill="url(#green)"/>
+  <line x1="312" y1="0" x2="312" y2="580" stroke="#caa14a" stroke-width="2" stroke-opacity="0.42"/>
 
-  <text x="20" y="40" fill="#eef3ee" font-family="Georgia, serif" font-size="17" font-weight="700">BindingSolution</text>
-  <text x="20" y="58" fill="#caa14a" font-family="system-ui, sans-serif" font-size="8.5" letter-spacing="1.4">AI READING ROOM</text>
+  <text x="20" y="38" fill="#eef3ee" font-family="Georgia, serif" font-size="15" font-weight="700">BindingSolution</text>
+  <text x="20" y="54" fill="#caa14a" font-family="system-ui, sans-serif" font-size="8" letter-spacing="1.2">AI READING ROOM</text>
 
-  <rect x="16" y="78" width="196" height="50" rx="11" fill="rgba(255,255,255,0.14)" stroke="#caa14a" stroke-width="1.5"/>
-  <text x="28" y="100" fill="#fff" font-family="system-ui, sans-serif" font-size="12" font-weight="600">Library</text>
-  <text x="28" y="116" fill="#b8cfc4" font-family="system-ui, sans-serif" font-size="8.5">Projects &amp; papers</text>
-  <rect x="170" y="94" width="30" height="18" rx="9" fill="rgba(179,137,47,0.35)"/>
-  <text x="185" y="106" fill="#fff8e8" font-size="8" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="700">4</text>
+  <rect x="16" y="72" width="280" height="48" rx="11" fill="rgba(255,255,255,0.14)" stroke="#caa14a" stroke-width="1.5"/>
+  <text x="28" y="92" fill="#fff" font-family="system-ui, sans-serif" font-size="12" font-weight="600">Library</text>
+  <text x="28" y="108" fill="#b8cfc4" font-family="system-ui, sans-serif" font-size="8.5">Projects &amp; papers</text>
+  <rect x="254" y="88" width="30" height="18" rx="9" fill="rgba(179,137,47,0.35)"/>
+  <text x="269" y="100" fill="#fff8e8" font-size="8" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="700">4</text>
 
-  <rect x="16" y="136" width="196" height="50" rx="11" fill="rgba(0,0,0,0.08)"/>
-  <text x="28" y="158" fill="#d6e2db" font-family="system-ui, sans-serif" font-size="12" font-weight="600">Connections</text>
-  <text x="28" y="174" fill="#9fb3a8" font-family="system-ui, sans-serif" font-size="8.5">Cross-project threads</text>
+  <rect x="16" y="128" width="280" height="48" rx="11" fill="rgba(0,0,0,0.08)"/>
+  <text x="28" y="148" fill="#d6e2db" font-family="system-ui, sans-serif" font-size="12" font-weight="600">Connections</text>
+  <text x="28" y="164" fill="#9fb3a8" font-family="system-ui, sans-serif" font-size="8.5">Cross-project threads</text>
 
-  <rect x="16" y="194" width="196" height="50" rx="11" fill="rgba(0,0,0,0.08)"/>
-  <text x="28" y="216" fill="#d6e2db" font-family="system-ui, sans-serif" font-size="12" font-weight="600">Strategies</text>
-  <text x="28" y="232" fill="#9fb3a8" font-family="system-ui, sans-serif" font-size="8.5">Reading plans</text>
+  <rect x="16" y="184" width="280" height="48" rx="11" fill="rgba(0,0,0,0.08)"/>
+  <text x="28" y="204" fill="#d6e2db" font-family="system-ui, sans-serif" font-size="12" font-weight="600">Strategies</text>
+  <text x="28" y="220" fill="#9fb3a8" font-family="system-ui, sans-serif" font-size="8.5">Reading plans</text>
 
-  <rect x="16" y="252" width="196" height="50" rx="11" fill="rgba(0,0,0,0.08)"/>
-  <text x="28" y="274" fill="#d6e2db" font-family="system-ui, sans-serif" font-size="12" font-weight="600">Project specs</text>
-  <text x="28" y="290" fill="#9fb3a8" font-family="system-ui, sans-serif" font-size="8.5">Paper suggestions</text>
+  <rect x="16" y="240" width="280" height="48" rx="11" fill="rgba(0,0,0,0.08)"/>
+  <text x="28" y="260" fill="#d6e2db" font-family="system-ui, sans-serif" font-size="12" font-weight="600">Spec</text>
+  <text x="28" y="276" fill="#9fb3a8" font-family="system-ui, sans-serif" font-size="8.5">Upload &amp; screen library</text>
 
-  <rect x="228" y="0" width="692" height="84" fill="url(#hero)"/>
-  <text x="248" y="48" fill="#fff" font-family="Georgia, serif" font-size="28" font-weight="600">Library</text>
-  <text x="248" y="68" fill="#b8cfc4" font-family="system-ui, sans-serif" font-size="11">Your Zotero collections, categorized and ready to explore.</text>
-  <rect x="790" y="26" width="110" height="32" rx="8" fill="#b3892f"/>
-  <text x="845" y="46" fill="#2b2410" font-family="system-ui, sans-serif" font-size="10" font-weight="700" text-anchor="middle">Categorize all</text>
+  <rect x="312" y="0" width="608" height="96" fill="url(#hero)"/>
+  <text x="332" y="44" fill="#fff" font-family="Georgia, serif" font-size="26" font-weight="600">Library</text>
+  <text x="332" y="64" fill="#b8cfc4" font-family="system-ui, sans-serif" font-size="10.5">Your Zotero collections, categorized and ready to explore.</text>
 
-  <g transform="translate(248, 100)">
-    <rect x="0" y="0" width="138" height="46" rx="8" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
-    <text x="69" y="22" fill="#1f4636" font-size="18" font-weight="700" text-anchor="middle" font-family="Georgia, serif">4</text>
-    <text x="69" y="36" fill="#8a8478" font-size="7.5" text-anchor="middle" font-family="system-ui, sans-serif">ACTIVE PROJECTS</text>
+  <rect x="548" y="22" width="96" height="28" rx="8" fill="rgba(255,255,255,0.16)" stroke="rgba(255,255,255,0.38)"/>
+  <text x="596" y="40" fill="#fff" font-family="system-ui, sans-serif" font-size="9" font-weight="600" text-anchor="middle">Sync library</text>
+  <rect x="652" y="22" width="96" height="28" rx="8" fill="rgba(0,0,0,0.18)" stroke="rgba(255,255,255,0.22)"/>
+  <text x="700" y="40" fill="#f2ebe9" font-family="system-ui, sans-serif" font-size="9" font-weight="600" text-anchor="middle">Purge library</text>
+  <line x1="548" y1="58" x2="748" y2="58" stroke="rgba(255,255,255,0.2)"/>
+  <rect x="618" y="66" width="130" height="28" rx="8" fill="#b3892f"/>
+  <text x="683" y="84" fill="#2b2410" font-family="system-ui, sans-serif" font-size="9.5" font-weight="700" text-anchor="middle">&#x2726; Categorize all</text>
 
-    <rect x="148" y="0" width="138" height="46" rx="8" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
-    <text x="217" y="22" fill="#1f4636" font-size="18" font-weight="700" text-anchor="middle" font-family="Georgia, serif">13</text>
-    <text x="217" y="36" fill="#8a8478" font-size="7.5" text-anchor="middle" font-family="system-ui, sans-serif">PAPERS</text>
+  <g transform="translate(332, 108)">
+    <rect x="0" y="0" width="128" height="42" rx="8" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
+    <text x="64" y="20" fill="#1f4636" font-size="17" font-weight="700" text-anchor="middle" font-family="Georgia, serif">4</text>
+    <text x="64" y="34" fill="#8a8478" font-size="7.5" text-anchor="middle" font-family="system-ui, sans-serif">ACTIVE PROJECTS</text>
 
-    <rect x="296" y="0" width="138" height="46" rx="8" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
-    <text x="365" y="22" fill="#1f4636" font-size="18" font-weight="700" text-anchor="middle" font-family="Georgia, serif">2</text>
-    <text x="365" y="36" fill="#8a8478" font-size="7.5" text-anchor="middle" font-family="system-ui, sans-serif">EXCLUDED</text>
+    <rect x="138" y="0" width="128" height="42" rx="8" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
+    <text x="202" y="20" fill="#1f4636" font-size="17" font-weight="700" text-anchor="middle" font-family="Georgia, serif">13</text>
+    <text x="202" y="34" fill="#8a8478" font-size="7.5" text-anchor="middle" font-family="system-ui, sans-serif">PAPERS</text>
 
-    <text x="0" y="78" fill="#1f4636" font-family="Georgia, serif" font-size="15" font-weight="600">Your projects</text>
-    <text x="0" y="94" fill="#5a564c" font-family="system-ui, sans-serif" font-size="10">Collections with 2+ papers &#x2014; categorize and analyze these.</text>
+    <rect x="276" y="0" width="128" height="42" rx="8" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
+    <text x="340" y="20" fill="#1f4636" font-size="17" font-weight="700" text-anchor="middle" font-family="Georgia, serif">2</text>
+    <text x="340" y="34" fill="#8a8478" font-size="7.5" text-anchor="middle" font-family="system-ui, sans-serif">EXCLUDED</text>
 
-    <rect x="0" y="108" width="318" height="132" rx="10" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
-    <rect x="0" y="108" width="4" height="132" rx="10" fill="#caa14a"/>
-    <text x="14" y="128" fill="#211f1a" font-family="Georgia, serif" font-size="13" font-weight="600">Fairness in ML</text>
-    <text x="14" y="142" fill="#8a8478" font-family="system-ui, sans-serif" font-size="8.5">3 papers</text>
-    <line x1="14" y1="148" x2="304" y2="148" stroke="#e2d9c6"/>
-    <text x="14" y="162" fill="#5a564c" font-family="system-ui, sans-serif" font-size="8">Impossibility results, auditing, and causal fairness across recommender systems.</text>
-    <rect x="14" y="170" width="108" height="16" rx="8" fill="#e6efe9" stroke="#c4dccd"/>
-    <text x="68" y="181" fill="#1f4636" font-size="7" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="600">Machine Learning</text>
-    <rect x="128" y="170" width="58" height="16" rx="8" fill="#ece9e1"/>
-    <text x="157" y="181" fill="#5a564c" font-size="7" text-anchor="middle" font-family="system-ui, sans-serif">established</text>
-    <rect x="298" y="154" width="4" height="72" rx="2" fill="#e2d9c6"/>
-    <rect x="298" y="162" width="4" height="28" rx="2" fill="#c4b89e"/>
+    <text x="0" y="68" fill="#1f4636" font-family="Georgia, serif" font-size="14" font-weight="600">Your projects</text>
+    <text x="0" y="82" fill="#5a564c" font-family="system-ui, sans-serif" font-size="9.5">Collections with 2+ papers &#x2014; categorize and analyze these.</text>
 
-    <rect x="334" y="108" width="318" height="132" rx="10" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
-    <text x="348" y="128" fill="#211f1a" font-family="Georgia, serif" font-size="13" font-weight="600">Causal Inference</text>
-    <text x="348" y="142" fill="#8a8478" font-family="system-ui, sans-serif" font-size="8.5">3 papers</text>
-    <line x1="348" y1="148" x2="638" y2="148" stroke="#e2d9c6"/>
-    <text x="348" y="162" fill="#5a564c" font-family="system-ui, sans-serif" font-size="8">Treatment effects, IVs, and sensitivity under partial overlap and feedback loops.</text>
-    <rect x="348" y="170" width="98" height="16" rx="8" fill="#e6efe9" stroke="#c4dccd"/>
-    <text x="397" y="181" fill="#1f4636" font-size="7" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="600">Statistics</text>
-    <rect x="454" y="170" width="62" height="16" rx="8" fill="#ece9e1"/>
-    <text x="485" y="181" fill="#5a564c" font-size="7" text-anchor="middle" font-family="system-ui, sans-serif">developing</text>
+    <rect x="0" y="94" width="288" height="120" rx="10" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
+    <rect x="0" y="94" width="4" height="120" rx="10" fill="#caa14a"/>
+    <text x="14" y="114" fill="#211f1a" font-family="Georgia, serif" font-size="12.5" font-weight="600">Fairness in ML</text>
+    <text x="14" y="128" fill="#8a8478" font-family="system-ui, sans-serif" font-size="8.5">3 papers</text>
+    <line x1="14" y1="134" x2="274" y2="134" stroke="#e2d9c6"/>
+    <text x="14" y="148" fill="#5a564c" font-family="system-ui, sans-serif" font-size="8">Impossibility results, auditing, and causal fairness across recommender systems.</text>
+    <rect x="14" y="156" width="108" height="16" rx="8" fill="#e6efe9" stroke="#c4dccd"/>
+    <text x="68" y="167" fill="#1f4636" font-size="7" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="600">Machine Learning</text>
 
-    <rect x="0" y="252" width="318" height="132" rx="10" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
-    <text x="14" y="272" fill="#211f1a" font-family="Georgia, serif" font-size="13" font-weight="600">Graph Neural Networks</text>
-    <text x="14" y="286" fill="#8a8478" font-family="system-ui, sans-serif" font-size="8.5">4 papers</text>
-    <line x1="14" y1="292" x2="304" y2="292" stroke="#e2d9c6"/>
-    <text x="14" y="306" fill="#5a564c" font-family="system-ui, sans-serif" font-size="8">Message passing, over-smoothing theory, and scalable subgraph sampling.</text>
-    <rect x="14" y="314" width="88" height="16" rx="8" fill="#e6efe9" stroke="#c4dccd"/>
-    <text x="58" y="325" fill="#1f4636" font-size="7" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="600">ML</text>
+    <rect x="300" y="94" width="288" height="120" rx="10" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
+    <text x="314" y="114" fill="#211f1a" font-family="Georgia, serif" font-size="12.5" font-weight="600">Causal Inference</text>
+    <text x="314" y="128" fill="#8a8478" font-family="system-ui, sans-serif" font-size="8.5">3 papers</text>
+    <line x1="314" y1="134" x2="574" y2="134" stroke="#e2d9c6"/>
+    <text x="314" y="148" fill="#5a564c" font-family="system-ui, sans-serif" font-size="8">Treatment effects, IVs, and sensitivity under partial overlap.</text>
+    <rect x="314" y="156" width="98" height="16" rx="8" fill="#e6efe9" stroke="#c4dccd"/>
+    <text x="363" y="167" fill="#1f4636" font-size="7" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="600">Statistics</text>
 
-    <rect x="334" y="252" width="318" height="132" rx="10" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
-    <text x="348" y="272" fill="#211f1a" font-family="Georgia, serif" font-size="13" font-weight="600">LLM Evaluation</text>
-    <text x="348" y="286" fill="#8a8478" font-family="system-ui, sans-serif" font-size="8.5">3 papers</text>
-    <line x1="348" y1="292" x2="638" y2="292" stroke="#e2d9c6"/>
-    <text x="348" y="306" fill="#5a564c" font-family="system-ui, sans-serif" font-size="8">Benchmarks, human preference alignment, and faithfulness metrics.</text>
-    <rect x="348" y="314" width="72" height="16" rx="8" fill="#e6efe9" stroke="#c4dccd"/>
-    <text x="384" y="325" fill="#1f4636" font-size="7" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="600">NLP</text>
+    <rect x="0" y="226" width="288" height="120" rx="10" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
+    <text x="14" y="246" fill="#211f1a" font-family="Georgia, serif" font-size="12.5" font-weight="600">Graph Neural Networks</text>
+    <text x="14" y="260" fill="#8a8478" font-family="system-ui, sans-serif" font-size="8.5">4 papers</text>
 
-    <text x="0" y="408" fill="#1f4636" font-family="Georgia, serif" font-size="14" font-weight="600">Excluded collections</text>
-    <rect x="0" y="420" width="318" height="88" rx="10" fill="#faf6ec" stroke="#d3c8b0" stroke-dasharray="5 4"/>
-    <text x="14" y="446" fill="#211f1a" font-family="Georgia, serif" font-size="12" font-weight="600">Empty folder</text>
-    <text x="14" y="462" fill="#8a8478" font-family="system-ui, sans-serif" font-size="8.5">0 papers</text>
-    <line x1="14" y1="468" x2="304" y2="468" stroke="#e2d9c6" stroke-dasharray="4 3"/>
-    <text x="14" y="484" fill="#8a8478" font-family="system-ui, sans-serif" font-size="8">No papers in this folder &#x2014; add papers in Zotero or ignore.</text>
+    <rect x="300" y="226" width="288" height="120" rx="10" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
+    <text x="314" y="246" fill="#211f1a" font-family="Georgia, serif" font-size="12.5" font-weight="600">LLM Evaluation</text>
+    <text x="314" y="260" fill="#8a8478" font-family="system-ui, sans-serif" font-size="8.5">3 papers</text>
 
-    <rect x="334" y="420" width="318" height="88" rx="10" fill="#faf6ec" stroke="#d3c8b0" stroke-dasharray="5 4"/>
-    <text x="348" y="446" fill="#211f1a" font-family="Georgia, serif" font-size="12" font-weight="600">Single paper</text>
-    <text x="348" y="462" fill="#8a8478" font-family="system-ui, sans-serif" font-size="8.5">1 paper</text>
+    <text x="0" y="368" fill="#1f4636" font-family="Georgia, serif" font-size="13" font-weight="600">Excluded collections</text>
+    <rect x="0" y="380" width="288" height="80" rx="10" fill="#faf6ec" stroke="#d3c8b0" stroke-dasharray="5 4"/>
+    <text x="14" y="404" fill="#211f1a" font-family="Georgia, serif" font-size="11.5" font-weight="600">Empty folder</text>
+    <text x="14" y="420" fill="#8a8478" font-family="system-ui, sans-serif" font-size="8.5">0 papers</text>
+
+    <rect x="300" y="380" width="288" height="80" rx="10" fill="#faf6ec" stroke="#d3c8b0" stroke-dasharray="5 4"/>
+    <text x="314" y="404" fill="#211f1a" font-family="Georgia, serif" font-size="11.5" font-weight="600">Single paper</text>
+    <text x="314" y="420" fill="#8a8478" font-family="system-ui, sans-serif" font-size="8.5">1 paper</text>
   </g>
 
-  <text x="248" y="582" fill="#8a8478" font-family="system-ui, sans-serif" font-size="9">Illustrative UI mock &#x2014; wider project cards with scrollable categorization.</text>
+  <text x="332" y="564" fill="#8a8478" font-family="system-ui, sans-serif" font-size="9">Illustrative UI mock &#x2014; wider sidebar, Sync/Purge toolbar, library project cards.</text>
 </svg>

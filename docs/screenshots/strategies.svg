@@ -15,61 +15,61 @@
   </defs>
 
   <rect width="920" height="560" fill="#f4efe4"/>
-  <rect x="0" y="0" width="228" height="560" fill="url(#green)"/>
-  <line x1="228" y1="0" x2="228" y2="560" stroke="#caa14a" stroke-width="2" stroke-opacity="0.42"/>
+  <rect x="0" y="0" width="312" height="560" fill="url(#green)"/>
+  <line x1="312" y1="0" x2="312" y2="560" stroke="#caa14a" stroke-width="2" stroke-opacity="0.42"/>
 
-  <text x="20" y="40" fill="#eef3ee" font-family="Georgia, serif" font-size="17" font-weight="700">BindingSolution</text>
+  <text x="20" y="38" fill="#eef3ee" font-family="Georgia, serif" font-size="15" font-weight="700">BindingSolution</text>
 
-  <rect x="16" y="194" width="196" height="50" rx="11" fill="rgba(255,255,255,0.14)" stroke="#caa14a" stroke-width="1.5"/>
-  <text x="28" y="216" fill="#fff" font-family="system-ui, sans-serif" font-size="12" font-weight="600">Strategies</text>
-  <text x="28" y="232" fill="#b8cfc4" font-family="system-ui, sans-serif" font-size="8.5">Reading plans</text>
+  <rect x="16" y="184" width="280" height="48" rx="11" fill="rgba(255,255,255,0.14)" stroke="#caa14a" stroke-width="1.5"/>
+  <text x="28" y="204" fill="#fff" font-family="system-ui, sans-serif" font-size="12" font-weight="600">Strategies</text>
+  <text x="28" y="220" fill="#b8cfc4" font-family="system-ui, sans-serif" font-size="8.5">Reading plans</text>
 
-  <rect x="228" y="0" width="692" height="84" fill="url(#hero)"/>
-  <text x="248" y="48" fill="#fff" font-family="Georgia, serif" font-size="28" font-weight="600">Reading strategies</text>
-  <text x="248" y="68" fill="#b8cfc4" font-family="system-ui, sans-serif" font-size="11">Compose ordered reading paths across projects for a specific goal.</text>
+  <rect x="312" y="0" width="608" height="84" fill="url(#hero)"/>
+  <text x="332" y="44" fill="#fff" font-family="Georgia, serif" font-size="26" font-weight="600">Reading strategies</text>
+  <text x="332" y="64" fill="#b8cfc4" font-family="system-ui, sans-serif" font-size="10.5">Compose ordered reading paths across projects for a specific goal.</text>
 
-  <g transform="translate(248, 100)">
-    <rect x="0" y="0" width="652" height="420" rx="12" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
-    <text x="20" y="34" fill="#1f4636" font-family="Georgia, serif" font-size="16" font-weight="600">Compose a reading plan</text>
-    <text x="20" y="52" fill="#8a8478" font-family="system-ui, sans-serif" font-size="10">Pick the projects to combine and state your goal.</text>
+  <g transform="translate(332, 100)">
+    <rect x="0" y="0" width="568" height="400" rx="12" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
+    <text x="20" y="32" fill="#1f4636" font-family="Georgia, serif" font-size="15" font-weight="600">Compose a reading plan</text>
+    <text x="20" y="48" fill="#8a8478" font-family="system-ui, sans-serif" font-size="9.5">Pick the projects to combine and state your goal.</text>
 
-    <rect x="20" y="64" width="248" height="30" rx="8" fill="#faf6ec" stroke="#d3c8b0"/>
-    <rect x="22" y="66" width="120" height="26" rx="7" fill="#1f4636"/>
-    <text x="82" y="83" fill="#fff" font-family="system-ui, sans-serif" font-size="9" font-weight="600" text-anchor="middle">I choose projects</text>
-    <text x="196" y="83" fill="#5a564c" font-family="system-ui, sans-serif" font-size="9" font-weight="600" text-anchor="middle">Let the agent decide</text>
+    <rect x="20" y="60" width="248" height="28" rx="8" fill="#faf6ec" stroke="#d3c8b0"/>
+    <rect x="22" y="62" width="120" height="24" rx="7" fill="#1f4636"/>
+    <text x="82" y="78" fill="#fff" font-family="system-ui, sans-serif" font-size="8.5" font-weight="600" text-anchor="middle">I choose projects</text>
+    <text x="196" y="78" fill="#5a564c" font-family="system-ui, sans-serif" font-size="8.5" font-weight="600" text-anchor="middle">Let the agent decide</text>
 
-    <line x1="20" y1="106" x2="632" y2="106" stroke="#e2d9c6"/>
+    <line x1="20" y1="100" x2="548" y2="100" stroke="#e2d9c6"/>
 
-    <text x="20" y="128" fill="#5a564c" font-family="system-ui, sans-serif" font-size="10" font-weight="600">Projects</text>
-    <rect x="20" y="136" width="148" height="54" rx="8" fill="#eef4f0" stroke="#1f4636"/>
-    <text x="34" y="158" fill="#211f1a" font-family="system-ui, sans-serif" font-size="10" font-weight="600">Fairness in ML</text>
-    <text x="34" y="174" fill="#8a8478" font-family="system-ui, sans-serif" font-size="8.5">3 papers</text>
+    <text x="20" y="120" fill="#5a564c" font-family="system-ui, sans-serif" font-size="9.5" font-weight="600">Projects</text>
+    <rect x="20" y="128" width="128" height="50" rx="8" fill="#eef4f0" stroke="#1f4636"/>
+    <text x="34" y="148" fill="#211f1a" font-family="system-ui, sans-serif" font-size="9.5" font-weight="600">Fairness in ML</text>
+    <text x="34" y="164" fill="#8a8478" font-family="system-ui, sans-serif" font-size="8">3 papers</text>
 
-    <rect x="176" y="136" width="148" height="54" rx="8" fill="#fff" stroke="#d3c8b0"/>
-    <text x="190" y="158" fill="#211f1a" font-family="system-ui, sans-serif" font-size="10" font-weight="600">Causal Inference</text>
-    <text x="190" y="174" fill="#8a8478" font-family="system-ui, sans-serif" font-size="8.5">3 papers</text>
+    <rect x="156" y="128" width="128" height="50" rx="8" fill="#fff" stroke="#d3c8b0"/>
+    <text x="170" y="148" fill="#211f1a" font-family="system-ui, sans-serif" font-size="9.5" font-weight="600">Causal Inference</text>
+    <text x="170" y="164" fill="#8a8478" font-family="system-ui, sans-serif" font-size="8">3 papers</text>
 
-    <rect x="332" y="136" width="148" height="54" rx="8" fill="#fff" stroke="#d3c8b0"/>
-    <text x="346" y="158" fill="#211f1a" font-family="system-ui, sans-serif" font-size="10" font-weight="600">Graph Neural Networks</text>
-    <text x="346" y="174" fill="#8a8478" font-family="system-ui, sans-serif" font-size="8.5">4 papers</text>
+    <rect x="292" y="128" width="128" height="50" rx="8" fill="#fff" stroke="#d3c8b0"/>
+    <text x="306" y="148" fill="#211f1a" font-family="system-ui, sans-serif" font-size="9.5" font-weight="600">Graph Neural Networks</text>
+    <text x="306" y="164" fill="#8a8478" font-family="system-ui, sans-serif" font-size="8">4 papers</text>
 
-    <rect x="488" y="136" width="148" height="54" rx="8" fill="#fff" stroke="#d3c8b0"/>
-    <text x="502" y="158" fill="#211f1a" font-family="system-ui, sans-serif" font-size="10" font-weight="600">LLM Evaluation</text>
-    <text x="502" y="174" fill="#8a8478" font-family="system-ui, sans-serif" font-size="8.5">3 papers</text>
+    <rect x="428" y="128" width="128" height="50" rx="8" fill="#fff" stroke="#d3c8b0"/>
+    <text x="442" y="148" fill="#211f1a" font-family="system-ui, sans-serif" font-size="9.5" font-weight="600">LLM Evaluation</text>
+    <text x="442" y="164" fill="#8a8478" font-family="system-ui, sans-serif" font-size="8">3 papers</text>
 
-    <text x="20" y="220" fill="#5a564c" font-family="system-ui, sans-serif" font-size="10" font-weight="600">Your goal (optional)</text>
-    <rect x="20" y="228" width="612" height="72" rx="8" fill="#fff" stroke="#d3c8b0"/>
-    <text x="32" y="252" fill="#8a8478" font-family="system-ui, sans-serif" font-size="9.5">Related-work section linking fairness and causal inference&#x2026;</text>
+    <text x="20" y="206" fill="#5a564c" font-family="system-ui, sans-serif" font-size="9.5" font-weight="600">Your goal (optional)</text>
+    <rect x="20" y="214" width="536" height="64" rx="8" fill="#fff" stroke="#d3c8b0"/>
+    <text x="32" y="236" fill="#8a8478" font-family="system-ui, sans-serif" font-size="9">Related-work section linking fairness and causal inference&#x2026;</text>
 
-    <rect x="20" y="318" width="148" height="34" rx="9" fill="#1f4636"/>
-    <text x="94" y="339" fill="#f2f7f3" font-family="system-ui, sans-serif" font-size="10" font-weight="600" text-anchor="middle">Generate strategy</text>
+    <rect x="20" y="296" width="140" height="32" rx="9" fill="#1f4636"/>
+    <text x="90" y="316" fill="#f2f7f3" font-family="system-ui, sans-serif" font-size="9.5" font-weight="600" text-anchor="middle">Generate strategy</text>
 
-    <text x="20" y="378" fill="#5a564c" font-family="system-ui, sans-serif" font-size="10" font-weight="600">Saved plans</text>
-    <rect x="20" y="388" width="612" height="52" rx="9" fill="#fff" stroke="#d3c8b0"/>
-    <text x="34" y="410" fill="#1f4636" font-family="system-ui, sans-serif" font-size="10.5" font-weight="600">Fairness grant aim â€” reading path</text>
-    <text x="34" y="426" fill="#8a8478" font-family="system-ui, sans-serif" font-size="8.5">4 papers &#xB7; 3 h &#xB7; 2 days &#xB7; from spec &#xB7; Fairness grant aim</text>
-    <text x="520" y="418" fill="#1f4636" font-family="system-ui, sans-serif" font-size="9" font-weight="600">Open</text>
+    <text x="20" y="352" fill="#5a564c" font-family="system-ui, sans-serif" font-size="9.5" font-weight="600">Saved plans</text>
+    <rect x="20" y="362" width="536" height="48" rx="9" fill="#fff" stroke="#d3c8b0"/>
+    <text x="34" y="382" fill="#1f4636" font-family="system-ui, sans-serif" font-size="10" font-weight="600">Fairness grant aim &#x2014; reading path</text>
+    <text x="34" y="398" fill="#8a8478" font-family="system-ui, sans-serif" font-size="8.5">4 papers &#xB7; 3 h &#xB7; 2 days &#xB7; from spec &#xB7; Fairness grant aim</text>
+    <text x="460" y="388" fill="#1f4636" font-family="system-ui, sans-serif" font-size="8.5" font-weight="600">Open</text>
   </g>
 
-  <text x="248" y="542" fill="#8a8478" font-family="system-ui, sans-serif" font-size="9">Illustrative UI mock â€” Reading strategies with schedule estimates on saved plans.</text>
+  <text x="332" y="542" fill="#8a8478" font-family="system-ui, sans-serif" font-size="9">Illustrative UI mock &#x2014; Reading strategies with schedule estimates on saved plans.</text>
 </svg>

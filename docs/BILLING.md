@@ -23,7 +23,8 @@ Pricing depends on the model you set in `ANTHROPIC_MODEL` — see
 | **Reading strategy** | 1 per plan | Medium | One heavy call; grows with papers in chosen projects. |
 | **Build reading plan** (from spec) | 1 per plan | Medium | Same as a manual strategy, but only spec-relevant papers are included — not a per-paper screen. |
 | **Upload spec** (validation) | 1 per upload | Low | Checks the text is a real project brief. |
-| **Find relevant papers** | **1 per paper screened** | **High at scale** | Scales linearly with active-library size. |
+| **Find in library** (spec screen) | **1 per paper screened** | **High at scale** | Scales linearly with active-library size. |
+| **Discover new papers** (PubMed) | 0 | Free | NCBI eutils; no Claude call. |
 
 **Zotero sync**, **re-opening saved results**, and **browsing the UI** do not
 call Claude. Neither does **demo AI mode** (no key, or `MOCK_LLM=true`).
@@ -35,8 +36,8 @@ call Claude. Neither does **demo AI mode** (no key, or `MOCK_LLM=true`).
 Results are saved in `./data/library.json`:
 
 - **Categorizations** survive a Zotero re-sync (for collections that still exist).
-- **Connections**, **reading plans**, and **spec suggestions** stay until you
-  delete them or **Purge library**.
+- **Connections**, **reading plans**, **library matches**, and **PubMed discoveries**
+  stay until you delete them or **Purge library**.
 - Opening a saved plan or spec tab does **not** call the API again.
 
 You only pay again when you explicitly re-run an analysis.
@@ -65,12 +66,13 @@ not every folder needs it on day one.
 
 ### 4. Treat spec screening as the main cost driver
 
-**Find relevant papers** runs once **per paper** in your active library. A
-library with 200 papers means ~200 API calls. The confirmation dialog shows how
-many papers will be screened — use it.
+**Find in library** runs once **per paper** in your active library. A library
+with 200 papers means ~200 API calls. The confirmation dialog shows how many
+papers will be screened — use it.
 
-- Run spec screening when you have a real grant aim or proposal, not on a whim.
-- **Refresh suggestions** only after you sync meaningful new papers.
+- Run library screening when you have a real grant aim or proposal, not on a whim.
+- **Re-screen library** only after you sync meaningful new papers.
+- **Discover new papers** on PubMed is separate and does not use your Anthropic key.
 - For very large libraries, consider a faster/cheaper model in `.env` for
   screening (see below).
 
@@ -80,8 +82,9 @@ many papers will be screened — use it.
 | --- | --- |
 | Connections | You added/merged projects or want a fresh cross-library read |
 | Reading strategy | Your goal or project set changed |
-| Build reading plan (spec) | You refreshed spec suggestions or want a new ordering |
-| Spec suggestions | You synced new papers or changed the spec text |
+| Build reading plan (spec) | You re-screened library matches or want a new ordering |
+| Find in library | You synced new papers or changed the spec text |
+| PubMed discovery | You updated the spec or categorized more projects |
 | Categorize | Papers in that collection changed materially |
 
 Otherwise, use what is already saved.

@@ -16,13 +16,14 @@ After changing `.env`, restart the server (`Ctrl-C`, then `make run`).
 
 ### Claude API key (`ANTHROPIC_API_KEY`)
 
-Powers every AI feature (categorization, connections, strategies, paper
-suggestions). Without it the app runs in a deterministic demo mode.
+Powers AI features (categorization, connections, strategies, **Find in library**
+spec screening). Without it the app runs in a deterministic demo mode.
 
 **Billing:** usage is charged to **your Anthropic account** (input + output
-tokens per API call). BindingSolution itself is free. Spec screening is the
-main cost driver — it calls Claude once per paper in your active library. See
-[BILLING.md](BILLING.md) for what costs money and how to use the API wisely.
+tokens per API call). BindingSolution itself is free. Library spec screening is
+the main cost driver — it calls Claude once per paper in your active library.
+**PubMed discovery** does not use your Anthropic key. See [BILLING.md](BILLING.md)
+for what costs money and how to use the API wisely.
 
 1. Go to <https://console.anthropic.com/settings/keys>
 2. Create a key, copy it (starts with `sk-ant-`)

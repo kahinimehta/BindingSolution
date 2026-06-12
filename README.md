@@ -28,7 +28,7 @@ Claude usage bills to **your** Anthropic account (per token). Zotero sync and re
 
 | Heavy | Light |
 | --- | --- |
-| **Find relevant papers** — one call **per active paper** | Categorize one project, upload spec validation |
+| **Find in library** (spec screen) — one call **per active paper** | Categorize one project, upload spec validation, **PubMed discovery** |
 | Re-screening after every small sync | One reading plan, one connections pass |
 
 **Tips:** try demo mode first; tidy Zotero (only collections with **2+ papers** are active); read the spec-screening confirmation before starting; set a [spend limit](https://console.anthropic.com/settings/billing). Full detail: [docs/BILLING.md](docs/BILLING.md).
@@ -42,8 +42,8 @@ Use any view in any order.
 - **Categorize** — discipline, themes, methods, keywords, summary per collection
 - **Connections** — shared threads and suggested groupings across projects
 - **Reading strategies** — ordered path + synthesis prompts; **schedule with estimated hours/days** (medium pace, ~12 pages/h at 2 h/day — see [docs/USAGE.md](docs/USAGE.md#reading-time-assumptions))
-- **Project specs** — upload a brief (PDF/Word/MD/text); irrelevant uploads rejected; **Suggested papers** lists only core/supporting hits with why each matters
-- **Spec → reading plan** — **Build reading plan** from suggestions; steps keep relevance notes; plan links back to the spec
+- **Spec** — upload a brief (PDF/Word/MD/text); **Find in library** screens your Zotero shelf (core/supporting only); **Suggested papers** scrapes PubMed for hits *not* in your library
+- **Spec → reading plan** — **Build reading plan** from library matches; steps keep relevance notes; plan links back to the spec
 - **Purge library** — wipe local data without touching Zotero (sidebar)
 
 <p align="center">
@@ -55,9 +55,9 @@ Use any view in any order.
 </p>
 
 <p align="center">
-  <img src="docs/screenshots/specs-upload.svg" alt="Project specs upload" width="920" />
+  <img src="docs/screenshots/specs-upload.svg" alt="Spec upload and library matches" width="920" />
   <br /><br />
-  <img src="docs/screenshots/specs.svg" alt="Suggested papers" width="920" />
+  <img src="docs/screenshots/specs.svg" alt="Suggested papers PubMed discovery" width="920" />
 </p>
 
 ## Persistence

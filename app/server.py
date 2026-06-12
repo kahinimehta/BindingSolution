@@ -5,6 +5,7 @@ analysis) returns a job id immediately; poll GET /api/jobs/{id}.
 """
 from __future__ import annotations
 
+import time
 from pathlib import Path
 from typing import Any
 
@@ -16,6 +17,7 @@ from . import __version__, jobs
 from .analysis import AnalysisError, get_analyzer
 from .config import STATIC_DIR, get_settings
 from .projects import is_usable_project, summary_fields, usable_projects
+from .discovery import discover_for_spec
 from .reading_schedule import attach_reading_schedule
 from .spec_strategy import attach_spec_mapping, projects_from_spec
 from .specs import extract_text
@@ -294,6 +296,7 @@ def create_app() -> FastAPI:
                 "preview": (spec.get("text", "")[:240]),
                 "num_relevant": len(spec.get("analysis", {})),
                 "num_screened": spec.get("num_screened", 0),
+                "num_discovered": len(spec.get("discoveries") or []),
             })
         return {"specs": specs}
 
@@ -358,6 +361,31 @@ def create_app() -> FastAPI:
             }
 
         return _start("analyze-spec", work)
+
+    @app.post("/api/specs/{spec_id}/discover")
+    def discover_spec_papers(spec_id: str) -> dict:
+        store = get_store()
+        spec = store.get_spec(spec_id)
+        if spec is None:
+            raise HTTPException(404, "Spec not found")
+        all_projects = store.get_projects()
+        projects = usable_projects(all_projects)
+        settings = get_settings()
+        use_mock = settings.mock_llm or not settings.anthropic_api_key
+
+        def work(job: jobs.Job) -> dict:
+            job.set_progress(0, 1, "Searching PubMed for new papers…")
+            hits = discover_for_spec(spec, projects, use_mock=use_mock)
+            store.update_spec(
+                spec_id,
+                discoveries=hits,
+                discover_status="done",
+                discovered_at=time.time(),
+            )
+            job.set_progress(1, 1, "Done")
+            return {"spec_id": spec_id, "discovered": len(hits), "discoveries": hits}
+
+        return _start("discover-spec", work)
 
     # ── jobs ─────────────────────────────────────────────────────────
     @app.get("/api/jobs/{job_id}")

@@ -73,8 +73,8 @@ causal inference"*) and click **Generate strategy**. You get:
 - **synthesis prompts** to hold in mind as you read across the set
 
 Plans are saved; open or delete them from the same screen. Plans built from a
-project spec show **from spec** in the list and a link back to **Suggested
-papers** when you open them.
+spec show **from spec** in the list and a link back to the spec's **Library
+matches** when you open them.
 
 ### Reading time assumptions
 
@@ -93,9 +93,14 @@ These are planning hints, not deadlines. Skim faster or read deeper and your rea
   <img src="screenshots/strategies.svg" alt="Reading strategies compose form and spec-mapped plan" width="920" />
 </p>
 
-## 5. ✦ Paper suggestions — *Project specs*
+## 5. ✦ Spec — upload, screen library, discover on PubMed
 
-Open **Project specs** in the sidebar. The view has two tabs:
+Open **Spec** in the sidebar. The view has two tabs with different jobs:
+
+| Tab | What it does | Uses Claude? |
+| --- | --- | --- |
+| **Upload & manage** | Save a brief and **Find in library** (screen your synced Zotero shelf) | Yes — one call per active paper |
+| **Suggested papers** | **Discover new papers** on PubMed that are *not* already in your library | No — PubMed eutils (free) |
 
 ### Upload & manage
 
@@ -104,35 +109,33 @@ Open **Project specs** in the sidebar. The view has two tabs:
 2. Click **Save spec**. Irrelevant uploads (shopping lists, filler text, published
    papers, admin docs) are rejected with a short explanation of what to upload
    instead.
-3. Click **Find relevant papers** on a saved spec. A confirmation explains how
-   many papers will be screened and that runtime scales with library size.
+3. Click **Find in library** on a saved spec. A confirmation explains how many
+   papers will be screened and that runtime scales with library size.
+4. Scroll to **Library matches** on the same tab. Pick a spec, review core /
+   supporting hits with **why it's relevant** notes, and click **↯ Build reading
+   plan** to turn them into an ordered path in **Strategies**.
 
 <p align="center">
-  <img src="screenshots/specs-upload.svg" alt="Upload and manage tab with spec dropzone" width="720" />
+  <img src="screenshots/specs-upload.svg" alt="Spec upload tab with library matches" width="720" />
 </p>
 
-### Suggested papers
+### Suggested papers (PubMed)
 
-After screening finishes, the app switches to **Suggested papers** automatically.
-You can also open this tab any time to review past results.
+Switch to **Suggested papers** when you want *new* literature — papers you do
+not already have in Zotero.
 
-- Pick a spec from the dropdown at the top.
-- See a count like **4 relevant of 13 screened** — only matches are listed.
-- Each row shows the paper title, its collection, a **core / supporting** flag,
-  a **why it's relevant** explanation, and optional **"use this for…"** tags.
+- Pick a spec from the dropdown.
+- Click **✦ Discover new papers**. BindingSolution builds a PubMed query from your
+  spec text and categorized project keywords, searches NCBI eutils, and filters
+  out titles already in your synced library.
+- Each row shows title, authors, journal/year, a short relevance note, and a link
+  to PubMed. Re-run discovery after you update the spec or categorize more projects.
 
-Non-relevant papers are not shown. Results are ranked so the strongest matches
-appear first. Click **Refresh suggestions** to re-screen after syncing new papers.
-
-Click **↯ Build reading plan** to turn the suggested papers into an ordered
-reading path in **Strategies**. Only **core** and **supporting** hits are
-included — not your whole library. The plan is built with one strategy API call
-(see [BILLING.md](BILLING.md)). Each step keeps its **core / supporting** flag
-and the **why it's relevant** note from the spec assessment. Open the saved plan
-to see a banner linking back to the spec's **Suggested papers** tab.
+Demo mode (`MOCK_LLM=true`) uses deterministic mock PubMed hits so you can try
+the flow offline.
 
 <p align="center">
-  <img src="screenshots/specs.svg" alt="Suggested papers tab with Build reading plan button" width="720" />
+  <img src="screenshots/specs.svg" alt="Suggested papers PubMed discovery tab" width="720" />
 </p>
 
 ---
@@ -145,9 +148,9 @@ to see a banner linking back to the spec's **Suggested papers** tab.
   can keep working while it runs. Confirmations and progress (spec screening,
   reading plans, connections, bulk categorization) open in the same centered
   dialog so the page does not jump or rescroll behind you.
-- Refreshing suggestions re-screens against the current library, so it's worth
-  re-running after you sync new papers — but each re-run calls Claude again for
-  every active paper (see [BILLING.md](BILLING.md)).
+- **Find in library** re-screens against the current shelf — each re-run calls
+  Claude again for every active paper (see [BILLING.md](BILLING.md)). PubMed
+  discovery is separate and does not use your Anthropic key.
 - Saved categorizations, connections, plans, and spec results are **free to
   re-open**; you only pay when you trigger a new analysis.
 

@@ -1,5 +1,5 @@
 /* BindingSolution frontend — vanilla JS SPA, no build step.
-   Views: Library · Connections · Strategies · Project specs.
+   Views: Library · Connections · Strategies · Spec.
    Long tasks run as server jobs; we poll /api/jobs/{id} for live progress. */
 
 const $ = (sel, root = document) => root.querySelector(sel);
@@ -267,8 +267,8 @@ const viewMeta = {
     subtitle: "Compose ordered reading paths across projects for a specific goal.",
   },
   specs: {
-    title: "Suggest new papers",
-    subtitle: "Upload a project spec, screen your library, and see which papers match — with why each one matters.",
+    title: "Spec",
+    subtitle: "Upload a project brief, screen papers already in your library, or discover new ones on PubMed.",
   },
 };
 
@@ -348,10 +348,11 @@ async function renderKpiStrip(route) {
     let specs = [];
     try { specs = (await api.get("/specs")).specs; } catch { /* ignore */ }
     const analyzed = specs.filter((s) => s.status === "analyzed").length;
+    const discovered = specs.reduce((n, s) => n + (s.num_discovered || 0), 0);
     items.push(
-      kpiItem(specs.length, "Specs", "Uploaded descriptions", true),
-      kpiItem(analyzed, "With suggestions", "Specs with relevant papers"),
-      kpiItem(usableProjects().length ? totalPapers(true) : "—", "Papers", "Screened from library"),
+      kpiItem(specs.length, "Specs", "Uploaded briefs", true),
+      kpiItem(analyzed, "Library matches", "Papers already in Zotero"),
+      kpiItem(discovered, "Discovered", "New on PubMed"),
     );
   }
 
@@ -731,8 +732,8 @@ function openStrategy(s) {
       el("button", {
         type: "button",
         class: "btn btn-ghost btn-sm",
-        onclick: () => { closeModal(); selectedSpecId = s.spec_id; specsTab = "suggestions"; location.hash = "#/specs"; },
-      }, s.spec_title || "View suggestions")));
+        onclick: () => { closeModal(); selectedSpecId = s.spec_id; specsTab = "upload"; location.hash = "#/specs"; },
+      }, s.spec_title || "View spec")));
   }
   if (plan.schedule?.summary) {
     body.append(el("div", { class: "schedule-banner" },
@@ -778,8 +779,8 @@ let selectedSpecId = null;
 
 function specsToolbarActions() {
   return specsTab === "upload"
-    ? [el("button", { type: "button", class: "btn btn-primary btn-sm", onclick: () => switchSpecsTab("suggestions") }, "View suggestions")]
-    : [el("button", { type: "button", class: "btn btn-primary btn-sm", onclick: () => switchSpecsTab("upload") }, "Upload spec")];
+    ? [el("button", { type: "button", class: "btn btn-primary btn-sm", onclick: () => switchSpecsTab("discover") }, "Suggested papers")]
+    : [el("button", { type: "button", class: "btn btn-primary btn-sm", onclick: () => switchSpecsTab("upload") }, "Upload & manage")];
 }
 
 async function renderSpecs() {
@@ -789,7 +790,7 @@ async function renderSpecs() {
   const wrap = el("div", {});
   wrap.append(el("div", { class: "sub-tabs" },
     el("button", { type: "button", class: specsTab === "upload" ? "on" : "", onclick: () => switchSpecsTab("upload") }, "Upload & manage"),
-    el("button", { type: "button", class: specsTab === "suggestions" ? "on" : "", onclick: () => switchSpecsTab("suggestions") }, "Suggested papers")));
+    el("button", { type: "button", class: specsTab === "discover" ? "on" : "", onclick: () => switchSpecsTab("discover") }, "Suggested papers")));
   wrap.append(el("div", { id: "specs-panel" }));
   view().replaceChildren(wrap);
   await renderSpecsPanel();
@@ -798,7 +799,7 @@ async function renderSpecs() {
 async function switchSpecsTab(tab) {
   if (specsTab === tab) return;
   specsTab = tab;
-  $$(".sub-tabs button").forEach((b, i) => b.classList.toggle("on", (tab === "upload") === (i === 0)));
+  $$(".sub-tabs button").forEach((b, i) => b.classList.toggle("on", (tab === "upload") ? i === 0 : i === 1));
   $("#view-actions")?.replaceChildren(...specsToolbarActions());
   await renderSpecsPanel();
 }
@@ -808,20 +809,23 @@ async function renderSpecsPanel() {
   if (!panel) return;
   if (specsTab === "upload") {
     panel.replaceChildren(
-      viewHero("Upload a project spec",
-        "Drop in a grant aim, proposal, or project description (PDF, Word, Markdown, or text). Irrelevant uploads are rejected with guidance on what to upload instead."),
+      viewHero("Upload & screen your library",
+        "Save a grant aim or proposal, then use Find in library to see which papers you already have that match. This only searches your synced Zotero collections."),
       specUploader(),
-      el("div", { class: "section-head mt-3" }, el("div", {}, el("h2", {}, "Your specs"))),
+      el("div", { class: "section-head mt-2" }, el("div", {}, el("h2", {}, "Your specs"))),
       el("div", { id: "spec-list" }, el("div", { class: "muted" }, "Loading…")),
+      el("div", { class: "section-head mt-2" }, el("div", {}, el("h2", {}, "Library matches"))),
+      el("div", { id: "library-matches" }, el("div", { class: "muted" }, "Loading…")),
     );
     await loadSpecs();
+    await loadLibraryMatches();
   } else {
     panel.replaceChildren(
-      viewHero("Suggested papers",
-        "Relevant papers from your library for each project spec, with a short explanation of why each one matters."),
-      el("div", { id: "spec-suggestions" }, el("div", { class: "muted" }, "Loading…")),
+      viewHero("Suggested papers (PubMed)",
+        "Discover papers not in your library. BindingSolution searches PubMed from your spec and project categories, then lists new hits you may want to add to Zotero."),
+      el("div", { id: "spec-discoveries" }, el("div", { class: "muted" }, "Loading…")),
     );
-    await loadSpecSuggestions();
+    await loadSpecDiscoveries();
   }
 }
 
@@ -881,7 +885,7 @@ function specRow(s) {
         el("span", { class: `pill ${status}` }, s.status === "analyzed" ? `${s.num_relevant ?? 0} relevant` : s.status)),
       el("div", { class: "muted", style: "margin-top:3px" }, esc(s.preview).slice(0, 120) + "…")),
     el("div", { style: "display:flex;gap:8px" },
-      el("button", { class: "btn btn-primary btn-sm", onclick: () => confirmAnalyzeSpec(s.id) }, s.status === "analyzed" ? "Refresh suggestions" : "Find relevant papers"),
+      el("button", { class: "btn btn-primary btn-sm", onclick: () => confirmAnalyzeSpec(s.id) }, s.status === "analyzed" ? "Re-screen library" : "Find in library"),
       el("button", { class: "btn btn-ghost btn-sm btn-danger", onclick: () => deleteSpec(s.id) }, "Delete")));
 }
 function offerAnalyze(spec) {
@@ -900,26 +904,26 @@ function confirmAnalyzeSpec(specId) {
       "Depending on how many papers you have, this can take a while — from under a minute for a small library to several minutes for a large one. You can keep using the app while it runs."),
     el("div", { class: "spread mt-3", style: "justify-content:flex-end;gap:10px" },
       el("button", { type: "button", class: "btn btn-ghost", onclick: closeModal }, "Cancel"),
-      el("button", { type: "button", class: "btn btn-primary", onclick: () => runAnalyzeSpec(specId) }, "Find relevant papers")));
-  openModal("Find relevant papers?", body, "dialog");
+      el("button", { type: "button", class: "btn btn-primary", onclick: () => runAnalyzeSpec(specId) }, "Find in library")));
+  openModal("Screen your library?", body, "dialog");
 }
 
 async function runAnalyzeSpec(specId) {
-  const box = showProgressModal("Finding relevant papers", "Screening your library against the project spec…");
+  const box = showProgressModal("Screening library", "Checking which synced papers match your spec…");
   try {
     const start = await api.post(`/specs/${specId}/analyze`, {});
     const result = await runJob(start, { onProgress: (p) => box._update(p) });
     closeModal();
     const n = result?.relevant ?? 0;
-    toast(n ? `Found ${n} relevant paper${n === 1 ? "" : "s"}.` : "No relevant papers found.", n ? "ok" : "");
+    toast(n ? `Found ${n} library match${n === 1 ? "" : "es"}.` : "No library matches found.", n ? "ok" : "");
     selectedSpecId = specId;
-    specsTab = "suggestions";
+    specsTab = "upload";
     await renderSpecs();
   } catch (e) { closeModal(); toast(e.message, "err"); }
 }
 
-async function loadSpecSuggestions() {
-  const host = $("#spec-suggestions");
+async function loadLibraryMatches() {
+  const host = $("#library-matches");
   if (!host) return;
   try {
     const { specs } = await api.get("/specs");
@@ -927,8 +931,8 @@ async function loadSpecSuggestions() {
     if (!analyzed.length) {
       host.replaceChildren(el("div", { class: "empty" },
         el("div", { class: "emoji" }, "✦"),
-        el("h3", {}, "No suggestions yet"),
-        el("p", {}, "Upload a project spec and click Find relevant papers to see which library papers matter for your aim."),
+        el("h3", {}, "No library matches"),
+        el("p", {}, "Upload a spec and click Find in library to screen papers you already have."),
         el("button", { type: "button", class: "btn btn-primary", onclick: () => switchSpecsTab("upload") }, "Upload a spec")));
       return;
     }
@@ -940,10 +944,10 @@ async function loadSpecSuggestions() {
     const results = Object.values(spec.analysis || {}).sort((a, b) => (b.score || 0) - (a.score || 0));
     const wrap = el("div", {});
     const picker = el("div", { class: "field" },
-      el("label", {}, "Project spec"),
+      el("label", {}, "Spec"),
       el("select", {
         class: "input",
-        onchange: async (e) => { selectedSpecId = e.target.value; await loadSpecSuggestions(); },
+        onchange: async (e) => { selectedSpecId = e.target.value; await loadLibraryMatches(); },
       }, ...analyzed.map((s) => {
         const opt = el("option", { value: s.id }, s.title);
         if (s.id === pick) opt.selected = true;
@@ -952,14 +956,14 @@ async function loadSpecSuggestions() {
     wrap.append(picker);
     wrap.append(el("p", { class: "muted", style: "margin:12px 0;font-size:.86rem" },
       spec.num_screened
-        ? `${results.length} relevant of ${spec.num_screened} screened`
-        : `${results.length} relevant papers`));
+        ? `${results.length} matches of ${spec.num_screened} papers screened in your library`
+        : `${results.length} library matches`));
     if (!results.length) {
-      wrap.append(el("p", { class: "muted" }, "No relevant papers found for this spec. Try refreshing after syncing more papers."));
-      wrap.append(el("button", { type: "button", class: "btn btn-primary mt-2", onclick: () => confirmAnalyzeSpec(pick) }, "Refresh suggestions"));
+      wrap.append(el("p", { class: "muted" }, "No matches in your library. Try Suggested papers to search PubMed."));
+      wrap.append(el("button", { type: "button", class: "btn btn-primary mt-2", onclick: () => confirmAnalyzeSpec(pick) }, "Re-screen library"));
     } else {
       wrap.append(el("div", { class: "spread mt-2", style: "margin-bottom:14px;align-items:center" },
-        el("p", { class: "muted", style: "margin:0;font-size:.86rem" }, "Turn these into an ordered reading plan — each step keeps its spec relevance note."),
+        el("p", { class: "muted", style: "margin:0;font-size:.86rem" }, "Build a reading plan from these library papers."),
         el("button", { type: "button", class: "btn btn-primary btn-sm", onclick: () => buildReadingPlanFromSpec(pick) }, "↯ Build reading plan")));
       for (const r of results) wrap.append(relevanceRow(r));
     }
@@ -967,9 +971,77 @@ async function loadSpecSuggestions() {
   } catch (e) { host.replaceChildren(el("p", { class: "muted" }, e.message)); }
 }
 
+async function loadSpecDiscoveries() {
+  const host = $("#spec-discoveries");
+  if (!host) return;
+  try {
+    const { specs } = await api.get("/specs");
+    if (!specs.length) {
+      host.replaceChildren(el("div", { class: "empty" },
+        el("div", { class: "emoji" }, "✦"),
+        el("h3", {}, "Upload a spec first"),
+        el("p", {}, "Save a project brief on Upload & manage, then search PubMed here for papers not in your library."),
+        el("button", { type: "button", class: "btn btn-primary", onclick: () => switchSpecsTab("upload") }, "Upload a spec")));
+      return;
+    }
+    const pick = selectedSpecId && specs.some((s) => s.id === selectedSpecId) ? selectedSpecId : specs[0].id;
+    selectedSpecId = pick;
+    const spec = await api.get(`/specs/${pick}`);
+    const results = (spec.discoveries || []).slice().sort((a, b) => (b.score || 0) - (a.score || 0));
+    const wrap = el("div", {});
+    wrap.append(el("div", { class: "field" },
+      el("label", {}, "Spec"),
+      el("select", {
+        class: "input",
+        onchange: async (e) => { selectedSpecId = e.target.value; await loadSpecDiscoveries(); },
+      }, ...specs.map((s) => {
+        const opt = el("option", { value: s.id }, s.title);
+        if (s.id === pick) opt.selected = true;
+        return opt;
+      }))));
+    wrap.append(el("div", { class: "spread mt-2", style: "margin:12px 0;align-items:center" },
+      el("p", { class: "muted", style: "margin:0;font-size:.86rem" },
+        results.length
+          ? `${results.length} new paper${results.length === 1 ? "" : "s"} from PubMed`
+          : "Search PubMed for papers outside your Zotero library"),
+      el("button", { type: "button", class: "btn btn-primary btn-sm", onclick: () => runDiscoverSpec(pick) }, "✦ Discover new papers")));
+    if (!results.length) {
+      wrap.append(el("p", { class: "muted", style: "margin-top:8px" },
+        "Uses your spec plus project categories to query PubMed. These are papers to add — not items already synced."));
+    } else {
+      for (const r of results) wrap.append(discoveryRow(r));
+    }
+    host.replaceChildren(wrap);
+  } catch (e) { host.replaceChildren(el("p", { class: "muted" }, e.message)); }
+}
+
+function discoveryRow(r) {
+  return el("div", { class: "relevance-row relevance-row--suggest" },
+    el("div", {},
+      el("div", { class: "rel-title" }, r.title || "Untitled"),
+      el("div", { class: "muted", style: "font-size:.76rem" }, [r.authors, r.journal, r.year].filter(Boolean).join(" · ")),
+      el("div", { class: "rel-why" }, r.relevance_explanation || "Suggested from PubMed."),
+      r.url ? el("a", { href: r.url, target: "_blank", rel: "noopener", class: "muted", style: "font-size:.78rem" }, "View on PubMed") : null),
+    el("span", { class: "rel-flag rel-core" }, "new"));
+}
+
+async function runDiscoverSpec(specId) {
+  const box = showProgressModal("Searching PubMed", "Looking for papers not already in your library…");
+  try {
+    const start = await api.post(`/specs/${specId}/discover`, {});
+    const result = await runJob(start, { onProgress: (p) => box._update(p) });
+    closeModal();
+    const n = result?.discovered ?? 0;
+    toast(n ? `Found ${n} new paper${n === 1 ? "" : "s"} on PubMed.` : "No new papers found.", n ? "ok" : "");
+    selectedSpecId = specId;
+    specsTab = "discover";
+    await renderSpecs();
+  } catch (e) { closeModal(); toast(e.message, "err"); }
+}
+
 async function openSpec(specId) {
   selectedSpecId = specId;
-  specsTab = "suggestions";
+  specsTab = "upload";
   await renderSpecs();
 }
 
@@ -1004,7 +1076,13 @@ function relevanceRow(r) {
     el("span", { class: `rel-flag rel-${r.relevance}` }, r.relevance.replace("_", " ")));
 }
 async function deleteSpec(id) {
-  try { await api.del(`/specs/${id}`); toast("Deleted.", "ok"); await loadSpecs(); }
+  try {
+    await api.del(`/specs/${id}`);
+    toast("Deleted.", "ok");
+    await loadSpecs();
+    if (specsTab === "upload") await loadLibraryMatches();
+    else await loadSpecDiscoveries();
+  }
   catch (e) { toast(e.message, "err"); }
 }
 
@@ -1043,18 +1121,7 @@ async function route() {
 }
 
 /* ── boot ─────────────────────────────────────────────────────── */
-async function goSuggestPapers() {
-  try {
-    const { specs } = await api.get("/specs");
-    specsTab = specs.some((s) => s.status === "analyzed") ? "suggestions" : "upload";
-  } catch {
-    specsTab = "upload";
-  }
-  location.hash = "#/specs";
-}
-
 function bindChrome() {
-  $("#suggest-btn")?.addEventListener("click", goSuggestPapers);
   $("#sync-btn").addEventListener("click", () => {
     if (state.status && !state.status.zotero_mode) doSync("demo");
     else doSync("zotero");

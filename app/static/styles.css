@@ -39,7 +39,7 @@
   --font-body: "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
   --shell-max: min(2200px, calc((100vw - var(--rail-w)) * 0.97));
   --content-x: clamp(1.15rem, 1.2vw, 2.25rem);
-  --rail-w: 276px;
+  --rail-w: 312px;
 }
 
 * { box-sizing: border-box; }
@@ -94,7 +94,7 @@ a { color: inherit; text-decoration: none; }
 /* ── sidebar ────────────────────────────────────────────────── */
 .rail {
   display: flex; flex-direction: column;
-  padding: 22px 18px;
+  padding: 18px 16px;
   background: linear-gradient(165deg, var(--bind-green) 0%, #183a2d 55%, var(--bind-green-2) 100%);
   color: #eef3ee;
   position: sticky; top: 0; height: 100vh;
@@ -110,7 +110,7 @@ a { color: inherit; text-decoration: none; }
 }
 .brand-mark { filter: drop-shadow(0 4px 10px rgba(0,0,0,.28)); }
 .brand-text { display: flex; flex-direction: column; line-height: 1.1; }
-.brand-name { font-family: var(--font-display); font-weight: 600; font-size: 1.15rem; letter-spacing: .2px; }
+.brand-name { font-family: var(--font-display); font-weight: 600; font-size: 1.02rem; letter-spacing: .1px; line-height: 1.2; }
 .brand-sub {
   font-size: .68rem; letter-spacing: .2em; text-transform: uppercase;
   color: var(--brass-2); margin-top: 4px; font-weight: 600;
@@ -185,7 +185,7 @@ a { color: inherit; text-decoration: none; }
 .hero-bar {
   background: linear-gradient(135deg, var(--bind-green) 0%, #254f3f 50%, var(--bind-green-2) 100%);
   color: #fff;
-  padding: 1rem var(--content-x) 0.9rem;
+  padding: 0.75rem var(--content-x) 0.7rem;
   box-shadow: 0 4px 20px rgba(31,70,54,.2);
   border-bottom: 1px solid rgba(202,161,74,.22);
 }
@@ -235,13 +235,6 @@ a { color: inherit; text-decoration: none; }
   background: rgba(255,255,255,.24);
   border-color: rgba(202,161,74,.65);
 }
-.btn-chrome-suggest {
-  background: linear-gradient(135deg, var(--brass), var(--brass-2));
-  color: #2b2410;
-  border-color: rgba(255,230,160,.55);
-  box-shadow: 0 2px 10px rgba(0,0,0,.18);
-}
-.btn-chrome-suggest:hover { filter: brightness(1.06); background: linear-gradient(135deg, var(--brass), var(--brass-2)); }
 .btn-chrome-purge {
   font-size: .82rem;
   background: rgba(0,0,0,.18);
@@ -256,6 +249,12 @@ a { color: inherit; text-decoration: none; }
 .hero-actions {
   display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
   justify-content: flex-end;
+}
+.hero-actions:not(:empty) {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255,255,255,.2);
+  width: 100%;
 }
 .hero-actions .btn-primary {
   background: linear-gradient(135deg, var(--brass), var(--brass-2));
@@ -276,7 +275,7 @@ a { color: inherit; text-decoration: none; }
   background: transparent;
   border: none;
   box-shadow: none;
-  padding: 0 0 0.65rem;
+  padding: 0 0 0.4rem;
   width: 100%;
 }
 .kpi-inner {
@@ -322,7 +321,7 @@ a { color: inherit; text-decoration: none; }
   flex: 1;
   display: flex;
   justify-content: flex-start;
-  padding: 0.55rem var(--content-x) 2rem;
+  padding: 0.35rem var(--content-x) 1.1rem;
 }
 .view {
   width: 100%;
@@ -363,8 +362,8 @@ a { color: inherit; text-decoration: none; }
   border: 1px solid var(--line);
   border-left-width: 4px;
   border-radius: var(--radius);
-  padding: 0.95rem 1.15rem 1rem;
-  margin-bottom: 1rem;
+  padding: 0.75rem 1rem 0.85rem;
+  margin-bottom: 0.65rem;
   box-shadow: var(--shadow);
 }
 .view-hero h2 {

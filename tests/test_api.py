@@ -128,6 +128,26 @@ def test_reading_strategy_auto_mode(client):
     assert saved["mode"] == "auto"
 
 
+def test_spec_discover_pubmed(client):
+    _load_demo(client)
+    spec = client.post(
+        "/api/specs",
+        data={
+            "text": "We study fairness and calibration in recommender systems using causal inference.",
+            "title": "Fairness aim",
+        },
+    ).json()
+    start = client.post(f"/api/specs/{spec['id']}/discover", json={}).json()
+    result = run_job(client, start)
+    assert result["discovered"] > 0
+    full = client.get(f"/api/specs/{spec['id']}").json()
+    assert len(full["discoveries"]) == result["discovered"]
+    for hit in full["discoveries"]:
+        assert hit.get("title")
+        assert hit.get("url")
+        assert hit.get("relevance_explanation")
+
+
 def test_spec_upload_text_and_analyze(client):
     _load_demo(client)
     spec = client.post(
