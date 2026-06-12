@@ -66,6 +66,10 @@ Open the **Library** view. Click **✦ Categorize** on an active card (or
 
 Click any card to see its full paper list and categorization.
 
+The **Papers** KPI sums **collection entries** in active folders (the same item
+filed in multiple collections counts more than once). The subtitle shows how many
+**unique** papers that represents when they differ.
+
 ## 3. ⁂ Find connections — *Connections*
 
 Open **Connections** and click **Find connections**. Claude reads across all
@@ -81,9 +85,10 @@ Connections need at least two projects.
 ## 4. ◎ Group papers — *Groups*
 
 Open **Groups** and click **◎ Group papers**. BindingSolution reads **every**
-active paper across your projects. Progress is **step-based** (e.g. *Step 2 of 3 —
-Analyzing 184 papers across 12 projects…*) because grouping is one Claude pass over
-the whole shelf, not one API call per paper. Track it in the dialog or **Running**
+active paper across your projects (deduplicated by Zotero item key). Progress is
+**step-based** (e.g. *Step 2 of 3 — Analyzing 115 unique papers (184 collection
+entries in 13 active projects)…*) because grouping is one Claude pass over the
+whole shelf, not one API call per paper. Track it in the dialog or **Running**
 panel. It returns:
 
 - **Optimal paper sets** — thematic reading groups that may span multiple

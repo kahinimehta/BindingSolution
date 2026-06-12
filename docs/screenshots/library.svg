@@ -86,9 +86,10 @@
       <text x="60" y="19" fill="#1f4636" font-size="16" font-weight="700" text-anchor="middle" font-family="Georgia, serif">13</text>
       <text x="60" y="33" fill="#8a8478" font-size="7" text-anchor="middle" font-family="system-ui, sans-serif">ACTIVE PROJECTS</text>
 
-      <rect x="130" y="0" width="120" height="40" rx="8" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
-      <text x="190" y="19" fill="#1f4636" font-size="16" font-weight="700" text-anchor="middle" font-family="Georgia, serif">184</text>
-      <text x="190" y="33" fill="#8a8478" font-size="7" text-anchor="middle" font-family="system-ui, sans-serif">PAPERS</text>
+      <rect x="130" y="0" width="120" height="44" rx="8" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
+      <text x="190" y="17" fill="#1f4636" font-size="16" font-weight="700" text-anchor="middle" font-family="Georgia, serif">184</text>
+      <text x="190" y="29" fill="#8a8478" font-size="7" text-anchor="middle" font-family="system-ui, sans-serif">PAPERS</text>
+      <text x="190" y="39" fill="#8a8478" font-size="5.5" text-anchor="middle" font-family="system-ui, sans-serif">115 unique in active</text>
 
       <rect x="260" y="0" width="120" height="40" rx="8" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
       <text x="320" y="19" fill="#1f4636" font-size="16" font-weight="700" text-anchor="middle" font-family="Georgia, serif">18</text>
@@ -126,5 +127,5 @@
     </g>
   </g>
 
-  <text x="500" y="566" fill="#8a8478" font-family="system-ui, sans-serif" font-size="9" text-anchor="middle">Illustrative UI mock &#x2014; centered shell, Running panel, hero Sync/Purge toolbar.</text>
+  <text x="500" y="566" fill="#8a8478" font-family="system-ui, sans-serif" font-size="9" text-anchor="middle">Illustrative UI mock &#x2014; centered shell (2800px max), Running panel, Papers KPI with unique count.</text>
 </svg>

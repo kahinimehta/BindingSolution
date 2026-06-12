@@ -566,7 +566,11 @@ async function renderKpiStrip(route) {
     const inactive = inactiveProjects();
     items.push(
       kpiItem(active.length, "Active projects", "Collections with papers", true),
-      kpiItem(totalPapers(true), "Papers", "In active collections"),
+      kpiItem(totalPapers(true), "Papers", (() => {
+        const entries = totalPapers(true);
+        const unique = uniquePaperCount(true);
+        return unique !== entries ? `${unique} unique in active` : "In active collections";
+      })()),
       kpiItem(categorizedCount(), "Categorized", categorizedCount() ? "AI-tagged" : "Run categorize"),
     );
     if (inactive.length) items.push(kpiItem(inactive.length, "Excluded", "Empty, single & unfiled"));

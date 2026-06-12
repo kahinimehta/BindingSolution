@@ -89,7 +89,9 @@ To start fresh:
 Long-running work (sync, categorization, spec screening, etc.) runs as background
 jobs. Use the sidebar **Running** panel to monitor progress after closing the
 progress window or reloading the page. Only stopping the server (e.g. Ctrl+C)
-cancels in-flight jobs.
+cancels in-flight jobs. **Group papers** uses phase-based progress (prepare →
+analyze → apply) with an indeterminate bar during the single Claude call; per-paper
+jobs (sync, spec screening) show `current/total` counts instead.
 
 Nothing is sent anywhere except the Anthropic API (for analysis) and Zotero
 (to read your library). The server binds to `127.0.0.1` by default, so it's

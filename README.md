@@ -39,7 +39,7 @@ Use any view in any order.
 
 - **Zotero sync** — Web API or local Zotero 7; bundled demo library; **Sync library** / **Purge library** in the hero toolbar
 - **Running** — sidebar panel tracks background jobs; close the progress window or switch views without stopping work
-- **Active vs excluded** — only folders with 2+ papers are analyzed; empty, single-paper, and unfiled collections are reference-only
+- **Active vs excluded** — only folders with 2+ papers are analyzed; empty, single-paper, and unfiled collections are reference-only; **Papers** KPIs sum collection entries (duplicate filings across folders inflate the count vs unique items)
 - **Categorize** — discipline, themes, methods, keywords, summary per collection
 - **Connections** — shared threads and suggested groupings across projects
 - **Groups** — thematic paper sets (per-set counts, flat lists), **standalone** papers, drop suggestions, and unique-paper accounting (`115 unique papers — 47 in sets · 63 standalone · 5 to drop`; collection-entry KPI may be higher when the same item is filed in multiple folders)
@@ -53,7 +53,7 @@ Use any view in any order.
 </p>
 
 <p align="center">
-  <img src="docs/screenshots/groups.svg" alt="Groups view with paper sets, standalone papers, and prune suggestions" width="1000" />
+  <img src="docs/screenshots/groups.svg" alt="Groups view with collection-entry KPI, unique-paper accounting, paper sets, and standalone papers" width="1000" />
 </p>
 
 <p align="center">

@@ -126,7 +126,8 @@ The **Groups** view calls `POST /api/groups` (`app/grouping.py`):
    (entries minus unique) because the same Zotero key may appear in multiple
    collections. Job progress is
    **phase-based** (prepare → analyze → apply) with paper/project counts in the
-   message; the analyze step is **indeterminate** because it is a single Claude call.
+   message (e.g. `115 unique papers (184 collection entries in 13 active projects)`);
+   the analyze step is **indeterminate** because it is a single Claude call.
 2. **Validate** — `complete_paper_groups` drops invalid keys, ensures each paper
    appears in at most one group, computes `ungrouped` + `stats` (`total_papers`,
    `papers_grouped`, `num_ungrouped`, `num_drops`, `unique_papers`,
