@@ -24,6 +24,12 @@ Add `ANTHROPIC_API_KEY`, `ZOTERO_LIBRARY_ID`, and `ZOTERO_API_KEY` to the gitign
 
 **No keys?** `make run` → **Load demo library** (heuristic “demo AI”, full UI).
 
+### Live demo (Vercel)
+
+A **read-only** static demo is deployed on Vercel: pre-loaded sample library, no sign-in, no API calls, no data collection. Browse Library, Connections, Groups, Spec, Strategies, and a sample Chat thread. For your own Zotero library, run locally with `make run`.
+
+Vercel serves the committed `vercel/` folder directly (no Python build on deploy). After UI changes, run `make vercel-demo` locally and push.
+
 ## Features
 
 Six sidebar views (Library → Connections → Groups → Spec → Strategies → Chat):
