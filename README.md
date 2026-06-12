@@ -38,19 +38,33 @@ Excluded items appear in a separate section at the bottom of **Library**. Add pa
   <img src="docs/screenshots/library.svg" alt="Library view with KPI bar above active and excluded collections" width="920" />
 </p>
 
-## Persistence
+## Persistence & reset
 
-Data lives in `./data/library.json` (gitignored). `make run` picks up where you left off — no re-sync or re-analysis needed unless you want fresh results. `make clean` wipes everything.
+Data lives in `./data/library.json` (gitignored). `make run` picks up where you left off — no re-sync or re-analysis needed unless you want fresh results.
+
+| Action | What it does |
+| --- | --- |
+| **Purge library** (in-app, sidebar) | Wipes local projects, categorizations, connections, reading plans, and specs. Your Zotero library is untouched. Sync or load the demo again afterward. |
+| `make clean` | Removes `data/`, the virtualenv, and caches — full dev reset. Keeps `.env`. |
+| `make setup` again | Reinstalls dependencies only — does **not** delete your library. |
 
 ## Features
 
-- **Project categorization** — discipline, themes, methods, summary per collection
-- **Cross-project connections** — shared threads and suggested groupings
-- **Reading strategies** — ordered paths with synthesis prompts
+Use any view in any order — nothing is sequential.
+
+- **Zotero sync** — Web API or local Zotero 7; bundled demo library for trying without keys
+- **Active vs excluded collections** — only folders with 2+ papers are used in analysis; empty, single-paper, and unfiled collections are shown separately for reference
+- **Project categorization** — discipline, themes, methods, keywords, and summary per collection
+- **Cross-project connections** — shared threads across projects and suggested groupings to read together
+- **Reading strategies** — pick projects (or let the agent choose), set a goal, get an ordered reading path with synthesis prompts; saved plans persist across sessions
 - **Project-spec paper suggestions** — two tabs on **Project specs**:
-  - **Upload & manage** — drop a PDF, Word (`.doc`/`.docx`), or text spec (grant aim, proposal, project description). Irrelevant uploads are rejected.
-  - **Suggested papers** — after **Find relevant papers**, see only the library hits that matter, each with a **core / supporting** flag and a short **why it's relevant** note. The app screens your whole active library but only lists matches.
-- **Zotero sync** — Web API or local Zotero 7; demo library included
+  - **Upload & manage** — drop a PDF, Word (`.doc`/`.docx`), Markdown, or text spec. Irrelevant uploads (shopping lists, published papers, admin docs) are rejected with guidance.
+  - **Suggested papers** — **Find relevant papers** screens your active library and lists only **core** and **supporting** hits, each with a short **why it's relevant** note. Runtime scales with library size; you can keep using the app while it runs.
+- **Purge library** — start from scratch without touching Zotero (sidebar → **Purge library**)
+
+<p align="center">
+  <img src="docs/screenshots/strategies.svg" alt="Reading strategies compose form" width="920" />
+</p>
 
 <p align="center">
   <img src="docs/screenshots/specs-upload.svg" alt="Project specs Upload and manage tab" width="920" />

@@ -63,6 +63,19 @@ def create_app() -> FastAPI:
             return _run_demo_sync()
         return _run_zotero_sync()
 
+    @app.delete("/api/library")
+    def purge_library() -> dict:
+        store = get_store()
+        if (
+            not store.get_projects()
+            and not store.list_specs()
+            and not store.list_strategies()
+            and not store.get_connections()
+        ):
+            raise HTTPException(400, "Nothing to purge — the library is already empty.")
+        store.purge()
+        return {"purged": True}
+
     @app.get("/api/projects")
     def list_projects() -> dict:
         projects = get_store().get_projects()

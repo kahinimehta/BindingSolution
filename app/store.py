@@ -167,3 +167,9 @@ class Store:
     def get_meta(self) -> dict:
         with self._lock:
             return copy.deepcopy(self._data["meta"])
+
+    def purge(self) -> None:
+        """Wipe all local data — projects, analyses, plans, and specs."""
+        with self._lock:
+            self._data = copy.deepcopy(_EMPTY)
+            self._save()

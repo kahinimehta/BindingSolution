@@ -13,6 +13,22 @@ def test_status_reports_mock_mode(client):
     assert body["anthropic_model"]  # a model id is always reported
 
 
+def test_purge_library(client):
+    _load_demo(client)
+    client.post(
+        "/api/specs",
+        data={"text": "We study fairness and calibration in recommender systems using causal inference.", "title": "Aim"},
+    )
+    start = client.post("/api/strategies", json={"goal": "read", "mode": "auto"}).json()
+    run_job(client, start)
+    assert client.delete("/api/library").status_code == 200
+    assert client.get("/api/projects").json()["projects"] == []
+    assert client.get("/api/specs").json()["specs"] == []
+    assert client.get("/api/strategies").json()["strategies"] == []
+    assert client.get("/api/connections").json()["connections"] is None
+    assert client.delete("/api/library").status_code == 400
+
+
 def test_demo_sync_loads_projects(client):
     result = _load_demo(client)
     assert result["num_projects"] == 6

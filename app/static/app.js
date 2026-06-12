@@ -93,7 +93,15 @@ async function refreshStatus() {
     state.status = await api.get("/status");
     renderStatusChips();
     setCount("projects", state.status.library.num_usable_projects ?? state.status.library.num_projects);
+    updatePurgeButton();
   } catch (e) { /* server not up yet */ }
+}
+
+function updatePurgeButton() {
+  const btn = $("#purge-btn");
+  if (!btn) return;
+  const n = state.status?.library?.num_projects ?? state.projects.length;
+  btn.classList.toggle("hidden", !n);
 }
 function setCount(name, n) {
   const node = $(`.nav-count[data-count="${name}"]`);
@@ -140,7 +148,39 @@ async function loadProjects() {
     const data = await api.get("/projects");
     state.projects = data.projects;
     setCount("projects", usableProjects().length);
+    updatePurgeButton();
   } catch { state.projects = []; }
+}
+
+function confirmPurgeLibrary() {
+  const body = el("div", {},
+    el("p", { class: "lead" },
+      "This removes everything stored locally: synced projects, categorizations, connections, reading plans, and project specs."),
+    el("p", { class: "muted", style: "margin-top:12px;font-size:.9rem" },
+      "Your Zotero library is not changed. After purging, sync again or load the demo library to start fresh."),
+    el("div", { class: "spread mt-3", style: "justify-content:flex-end;gap:10px" },
+      el("button", { type: "button", class: "btn btn-ghost", onclick: closeModal }, "Cancel"),
+      el("button", { type: "button", class: "btn btn-danger", onclick: () => { closeModal(); runPurgeLibrary(); } }, "Purge library")));
+  openModal("Purge library?", body);
+}
+
+async function runPurgeLibrary() {
+  const btn = $("#purge-btn");
+  if (btn) btn.disabled = true;
+  try {
+    await api.del("/library");
+    state.projects = [];
+    toast("Library purged. Sync or load the demo to start over.", "ok");
+    await refreshStatus();
+    setCount("strategies", "");
+    setCount("specs", "");
+    if (location.hash.replace("#/", "") === "library") await renderLibrary();
+    else location.hash = "#/library";
+  } catch (e) {
+    toast(e.message, "err");
+  } finally {
+    if (btn) btn.disabled = false;
+  }
 }
 
 /* ════════════════════════════════════════════════════════════════
@@ -875,6 +915,7 @@ function bindChrome() {
     if (state.status && !state.status.zotero_mode) doSync("demo");
     else doSync("zotero");
   });
+  $("#purge-btn")?.addEventListener("click", confirmPurgeLibrary);
 }
 window.addEventListener("hashchange", route);
 window.addEventListener("DOMContentLoaded", async () => {

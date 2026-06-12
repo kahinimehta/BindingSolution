@@ -68,8 +68,13 @@ suggestions). Without it the app runs in a deterministic demo mode.
 ## Where your data lives
 
 Everything synced and generated is written to `./data/library.json`
-(or `$BINDING_DATA_DIR`). That directory is gitignored. Delete it to start
-fresh; `make clean` removes it along with the virtualenv.
+(or `$BINDING_DATA_DIR`). That directory is gitignored.
+
+To start fresh:
+
+- **In the app:** sidebar → **Purge library** (wipes the JSON store; Zotero is untouched)
+- **On disk:** delete `./data/` or run `make clean` (also removes the virtualenv)
+- **`make setup` again** only reinstalls dependencies — it does not delete your library
 
 Nothing is sent anywhere except the Anthropic API (for analysis) and Zotero
 (to read your library). The server binds to `127.0.0.1` by default, so it's

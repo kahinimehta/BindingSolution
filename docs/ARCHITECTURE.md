@@ -84,6 +84,7 @@ a corrupt file is set aside rather than crashing. No database to run.
 |---|---|---|
 | `GET` | `/api/status` | Config + library summary |
 | `POST` | `/api/library/sync` | Sync Zotero (`{"source":"zotero"}`) or load demo (`{"source":"demo"}`) → job |
+| `DELETE` | `/api/library` | Purge all local data (projects, analyses, plans, specs) |
 | `GET` | `/api/projects` | List projects (summaries) |
 | `GET` | `/api/projects/{key}` | One project with its papers |
 | `POST` | `/api/projects/{key}/categorize` | Categorize one project → job |

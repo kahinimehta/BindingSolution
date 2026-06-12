@@ -24,6 +24,13 @@ separate **Excluded collections** section — visible for reference but left out
 of categorization, connections, reading plans, and paper suggestions. Add papers or
 merge collections in Zotero, then re-sync.
 
+**Purge library:** to wipe everything locally and start over, click **Purge
+library** in the sidebar (below **Sync library**). This deletes synced projects,
+categorizations, connections, saved reading plans, and project specs from
+`./data/library.json`. It does **not** change your Zotero library. Confirm in
+the dialog, then sync again or load the demo library. The button is hidden when
+the shelf is already empty.
+
 ## 2. 📂 Categorize projects — *Library*
 
 Open the **Library** view. Click **✦ Categorize** on an active card (or

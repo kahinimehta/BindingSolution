@@ -150,6 +150,17 @@ a { color: inherit; text-decoration: none; }
 .rail-foot { margin-top: auto; padding-top: 18px; border-top: 1px solid rgba(255,255,255,.08); }
 .btn-sync { width: 100%; justify-content: center; gap: 9px; color: #eef3ee; border-color: rgba(255,255,255,.22); }
 .btn-sync:hover { background: rgba(255,255,255,.1); border-color: rgba(202,161,74,.5); }
+.btn-purge {
+  width: 100%; justify-content: center; margin-top: 8px;
+  font-size: .78rem; color: #c5d4cb; border-color: rgba(255,255,255,.12);
+}
+.btn-purge:hover { color: #f0d4cf; border-color: rgba(138,59,50,.55); background: rgba(138,59,50,.18); }
+.btn-danger {
+  background: var(--oxblood); color: #fff;
+  border-color: var(--oxblood);
+  box-shadow: 0 2px 8px rgba(138,59,50,.25);
+}
+.btn-danger:hover { filter: brightness(1.06); }
 .sync-spin {
   width: 13px; height: 13px; border-radius: 50%;
   border: 2px solid rgba(255,255,255,.35); border-top-color: var(--brass-2);
