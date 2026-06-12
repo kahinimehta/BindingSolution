@@ -16,8 +16,8 @@ After changing `.env`, restart the server (`Ctrl-C`, then `make run`).
 
 ### Claude API key (`ANTHROPIC_API_KEY`)
 
-Powers every AI feature (categorization, connections, strategies, spec
-analysis). Without it the app runs in a deterministic demo mode.
+Powers every AI feature (categorization, connections, strategies, paper
+suggestions). Without it the app runs in a deterministic demo mode.
 
 1. Go to <https://console.anthropic.com/settings/keys>
 2. Create a key, copy it (starts with `sk-ant-`)

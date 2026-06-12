@@ -21,7 +21,7 @@ any categorization you've already generated.
 **Active vs excluded:** only collections with **at least 2 papers** are active.
 Empty folders, single-paper collections, and **Library (unfiled)** appear in a
 separate **Excluded collections** section — visible for reference but left out
-of categorization, connections, reading plans, and spec analysis. Add papers or
+of categorization, connections, reading plans, and paper suggestions. Add papers or
 merge collections in Zotero, then re-sync.
 
 ## 2. 📂 Categorize projects — *Library*
@@ -65,23 +65,40 @@ causal inference"*) and click **Generate strategy**. You get:
 
 Plans are saved; open or delete them from the same screen.
 
-## 5. ✦ Find relevant papers — *Project specs*
+## 5. ✦ Paper suggestions — *Project specs*
 
-Open **Project specs**. Use two tabs:
+Open **Project specs** in the sidebar (Step 4). The view has two tabs:
 
-- **Upload & manage** — drop a **PDF, Word (.doc/.docx), Markdown, or text**
-  file (grant aim, proposal, or project description) or paste the text.
-  Irrelevant uploads (shopping lists, filler text, published papers, admin docs)
-  are rejected with a short explanation of what to upload instead.
-- **Suggested papers** — after you click **Find relevant papers**, see only the
-  library papers that matter for that spec, each with:
+### Upload & manage
 
-  - a **core / supporting** flag
-  - a short **why it's relevant** explanation
-  - concrete **"use this for…"** suggestions where applicable
+1. Drop a **PDF, Word (.doc/.docx), Markdown, or text** file — or paste a grant
+   aim, proposal, or one-paragraph project description.
+2. Click **Save spec**. Irrelevant uploads (shopping lists, filler text, published
+   papers, admin docs) are rejected with a short explanation of what to upload
+   instead.
+3. Click **Find relevant papers** on a saved spec. A confirmation explains how
+   many papers will be screened and that runtime scales with library size.
 
-The app screens your whole active library but only lists the relevant hits, ranked
-so the strongest matches appear first.
+<p align="center">
+  <img src="screenshots/specs-upload.svg" alt="Upload and manage tab with spec dropzone" width="720" />
+</p>
+
+### Suggested papers
+
+After screening finishes, the app switches to **Suggested papers** automatically.
+You can also open this tab any time to review past results.
+
+- Pick a spec from the dropdown at the top.
+- See a count like **4 relevant of 13 screened** — only matches are listed.
+- Each row shows the paper title, its collection, a **core / supporting** flag,
+  a **why it's relevant** explanation, and optional **"use this for…"** tags.
+
+Non-relevant papers are not shown. Results are ranked so the strongest matches
+appear first. Click **Refresh suggestions** to re-screen after syncing new papers.
+
+<p align="center">
+  <img src="screenshots/specs.svg" alt="Suggested papers tab with relevance explanations" width="720" />
+</p>
 
 ---
 
@@ -90,6 +107,6 @@ so the strongest matches appear first.
 - Every analysis runs as a background job with a **live progress bar** — you
   can keep working while it runs.
 - Switching to a different `ANTHROPIC_MODEL` in `.env` (e.g. a faster model for
-  bulk spec analysis) only needs a server restart.
+  paper screening) only needs a server restart.
 - Refreshing suggestions re-screens against the current library, so it's worth
   re-running after you sync new papers.

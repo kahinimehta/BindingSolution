@@ -57,8 +57,20 @@ no key and no network.
 
 Analyses and syncs can take a while, so write endpoints return a `job_id`
 immediately (`app/jobs.py` runs the work in a daemon thread) and the frontend
-polls `GET /api/jobs/{id}` for live progress. Spec analysis persists results
-incrementally, so partial progress survives an interruption.
+polls `GET /api/jobs/{id}` for live progress. Spec screening persists relevant
+hits incrementally, so partial progress survives an interruption.
+
+### Project specs (paper suggestions)
+
+The **Project specs** view is a two-tab SPA panel (`Upload & manage` ·
+`Suggested papers`):
+
+1. **Upload** — `POST /api/specs` extracts text (PDF/Word/MD/txt), validates
+   that the content is a real project brief (`SpecValidation`), and stores it.
+2. **Screen** — `POST /api/specs/{id}/analyze` assesses each paper in the
+   active library but only persists **core** and **supporting** hits in
+   `spec.analysis`. The UI lists those in the **Suggested papers** tab with
+   `relevance_explanation` and optional `use_for` tags.
 
 ## Persistence
 

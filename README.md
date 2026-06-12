@@ -4,8 +4,8 @@
 
 **Point it at your Zotero library and it makes sense of it.**
 
-*Categorize collections, find cross-project threads, plan what to read, and score
-papers against a project spec — locally, with Claude.*
+*Categorize collections, find cross-project threads, plan what to read, and get
+paper suggestions for a project spec — locally, with Claude.*
 
 </div>
 
@@ -47,11 +47,15 @@ Data lives in `./data/library.json` (gitignored). `make run` picks up where you 
 - **Project categorization** — discipline, themes, methods, summary per collection
 - **Cross-project connections** — shared threads and suggested groupings
 - **Reading strategies** — ordered paths with synthesis prompts
-- **Project-spec suggestions** — drop a PDF, Word (`.doc`/`.docx`), or text spec; the **Suggested papers** tab lists only relevant library papers and explains why each one matters. Irrelevant uploads are rejected. Screening runs paper-by-paper with a confirmation first — runtime scales with library size. You can keep using the app while it runs.
+- **Project-spec paper suggestions** — two tabs on **Project specs**:
+  - **Upload & manage** — drop a PDF, Word (`.doc`/`.docx`), or text spec (grant aim, proposal, project description). Irrelevant uploads are rejected.
+  - **Suggested papers** — after **Find relevant papers**, see only the library hits that matter, each with a **core / supporting** flag and a short **why it's relevant** note. The app screens your whole active library but only lists matches.
 - **Zotero sync** — Web API or local Zotero 7; demo library included
 
 <p align="center">
-  <img src="docs/screenshots/specs.svg" alt="Project specs Suggested papers tab listing relevant library papers" width="720" />
+  <img src="docs/screenshots/specs-upload.svg" alt="Project specs Upload and manage tab" width="720" />
+  <br /><br />
+  <img src="docs/screenshots/specs.svg" alt="Project specs Suggested papers tab" width="720" />
 </p>
 
 ## Docs
