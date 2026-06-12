@@ -179,7 +179,7 @@ Example questions: *Which collections share drift-diffusion themes?* · *What is
 the Cortex paper group?* · *Which papers matched my spec?*
 
 <p align="center">
-  <img src="screenshots/chat.svg" alt="Chat view with compact can/cannot overview, large up-arrow send button, and no KPI strip" width="1000" />
+  <img src="screenshots/chat.svg" alt="Chat view with compact can/cannot overview, up-arrow send button, and no KPI strip" width="1000" />
 </p>
 
 ## 6. ↯ Plan your reading — *Strategies*

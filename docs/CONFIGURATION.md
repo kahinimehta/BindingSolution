@@ -109,7 +109,7 @@ varied set sizes — not uniform chunks or mega-sets).
 
 After pulling updates, **restart** the server (`Ctrl+C`, then `make run`) so new
 API routes and `GET /api/status` `capabilities` match the UI. **Chat** uses a
-large circular **↑** send button (52×52px, bottom-right of the input); if chat
+compact circular **↑** send button (bottom-right of the input); if chat
 endpoints 404 or grouping shows *Streaming is required*, an old process is
 usually still bound to port 8765.
 

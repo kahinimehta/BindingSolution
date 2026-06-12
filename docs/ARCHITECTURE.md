@@ -214,7 +214,7 @@ The **Chat** view calls `POST /api/chat` (`app/chat_context.py`, `app/analysis.p
 
 The Chat view hides the KPI strip and shows a compact **can / cannot** overview
 (local store metadata only — no PDFs or full paper text). The compose box uses a
-large circular **↑** send control (52×52px, bottom-right of the input); **Enter** sends,
+compact circular **↑** send control (thin arrow, bottom-right of the input); **Enter** sends,
 **Shift+Enter** inserts a newline. `GET /api/status` exposes `capabilities.chat`
 so the UI can detect a stale server missing chat routes and prompt a restart
 after updates. The system prompt instructs Claude not to claim access to full

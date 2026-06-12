@@ -1019,14 +1019,14 @@ function chatSendButton() {
   });
   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   svg.setAttribute("viewBox", "0 0 24 24");
-  svg.setAttribute("width", "28");
-  svg.setAttribute("height", "28");
+  svg.setAttribute("width", "20");
+  svg.setAttribute("height", "20");
   svg.setAttribute("aria-hidden", "true");
   const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
   path.setAttribute("d", "M12 19V5M5 12l7-7 7 7");
   path.setAttribute("fill", "none");
   path.setAttribute("stroke", "currentColor");
-  path.setAttribute("stroke-width", "2.5");
+  path.setAttribute("stroke-width", "1.75");
   path.setAttribute("stroke-linecap", "round");
   path.setAttribute("stroke-linejoin", "round");
   svg.appendChild(path);
@@ -1036,12 +1036,11 @@ function chatSendButton() {
 
 function chatOverviewPanel() {
   const active = usableProjects();
-  const unique = uniquePaperCount(true);
   const total = state.projects.length;
   const source = state.status?.library?.source || state.status?.zotero_mode || "local";
   return el("div", { class: "chat-overview" },
     el("p", { class: "chat-overview-lead" },
-      `${total} collections (${active.length} active), ${unique} unique papers in your local store (${source}). No PDFs re-uploaded.`),
+      `${total} collections (${active.length} active) in your local store (${source}). No PDFs re-uploaded.`),
     el("div", { class: "chat-overview-cols" },
       el("div", { class: "chat-overview-col" },
         el("div", { class: "chat-overview-heading" }, "Can use"),
