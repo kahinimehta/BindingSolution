@@ -899,7 +899,7 @@ async function renderGroups() {
 
   view().replaceChildren(
     viewHero("Shelf organization",
-      "Grouping works on unique papers (each Zotero item once). The same paper filed in multiple collections counts once here, even if your library KPI sums collection entries."),
+      "Same Papers count as Library. Summary below splits unique items into sets, standalone, and drops."),
     el("div", { id: "groups-body" }, el("div", { class: "muted" }, "Loading…")));
 
   try {
@@ -945,11 +945,9 @@ function renderPaperGroups(g) {
 
   const stats = g.stats || {};
   const unique = stats.unique_papers ?? stats.shelf_papers ?? stats.total_papers ?? 0;
-  const entries = stats.collection_entries ?? 0;
   const grouped = stats.papers_grouped ?? 0;
   const standalone = stats.num_ungrouped ?? 0;
   const drops = stats.num_drops ?? 0;
-  const filings = stats.duplicate_filings ?? 0;
   const accounted = stats.papers_accounted ?? grouped + standalone + drops;
   if (unique) {
     const summaryKids = [
@@ -961,10 +959,6 @@ function renderPaperGroups(g) {
     }
     root.append(el("div", { class: "shelf-accounting muted", style: "margin:-8px 0 18px;font-size:.86rem;display:flex;flex-wrap:wrap;align-items:center;gap:4px" },
       ...summaryKids));
-    if (entries && filings) {
-      root.append(el("p", { class: "muted", style: "margin:-12px 0 18px;font-size:.82rem" },
-        `${entries} collection entries across your library — ${filings} are extra filings of papers already counted in another folder.`));
-    }
   }
 
   if (g.groups?.length) {
