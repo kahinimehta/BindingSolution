@@ -29,6 +29,15 @@
       <rect x="18" y="158" width="252" height="38" rx="11" fill="rgba(255,255,255,0.14)" stroke="#caa14a" stroke-width="1.5"/>
       <text x="30" y="174" fill="#fff" font-family="system-ui, sans-serif" font-size="11" font-weight="600">Groups</text>
       <text x="30" y="187" fill="#b8cfc4" font-family="system-ui, sans-serif" font-size="7.5">Paper sets &amp; prune</text>
+
+      <rect x="18" y="478" width="252" height="26" rx="10" fill="rgba(0,0,0,0.22)" stroke="rgba(255,255,255,0.08)"/>
+      <text x="30" y="495" fill="#d6e2db" font-family="system-ui, sans-serif" font-size="7.5" font-weight="600" letter-spacing="0.6">RUNNING</text>
+      <rect x="18" y="512" width="88" height="16" rx="8" fill="rgba(0,0,0,0.2)"/>
+      <circle cx="28" cy="520" r="3" fill="#7fce9b"/>
+      <text x="36" y="523" fill="#cbdbd1" font-size="6.5" font-family="system-ui, sans-serif" font-weight="600">claude opus</text>
+      <rect x="112" y="512" width="52" height="16" rx="8" fill="rgba(0,0,0,0.2)"/>
+      <circle cx="122" cy="520" r="3" fill="#7fce9b"/>
+      <text x="130" y="523" fill="#cbdbd1" font-size="6.5" font-family="system-ui, sans-serif" font-weight="600">Zotero</text>
     </g>
 
     <rect x="338" y="0" width="612" height="84" fill="url(#hero)"/>

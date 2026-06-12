@@ -28,8 +28,8 @@ Claude usage bills to **your** Anthropic account (per token). Zotero sync and re
 
 | Heavy | Light |
 | --- | --- |
-| **Find in library** (spec screen) — one call **per active paper** | Categorize one project, upload spec validation, **PubMed discovery** |
-| Re-screening after every small sync | One reading plan, connections, or paper groups pass |
+| **Find in library** (first run) — one call **per active paper** | Categorize one project, upload spec validation, **PubMed discovery** |
+| **Re-screen library** after sync — **new papers only** | One reading plan, connections, or paper groups pass |
 
 **Tips:** try demo mode first; tidy Zotero (only collections with **2+ papers** are active); read the spec-screening confirmation before starting; set a [spend limit](https://console.anthropic.com/settings/billing). Full detail: [docs/BILLING.md](docs/BILLING.md).
 
@@ -37,13 +37,14 @@ Claude usage bills to **your** Anthropic account (per token). Zotero sync and re
 
 Use any view in any order.
 
-- **Zotero sync** — Web API or local Zotero 7; bundled demo library
+- **Zotero sync** — Web API or local Zotero 7; bundled demo library; **Sync library** / **Purge library** in the hero toolbar
+- **Running** — sidebar panel tracks background jobs; close the progress window or switch views without stopping work
 - **Active vs excluded** — only folders with 2+ papers are analyzed; empty, single-paper, and unfiled collections are reference-only
 - **Categorize** — discipline, themes, methods, keywords, summary per collection
 - **Connections** — shared threads and suggested groupings across projects
 - **Groups** — optimal non-overlapping paper sets across collections; flags duplicates and weak fits to drop
 - **Reading strategies** — ordered path + synthesis prompts; **schedule with estimated hours/days** (medium pace, ~12 pages/h at 2 h/day — see [docs/USAGE.md](docs/USAGE.md#reading-time-assumptions))
-- **Spec** — upload a brief (PDF/Word/MD/text); **Find in library** screens your Zotero shelf (core/supporting only); **Suggested papers** returns up to five ranked PubMed hits *not* in your library, with summaries and relevance notes
+- **Spec** — upload a brief (PDF/Word/MD/text); **Find in library** screens your Zotero shelf (core/supporting only); **Re-screen library** is incremental (new papers only after sync); **Suggested papers** returns up to five ranked PubMed hits *not* in your library, with summaries and relevance notes
 - **Spec → reading plan** — **Build reading plan** from library matches; steps keep relevance notes; plan links back to the spec
 - **Purge library** — wipe local data without touching Zotero (hero toolbar)
 

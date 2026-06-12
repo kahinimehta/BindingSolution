@@ -50,6 +50,10 @@ that still exist are kept. Sync does **not** call Claude and does **not** change
 anything in Zotero. With no Zotero credentials, use **Load demo library** on the
 empty state instead (same sync endpoint, bundled sample data).
 
+<p align="center">
+  <img src="screenshots/library.svg" alt="Library view with Running panel and hero toolbar" width="1000" />
+</p>
+
 ## 2. 📂 Categorize projects — *Library*
 
 Open the **Library** view. Click **✦ Categorize** on an active card (or
@@ -141,7 +145,7 @@ Open **Spec** in the sidebar. The view has two tabs with different jobs:
 
 | Tab | What it does | Uses Claude? |
 | --- | --- | --- |
-| **Upload & manage** | Save a brief and **Find in library** (screen your synced Zotero shelf) | Yes — one call per active paper |
+| **Upload & manage** | Save a brief and **Find in library** (screen your synced Zotero shelf); **Re-screen** is incremental | Yes — one call per paper screened (new papers only on re-screen) |
 | **Suggested papers** | **Discover new papers** on PubMed that are *not* already in your library | No — PubMed eutils (free) |
 
 ### Upload & manage
@@ -192,10 +196,9 @@ the flow offline.
 
 ### Workflow
 
-- Every analysis runs as a background job with a **live progress bar** — you
-  can keep working while it runs. Confirmations and progress (spec screening,
-  reading plans, connections, bulk categorization) open in the same centered
-  dialog so the page does not jump or rescroll behind you.
+- Every analysis runs as a **background job**. Progress opens in a centered
+  dialog; you can close it (✕), switch views, or refresh — work continues until
+  done. Track jobs in the sidebar **Running** panel (badge shows active count).
 - **Find in library** saves results after the first run. **Re-screen library**
   only assesses **new** papers added since the last screen (e.g. after a Zotero
   sync) — already-screened papers are skipped (see [BILLING.md](BILLING.md)).

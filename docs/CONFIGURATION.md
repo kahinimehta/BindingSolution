@@ -21,8 +21,9 @@ spec screening). Without it the app runs in a deterministic demo mode.
 
 **Billing:** usage is charged to **your Anthropic account** (input + output
 tokens per API call). BindingSolution itself is free. Library spec screening is
-the main cost driver — it calls Claude once per paper in your active library.
-**PubMed discovery** does not use your Anthropic key. See [BILLING.md](BILLING.md)
+the main cost driver on first run — it calls Claude once per paper in your
+active library. **Re-screen library** is incremental (new papers only after a
+sync). **PubMed discovery** does not use your Anthropic key. See [BILLING.md](BILLING.md)
 for what costs money and how to use the API wisely.
 
 1. Go to <https://console.anthropic.com/settings/keys>
@@ -84,6 +85,11 @@ To start fresh:
 - **In the app:** top toolbar → **Sync library** (reads your Zotero collections and papers into the JSON store; refreshes local project lists and keeps categorizations for collections that still exist — does not modify Zotero or call Claude)
 - **On disk:** delete `./data/` or run `make clean` (also removes the virtualenv)
 - **`make setup` again** only reinstalls dependencies — it does not delete your library
+
+Long-running work (sync, categorization, spec screening, etc.) runs as background
+jobs. Use the sidebar **Running** panel to monitor progress after closing the
+progress window or reloading the page. Only stopping the server (e.g. Ctrl+C)
+cancels in-flight jobs.
 
 Nothing is sent anywhere except the Anthropic API (for analysis) and Zotero
 (to read your library). The server binds to `127.0.0.1` by default, so it's

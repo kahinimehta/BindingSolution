@@ -24,7 +24,8 @@ Pricing depends on the model you set in `ANTHROPIC_MODEL` — see
 | **Reading strategy** | 1 per plan | Medium | One heavy call; grows with papers in chosen projects. |
 | **Build reading plan** (from spec) | 1 per plan | Medium | Same as a manual strategy, but only spec-relevant papers are included — not a per-paper screen. |
 | **Upload spec** (validation) | 1 per upload | Low | Checks the text is a real project brief. |
-| **Find in library** (spec screen) | **1 per paper screened** | **High at scale** | Scales linearly with active-library size. |
+| **Find in library** (spec screen) | **1 per paper screened** | **High at scale** | First run screens the whole active library. |
+| **Re-screen library** | **1 per new paper** | Low–medium | Incremental after sync — skips papers already screened. |
 | **Discover new papers** (PubMed) | 0 | Free | Up to 5 ranked hits via NCBI eutils; no Claude call. |
 
 **Zotero sync**, **re-opening saved results**, and **browsing the UI** do not
