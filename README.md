@@ -45,6 +45,34 @@ Prefer an editor? `make setup` then `${EDITOR:-nano} .env`, then `make run`.
 features fall back to a heuristic until you add a key). Your `.env` is in
 `.gitignore` and never reaches GitHub.
 
+## Does it remember my work?
+
+Yes. Everything is saved locally to `./data/library.json` (gitignored) and
+survives stopping and restarting the server. You do **not** need to re-sync or
+re-run analyses every time you open the app.
+
+| Command | What it does | Wipes your library / analyses? |
+| --- | --- | --- |
+| `make setup` | Creates `.venv`, installs deps, scaffolds `.env` if missing | No |
+| `make run` | Starts the server at http://127.0.0.1:8765 | No |
+| `make dev` | Same as `make run`, with auto-reload for code changes | No |
+| `make test` | Runs the offline test suite | No |
+| `make clean` | Removes `.venv`, caches, and the `data/` folder | **Yes** |
+
+**What persists between sessions:** synced projects and papers, categorizations,
+connection maps, reading strategies, and project-spec analyses.
+
+**When to re-run something:**
+
+- **Sync library** — when you want fresh papers from Zotero (existing
+  categorizations for collections that still exist are kept).
+- **Categorize / Find connections / Analyze spec** — only when you want new AI
+  output, or after a big library change.
+- **After `make clean`** — start over: sync (or load the demo) and run analyses again.
+
+Override the data location with `BINDING_DATA_DIR` in `.env` if you want the
+store somewhere other than `./data/`. See [docs/CONFIGURATION.md](docs/CONFIGURATION.md).
+
 ## Features
 
 - **📂 Project categorization** — each Zotero collection is labeled with its
