@@ -1,0 +1,657 @@
+/* BindingSolution frontend — vanilla JS SPA, no build step.
+   Views: Library · Connections · Strategies · Project specs.
+   Long tasks run as server jobs; we poll /api/jobs/{id} for live progress. */
+
+const $ = (sel, root = document) => root.querySelector(sel);
+const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
+const el = (tag, attrs = {}, ...kids) => {
+  const node = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === "class") node.className = v;
+    else if (k === "html") node.innerHTML = v;
+    else if (k.startsWith("on") && typeof v === "function") node.addEventListener(k.slice(2), v);
+    else if (v !== null && v !== undefined && v !== false) node.setAttribute(k, v);
+  }
+  for (const kid of kids.flat()) {
+    if (kid == null || kid === false) continue;
+    node.append(kid.nodeType ? kid : document.createTextNode(String(kid)));
+  }
+  return node;
+};
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => (
+  { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+/* ── API ──────────────────────────────────────────────────────── */
+const api = {
+  async get(path) { return this._req("GET", path); },
+  async post(path, body) { return this._req("POST", path, body); },
+  async del(path) { return this._req("DELETE", path); },
+  async _req(method, path, body) {
+    const opts = { method, headers: {} };
+    if (body !== undefined) { opts.headers["Content-Type"] = "application/json"; opts.body = JSON.stringify(body); }
+    const res = await fetch(`/api${path}`, opts);
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.detail || `${res.status} ${res.statusText}`);
+    return data;
+  },
+  async upload(formData) {
+    const res = await fetch("/api/specs", { method: "POST", body: formData });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.detail || "Upload failed");
+    return data;
+  },
+};
+
+/* ── job polling ──────────────────────────────────────────────── */
+function runJob(startResponse, { onProgress } = {}) {
+  const jobId = startResponse.job_id;
+  return new Promise((resolve, reject) => {
+    const tick = async () => {
+      try {
+        const job = await api.get(`/jobs/${jobId}`);
+        if (onProgress) onProgress(job.progress, job);
+        if (job.status === "done") return resolve(job.result);
+        if (job.status === "error") return reject(new Error(job.error || "Job failed"));
+        setTimeout(tick, 650);
+      } catch (e) { reject(e); }
+    };
+    tick();
+  });
+}
+
+/* ── toasts ───────────────────────────────────────────────────── */
+function toast(msg, kind = "") {
+  const node = el("div", { class: `toast ${kind}` }, msg);
+  $("#toasts").append(node);
+  setTimeout(() => { node.style.transition = "opacity .3s, transform .3s"; node.style.opacity = "0"; node.style.transform = "translateX(20px)"; setTimeout(() => node.remove(), 300); }, 4200);
+}
+
+/* ── modal ────────────────────────────────────────────────────── */
+function openModal(title, bodyNode) {
+  const host = $("#modal-host");
+  host.hidden = false;
+  host.replaceChildren(el("div", { class: "modal" },
+    el("div", { class: "modal-head" },
+      el("h2", {}, title),
+      el("button", { class: "modal-x", onclick: closeModal, "aria-label": "Close" }, "✕")),
+    el("div", { class: "modal-body" }, bodyNode)));
+  host.onclick = (e) => { if (e.target === host) closeModal(); };
+}
+function closeModal() { const h = $("#modal-host"); h.hidden = true; h.replaceChildren(); }
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
+
+/* ── global state ─────────────────────────────────────────────── */
+const state = { status: null, projects: [], busy: false };
+const fmtTime = (t) => t ? new Date(t * 1000).toLocaleString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }) : "—";
+
+/* ── status / sidebar ─────────────────────────────────────────── */
+async function refreshStatus() {
+  try {
+    state.status = await api.get("/status");
+    renderStatusChips();
+    setCount("projects", state.status.library.num_projects);
+  } catch (e) { /* server not up yet */ }
+}
+function setCount(name, n) {
+  const node = $(`.nav-count[data-count="${name}"]`);
+  if (node) node.textContent = n ? String(n) : "";
+}
+function renderStatusChips() {
+  const s = state.status; if (!s) return;
+  const chips = [];
+  if (s.using_mock_llm) chips.push(chip("Demo AI", "warn", "No Claude key — heuristic mode"));
+  else chips.push(chip(s.anthropic_model.replace("claude-", "").replace(/-/g, " "), "ok", "Claude connected"));
+  if (s.zotero_mode) chips.push(chip(`Zotero · ${s.zotero_mode}`, "ok"));
+  else chips.push(chip("No Zotero", "warn", "Use the demo library"));
+  $("#status-chips").replaceChildren(...chips);
+}
+function chip(label, kind = "", title = "") {
+  return el("span", { class: `chip ${kind}`, title }, el("span", { class: "dot" }), label);
+}
+
+/* ── sync ─────────────────────────────────────────────────────── */
+async function doSync(source) {
+  const btn = $("#sync-btn");
+  btn.classList.add("busy"); btn.disabled = true;
+  $(".sync-label", btn).textContent = source === "demo" ? "Loading demo…" : "Syncing…";
+  try {
+    const start = await api.post("/library/sync", { source });
+    const result = await runJob(start, {
+      onProgress: (p) => { if (p.message) $(".sync-label", btn).textContent = p.message.slice(0, 18); },
+    });
+    toast(`Loaded ${result.num_projects} projects from ${result.source}.`, "ok");
+    await refreshStatus();
+    await loadProjects();
+    if (location.hash.replace("#/", "") === "library") renderLibrary();
+    else location.hash = "#/library";
+  } catch (e) {
+    toast(e.message, "err");
+  } finally {
+    btn.classList.remove("busy"); btn.disabled = false;
+    $(".sync-label", btn).textContent = "Sync library";
+  }
+}
+
+async function loadProjects() {
+  try { const data = await api.get("/projects"); state.projects = data.projects; setCount("projects", state.projects.length); }
+  catch { state.projects = []; }
+}
+
+/* ════════════════════════════════════════════════════════════════
+   VIEWS
+   ════════════════════════════════════════════════════════════════ */
+const view = () => $("#view");
+function setView(title, actions = []) {
+  $("#view-title").textContent = title;
+  $("#view-actions").replaceChildren(...actions);
+}
+
+/* ── 1. LIBRARY ───────────────────────────────────────────────── */
+async function renderLibrary() {
+  await loadProjects();
+  const actions = state.projects.length
+    ? [el("button", { class: "btn btn-brass btn-sm", onclick: categorizeAll }, "✦ Categorize all")]
+    : [];
+  setView("Library", actions);
+
+  if (!state.projects.length) {
+    view().replaceChildren(emptyLibrary());
+    return;
+  }
+
+  const intro = el("div", { class: "section-head" },
+    el("div", {},
+      el("h2", {}, "Your projects"),
+      el("p", {}, "Each Zotero collection is a project. Categorize one to see its discipline, themes, and methods — or categorize the whole shelf at once.")));
+
+  const grid = el("div", { class: "grid grid-projects" },
+    ...state.projects.map(projectCard));
+  view().replaceChildren(intro, grid);
+}
+
+function projectCard(p) {
+  const cat = p.category;
+  const body = [
+    el("h3", {}, p.name),
+    el("div", { class: "muted" }, `${p.num_items} ${p.num_items === 1 ? "paper" : "papers"}`),
+  ];
+  if (cat) {
+    body.push(el("p", { class: "lead", style: "margin:12px 0 0;font-size:.88rem" }, cat.summary));
+    const meta = el("div", { class: "project-meta" },
+      el("span", { class: "pill green" }, cat.discipline),
+      el("span", { class: "pill ink" }, cat.maturity));
+    body.push(meta);
+    if (cat.themes?.length) body.push(el("div", { class: "tag-row" }, ...cat.themes.slice(0, 5).map((t) => el("span", { class: "tag" }, t))));
+  } else {
+    body.push(el("div", { class: "project-meta" },
+      el("button", {
+        class: "btn btn-ghost btn-sm",
+        onclick: (e) => { e.stopPropagation(); categorizeOne(p.key, e.currentTarget); },
+      }, "✦ Categorize")));
+  }
+  return el("div", { class: "card spine linkish project-card", onclick: () => openProject(p.key) }, ...body);
+}
+
+function emptyLibrary() {
+  return el("div", { class: "empty" },
+    el("div", { class: "emoji" }, "❡"),
+    el("h3", {}, "Your shelf is empty"),
+    el("p", {}, "Sync your Zotero library to pull in your collections — or load a demo library to explore everything first."),
+    el("div", { class: "row" },
+      el("button", { class: "btn btn-primary", onclick: () => doSync("zotero") }, "Sync Zotero"),
+      el("button", { class: "btn btn-brass", onclick: () => doSync("demo") }, "Load demo library")));
+}
+
+async function categorizeOne(key, btn) {
+  if (btn) { btn.disabled = true; btn.textContent = "Categorizing…"; }
+  try {
+    const start = await api.post(`/projects/${key}/categorize`);
+    await runJob(start);
+    toast("Categorized.", "ok");
+    await renderLibrary();
+  } catch (e) { toast(e.message, "err"); if (btn) { btn.disabled = false; btn.textContent = "✦ Categorize"; } }
+}
+
+async function categorizeAll(e) {
+  const btn = e?.currentTarget;
+  if (btn) { btn.disabled = true; }
+  const bar = progressBlock("Categorizing every project…");
+  view().prepend(bar.node);
+  try {
+    const start = await api.post("/projects/categorize-all");
+    await runJob(start, { onProgress: bar.update });
+    toast("All projects categorized.", "ok");
+    await renderLibrary();
+  } catch (err) { toast(err.message, "err"); bar.node.remove(); if (btn) btn.disabled = false; }
+}
+
+async function openProject(key) {
+  openModal("Loading…", el("div", { class: "skeleton", style: "height:200px" }));
+  try {
+    const p = await api.get(`/projects/${key}`);
+    const body = el("div", {});
+    if (p.category) {
+      body.append(
+        el("div", { class: "spread", style: "flex-wrap:wrap;gap:8px;margin-bottom:6px" },
+          el("span", { class: "pill green" }, p.category.discipline),
+          el("span", { class: "pill ink" }, p.category.maturity),
+          p.category._mock ? el("span", { class: "mock-note" }, "demo AI") : null),
+        el("p", { class: "lead", style: "margin:12px 0" }, p.category.summary),
+        labeledTags("Themes", p.category.themes),
+        labeledTags("Methods", p.category.methods));
+    } else {
+      body.append(el("button", { class: "btn btn-brass btn-sm", style: "margin-bottom:14px",
+        onclick: async (e) => { e.currentTarget.disabled = true; await categorizeOne(key); closeModal(); openProject(key); } }, "✦ Categorize this project"));
+    }
+    body.append(el("h3", { class: "mt-2", style: "font-family:var(--font-display);font-size:1.05rem" }, `${p.items.length} papers`));
+    const list = el("div", {});
+    for (const it of p.items) {
+      list.append(el("div", { class: "paper-line" },
+        el("div", { class: "pt" }, it.title),
+        el("div", { class: "pm" }, [it.creators, it.year, it.publication].filter(Boolean).join(" · "))));
+    }
+    body.append(list);
+    openModal(p.name, body);
+  } catch (e) { closeModal(); toast(e.message, "err"); }
+}
+function labeledTags(label, items) {
+  if (!items?.length) return null;
+  return el("div", { style: "margin:10px 0" },
+    el("div", { class: "muted", style: "font-size:.76rem;text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px" }, label),
+    el("div", { class: "tag-row" }, ...items.map((t) => el("span", { class: "tag" }, t))));
+}
+
+/* ── 2. CONNECTIONS ───────────────────────────────────────────── */
+async function renderConnections() {
+  await loadProjects();
+  setView("Connections", state.projects.length >= 2
+    ? [el("button", { class: "btn btn-primary btn-sm", onclick: findConnections }, "⁂ Find connections")] : []);
+
+  if (state.projects.length < 2) {
+    view().replaceChildren(el("div", { class: "empty" },
+      el("div", { class: "emoji" }, "⁂"),
+      el("h3", {}, "Connections need a library"),
+      el("p", {}, "Sync at least two projects and BindingSolution will surface the themes, methods, and authors that thread through them."),
+      el("div", { class: "row" }, el("button", { class: "btn btn-brass", onclick: () => doSync("demo") }, "Load demo library"))));
+    return;
+  }
+
+  view().replaceChildren(el("div", { class: "section-head" },
+    el("div", {}, el("h2", {}, "Cross-project threads"),
+      el("p", {}, "Where your projects overlap — shared concepts, recurring methods, the same authors showing up in different corners of your library."))),
+    el("div", { id: "conn-body" }, el("div", { class: "muted" }, "Loading…")));
+
+  try {
+    const { connections } = await api.get("/connections");
+    if (connections) renderConnectionMap(connections);
+    else $("#conn-body").replaceChildren(el("div", { class: "empty" },
+      el("div", { class: "emoji" }, "⁂"),
+      el("h3", {}, "No analysis yet"),
+      el("p", {}, "Run the analysis to map how your projects connect."),
+      el("div", { class: "row" }, el("button", { class: "btn btn-primary", onclick: findConnections }, "⁂ Find connections"))));
+  } catch (e) { $("#conn-body").replaceChildren(el("div", { class: "muted" }, e.message)); }
+}
+
+async function findConnections() {
+  const bar = progressBlock("Reading across your projects…");
+  $("#conn-body")?.replaceChildren(bar.node);
+  try {
+    const start = await api.post("/connections");
+    await runJob(start, { onProgress: bar.update });
+    toast("Connections mapped.", "ok");
+    const { connections } = await api.get("/connections");
+    renderConnectionMap(connections);
+  } catch (e) { toast(e.message, "err"); renderConnections(); }
+}
+
+function projName(key) { return state.projects.find((p) => p.key === key)?.name || key; }
+
+function renderConnectionMap(c) {
+  const root = el("div", {});
+  root.append(el("div", { class: "card", style: "padding:22px;margin-bottom:22px" },
+    c._mock ? el("span", { class: "mock-note", style: "margin-bottom:10px" }, "demo AI — connect a Claude key for real analysis") : null,
+    el("p", { class: "lead", style: "margin:0;font-size:1.02rem" }, c.overview)));
+
+  if (c.shared_threads?.length) {
+    root.append(el("h3", { style: "font-family:var(--font-display);margin:6px 0 12px" }, "Shared threads"));
+    for (const t of c.shared_threads) {
+      root.append(el("div", { class: "thread" },
+        el("div", {}, el("div", { class: "thread-label" }, t.label), el("div", { class: "thread-kind" }, t.kind)),
+        el("div", { class: "links" }, ...t.project_keys.map((k) => el("span", { class: "pill green" }, projName(k)))),
+        el("span", { class: `strength ${t.strength}` }, t.strength)));
+      if (t.explanation) root.lastChild.after(el("p", { class: "muted", style: "font-size:.83rem;margin:-4px 0 12px 2px" }, t.explanation));
+    }
+  }
+
+  if (c.clusters?.length) {
+    root.append(el("h3", { style: "font-family:var(--font-display);margin:22px 0 12px" }, "Suggested groupings"));
+    for (const cl of c.clusters) {
+      root.append(el("div", { class: "card spine cluster" },
+        el("h4", {}, cl.name),
+        el("div", { class: "links tag-row" }, ...cl.project_keys.map((k) => el("span", { class: "pill green" }, projName(k)))),
+        el("p", { class: "muted", style: "margin:6px 0 14px;font-size:.88rem;line-height:1.5" }, cl.rationale),
+        el("button", { class: "btn btn-ghost btn-sm", onclick: () => { location.hash = "#/strategies"; setTimeout(() => prefillStrategy(cl.project_keys), 60); } }, "↯ Build a reading plan")));
+    }
+  }
+  $("#conn-body").replaceChildren(root);
+}
+
+/* ── 3. STRATEGIES ────────────────────────────────────────────── */
+let strategySelection = new Set();
+let strategyMode = "manual";
+
+async function renderStrategies() {
+  await loadProjects();
+  setView("Reading strategies");
+  const wrap = el("div", {});
+
+  // builder
+  wrap.append(buildStrategyForm());
+
+  // saved strategies
+  wrap.append(el("div", { class: "section-head mt-3" }, el("div", {}, el("h2", {}, "Saved plans"))));
+  const list = el("div", { id: "strat-list" }, el("div", { class: "muted" }, "Loading…"));
+  wrap.append(list);
+  view().replaceChildren(wrap);
+  await loadStrategies();
+}
+
+function buildStrategyForm() {
+  if (!state.projects.length) {
+    return el("div", { class: "empty" },
+      el("div", { class: "emoji" }, "↯"),
+      el("h3", {}, "Plans need projects"),
+      el("p", {}, "Sync or load a library, then pick the projects you want to read together — or let the agent decide."),
+      el("div", { class: "row" }, el("button", { class: "btn btn-brass", onclick: () => doSync("demo") }, "Load demo library")));
+  }
+  const card = el("div", { class: "card", style: "padding:24px" });
+  const modeToggle = el("div", { class: "mode-toggle" },
+    el("button", { class: strategyMode === "manual" ? "on" : "", onclick: () => setMode("manual") }, "I choose projects"),
+    el("button", { class: strategyMode === "auto" ? "on" : "", onclick: () => setMode("auto") }, "Let the agent decide"));
+
+  const chooser = el("div", { class: "choose-grid", id: "strat-choose" },
+    ...state.projects.map((p) => choiceTile(p)));
+
+  const goal = el("textarea", { id: "strat-goal", rows: "3", placeholder: "e.g. I'm writing a related-work section connecting fairness and causal inference — what should I read and in what order?" });
+
+  card.append(
+    el("div", { class: "spread", style: "margin-bottom:16px" },
+      el("div", {}, el("h2", { style: "font-family:var(--font-display);margin:0 0 4px;font-size:1.2rem" }, "Compose a reading plan"),
+        el("p", { class: "muted", style: "margin:0;font-size:.88rem" }, "Pick the projects to combine and state your goal. You get an ordered path through the papers.")),
+      modeToggle),
+    el("div", { class: "field", id: "strat-choose-field" }, el("label", {}, "Projects"), chooser),
+    el("div", { class: "field mt-2" }, el("label", {}, "Your goal (optional)"), goal),
+    el("div", { class: "mt-2" }, el("button", { class: "btn btn-primary", id: "strat-go", onclick: submitStrategy }, "↯ Generate strategy")));
+  applyModeUI(card);
+  return card;
+}
+
+function choiceTile(p) {
+  const on = strategySelection.has(p.key);
+  return el("label", { class: `choice ${on ? "on" : ""}`, "data-key": p.key },
+    el("input", { type: "checkbox", ...(on ? { checked: "checked" } : {}), onchange: (e) => toggleChoice(p.key, e.target.checked) }),
+    el("div", {}, el("div", { class: "c-name" }, p.short_name || p.name), el("div", { class: "c-sub" }, `${p.num_items} papers`)));
+}
+function toggleChoice(key, on) {
+  if (on) strategySelection.add(key); else strategySelection.delete(key);
+  const tile = $(`.choice[data-key="${key}"]`); if (tile) tile.classList.toggle("on", on);
+}
+function setMode(mode) {
+  strategyMode = mode;
+  $$(".mode-toggle button").forEach((b, i) => b.classList.toggle("on", (mode === "manual") === (i === 0)));
+  applyModeUI(view());
+}
+function applyModeUI(root) {
+  const field = $("#strat-choose-field", root);
+  if (field) field.style.opacity = strategyMode === "auto" ? ".4" : "1";
+  if (field) field.style.pointerEvents = strategyMode === "auto" ? "none" : "auto";
+}
+function prefillStrategy(keys) {
+  strategyMode = "manual";
+  strategySelection = new Set(keys);
+  renderStrategies();
+}
+
+async function submitStrategy(e) {
+  const btn = e.currentTarget;
+  const goal = $("#strat-goal").value.trim();
+  const keys = [...strategySelection];
+  if (strategyMode === "manual" && keys.length === 0) { toast("Pick at least one project, or switch to “Let the agent decide”.", "err"); return; }
+  btn.disabled = true;
+  const bar = progressBlock("Designing your reading path…");
+  btn.after(bar.node);
+  try {
+    const start = await api.post("/strategies", { goal, mode: strategyMode, project_keys: keys });
+    await runJob(start, { onProgress: bar.update });
+    toast("Reading plan ready.", "ok");
+    strategySelection.clear();
+    await renderStrategies();
+  } catch (err) { toast(err.message, "err"); bar.node.remove(); btn.disabled = false; }
+}
+
+async function loadStrategies() {
+  try {
+    const { strategies } = await api.get("/strategies");
+    const host = $("#strat-list"); if (!host) return;
+    if (!strategies.length) { host.replaceChildren(el("p", { class: "muted" }, "No saved plans yet — generate one above.")); return; }
+    host.replaceChildren(...strategies.map(strategyRow));
+  } catch { /* ignore */ }
+}
+function strategyRow(s) {
+  const plan = s.plan || {};
+  return el("div", { class: "row-item linkish" },
+    el("div", { onclick: () => openStrategy(s), style: "cursor:pointer;flex:1" },
+      el("h4", {}, plan.title || "Reading plan"),
+      el("div", { class: "muted" }, `${plan.sequence?.length || 0} papers · ${s.mode === "auto" ? "agent-chosen" : "you chose"} · ${fmtTime(s.created_at)}`)),
+    el("div", { style: "display:flex;gap:8px" },
+      el("button", { class: "btn btn-ghost btn-sm", onclick: () => openStrategy(s) }, "Open"),
+      el("button", { class: "btn btn-ghost btn-sm btn-danger", onclick: () => deleteStrategy(s.id) }, "Delete")));
+}
+function openStrategy(s) {
+  const plan = s.plan || {};
+  const body = el("div", {});
+  if (plan._mock) body.append(el("span", { class: "mock-note", style: "margin-bottom:10px" }, "demo AI"));
+  body.append(el("p", { class: "lead" }, plan.approach || ""));
+  if (plan.goal_restatement) body.append(el("p", { class: "rel-why", style: "margin:10px 0" }, "Goal: " + plan.goal_restatement));
+  const seq = el("div", { class: "sequence" });
+  (plan.sequence || []).forEach((step, i) => {
+    seq.append(el("div", { class: "step" },
+      el("div", { class: "step-n" }, `Step ${i + 1} · ${projName(step.project_key)}`),
+      el("h4", {}, step.title),
+      el("div", { class: "step-reason" }, step.reason)));
+  });
+  body.append(seq);
+  if (plan.synthesis_prompts?.length) {
+    body.append(el("h3", { class: "mt-2", style: "font-family:var(--font-display);font-size:1.05rem" }, "Hold these in mind"),
+      el("ul", { style: "color:var(--ink-2);line-height:1.7;padding-left:20px" }, ...plan.synthesis_prompts.map((q) => el("li", {}, q))));
+  }
+  openModal(plan.title || "Reading plan", body);
+}
+async function deleteStrategy(id) {
+  try { await api.del(`/strategies/${id}`); toast("Deleted.", "ok"); await loadStrategies(); }
+  catch (e) { toast(e.message, "err"); }
+}
+
+/* ── 4. SPECS ─────────────────────────────────────────────────── */
+async function renderSpecs() {
+  await loadProjects();
+  setView("Project specs");
+  const wrap = el("div", {});
+  wrap.append(el("div", { class: "section-head" },
+    el("div", {}, el("h2", {}, "Match papers to a project"),
+      el("p", {}, "Drop in a project spec, grant aim, or a paragraph describing what you're working on. Every paper in your library gets summarized and scored for how it bears on that project."))));
+  wrap.append(specUploader());
+  wrap.append(el("div", { class: "section-head mt-3" }, el("div", {}, el("h2", {}, "Your specs"))));
+  wrap.append(el("div", { id: "spec-list" }, el("div", { class: "muted" }, "Loading…")));
+  view().replaceChildren(wrap);
+  await loadSpecs();
+}
+
+function specUploader() {
+  const card = el("div", { class: "card", style: "padding:22px" });
+  const drop = el("div", { class: "dropzone" },
+    el("div", { class: "emoji" }, "✦"),
+    el("p", { style: "margin:8px 0 4px;font-weight:600" }, "Drop a PDF, Markdown, or text file"),
+    el("p", { class: "muted", style: "margin:0;font-size:.84rem" }, "…or paste your project description below"),
+    el("input", { type: "file", id: "spec-file", accept: ".pdf,.md,.txt,.markdown", style: "display:none" }));
+  drop.addEventListener("click", () => $("#spec-file", drop).click());
+  drop.addEventListener("dragover", (e) => { e.preventDefault(); drop.classList.add("drag"); });
+  drop.addEventListener("dragleave", () => drop.classList.remove("drag"));
+  drop.addEventListener("drop", (e) => { e.preventDefault(); drop.classList.remove("drag"); if (e.dataTransfer.files[0]) uploadSpecFile(e.dataTransfer.files[0]); });
+  $("#spec-file", drop)?.addEventListener("change", (e) => { if (e.target.files[0]) uploadSpecFile(e.target.files[0]); });
+
+  const title = el("input", { type: "text", id: "spec-title", placeholder: "Project title (optional)" });
+  const text = el("textarea", { id: "spec-text", rows: "4", placeholder: "Or paste your project spec / aims here…" });
+  card.append(drop,
+    el("div", { class: "field mt-2" }, el("label", {}, "Title"), title),
+    el("div", { class: "field mt-2" }, el("label", {}, "Paste a specification"), text),
+    el("div", { class: "mt-2" }, el("button", { class: "btn btn-primary", onclick: submitSpecText }, "✦ Save spec")));
+  return card;
+}
+
+async function uploadSpecFile(file) {
+  const fd = new FormData();
+  fd.append("file", file);
+  fd.append("title", $("#spec-title")?.value || "");
+  try { const spec = await api.upload(fd); toast(`Saved “${spec.title}”.`, "ok"); await loadSpecs(); offerAnalyze(spec); }
+  catch (e) { toast(e.message, "err"); }
+}
+async function submitSpecText() {
+  const text = $("#spec-text")?.value.trim();
+  if (!text) { toast("Paste some text or drop a file.", "err"); return; }
+  const fd = new FormData();
+  fd.append("text", text);
+  fd.append("title", $("#spec-title")?.value || "");
+  try { const spec = await api.upload(fd); toast(`Saved “${spec.title}”.`, "ok"); $("#spec-text").value = ""; await loadSpecs(); offerAnalyze(spec); }
+  catch (e) { toast(e.message, "err"); }
+}
+
+async function loadSpecs() {
+  try {
+    const { specs } = await api.get("/specs");
+    const host = $("#spec-list"); if (!host) return;
+    if (!specs.length) { host.replaceChildren(el("p", { class: "muted" }, "No specs yet.")); return; }
+    host.replaceChildren(...specs.map(specRow));
+  } catch { /* ignore */ }
+}
+function specRow(s) {
+  const status = { new: "ink", analyzing: "brass", analyzed: "green" }[s.status] || "ink";
+  return el("div", { class: "row-item" },
+    el("div", { style: "flex:1;cursor:pointer", onclick: () => openSpec(s.id) },
+      el("div", { class: "spread", style: "justify-content:flex-start;gap:10px" },
+        el("h4", {}, s.title),
+        el("span", { class: `pill ${status}` }, s.status === "analyzed" ? `${s.num_assessed} assessed` : s.status)),
+      el("div", { class: "muted", style: "margin-top:3px" }, esc(s.preview).slice(0, 120) + "…")),
+    el("div", { style: "display:flex;gap:8px" },
+      el("button", { class: "btn btn-primary btn-sm", onclick: () => analyzeSpec(s.id) }, s.status === "analyzed" ? "Re-analyze" : "Analyze"),
+      el("button", { class: "btn btn-ghost btn-sm btn-danger", onclick: () => deleteSpec(s.id) }, "Delete")));
+}
+function offerAnalyze(spec) {
+  if (!state.projects.length) { toast("Saved — sync a library to analyze it against your papers.", ""); return; }
+  analyzeSpec(spec.id);
+}
+
+async function analyzeSpec(specId) {
+  if (!state.projects.length) { toast("Sync a library first.", "err"); return; }
+  openModal("Analyzing spec", (() => {
+    const bar = progressBlock("Assessing each paper against your project…");
+    const box = el("div", {}, bar.node);
+    box._update = bar.update;
+    return box;
+  })());
+  const box = $(".modal-body > div");
+  try {
+    const start = await api.post(`/specs/${specId}/analyze`, {});
+    await runJob(start, { onProgress: (p) => box._update(p) });
+    closeModal();
+    toast("Analysis complete.", "ok");
+    await loadSpecs();
+    openSpec(specId);
+  } catch (e) { closeModal(); toast(e.message, "err"); }
+}
+
+async function openSpec(specId) {
+  try {
+    const spec = await api.get(`/specs/${specId}`);
+    const results = Object.values(spec.analysis || {}).sort((a, b) => (b.score || 0) - (a.score || 0));
+    const body = el("div", {});
+    body.append(el("p", { class: "lead", style: "white-space:pre-wrap;max-height:140px;overflow:auto;background:var(--surface-2);padding:12px;border-radius:9px;font-size:.86rem" }, spec.text.slice(0, 1200) + (spec.text.length > 1200 ? "…" : "")));
+    if (!results.length) {
+      body.append(el("div", { class: "mt-2" }, el("button", { class: "btn btn-primary", onclick: () => { closeModal(); analyzeSpec(specId); } }, "✦ Analyze against library")));
+    } else {
+      const core = results.filter((r) => r.relevance === "core" || r.relevance === "supporting").length;
+      body.append(el("p", { class: "muted mt-2", style: "font-size:.86rem" }, `${results.length} papers assessed · ${core} relevant`));
+      for (const r of results) body.append(relevanceRow(r));
+    }
+    openModal(spec.title, body);
+  } catch (e) { toast(e.message, "err"); }
+}
+function heatColor(score) {
+  const stops = ["--heat-0", "--heat-1", "--heat-2", "--heat-3", "--heat-4"];
+  const idx = Math.min(4, Math.floor((score / 100) * 5));
+  return `var(${stops[idx]})`;
+}
+function relevanceRow(r) {
+  return el("div", { class: "relevance-row" },
+    el("div", { class: "heat", style: `background:${heatColor(r.score)}` }, r.score),
+    el("div", {},
+      el("div", { class: "rel-title" }, r.title || r.paper_key),
+      el("div", { class: "muted", style: "font-size:.76rem" }, projName(r.project_key)),
+      el("div", { class: "rel-summary" }, r.summary),
+      el("div", { class: "rel-why" }, r.relevance_explanation),
+      r.use_for?.length ? el("div", { class: "tag-row" }, ...r.use_for.map((u) => el("span", { class: "tag" }, u))) : null),
+    el("span", { class: `rel-flag rel-${r.relevance}` }, r.relevance.replace("_", " ")));
+}
+async function deleteSpec(id) {
+  try { await api.del(`/specs/${id}`); toast("Deleted.", "ok"); await loadSpecs(); }
+  catch (e) { toast(e.message, "err"); }
+}
+
+/* ── shared: progress block ───────────────────────────────────── */
+function progressBlock(initial) {
+  const fill = el("div", { class: "progress-fill" });
+  const msg = el("span", {}, initial);
+  const pct = el("span", { class: "muted" }, "");
+  const node = el("div", { class: "progress card", style: "padding:16px" },
+    el("div", { class: "progress-bar" }, fill),
+    el("div", { class: "progress-msg" }, msg, pct));
+  return {
+    node,
+    update(p) {
+      if (!p) return;
+      const total = p.total || 0; const cur = p.current || 0;
+      const ratio = total ? cur / total : 0.05;
+      fill.style.width = `${Math.max(5, ratio * 100)}%`;
+      if (p.message) msg.textContent = p.message;
+      pct.textContent = total ? `${cur}/${total}` : "";
+    },
+  };
+}
+
+/* ── router ───────────────────────────────────────────────────── */
+const routes = { library: renderLibrary, connections: renderConnections, strategies: renderStrategies, specs: renderSpecs };
+async function route() {
+  const name = (location.hash.replace("#/", "") || "library");
+  $$(".nav-item").forEach((n) => n.classList.toggle("active", n.dataset.route === name));
+  const fn = routes[name] || renderLibrary;
+  $("#app").dataset.loading = "true";
+  try { await fn(); } finally { $("#app").dataset.loading = "false"; }
+  // keep saved-counts fresh
+  api.get("/strategies").then((d) => setCount("strategies", d.strategies.length)).catch(() => {});
+  api.get("/specs").then((d) => setCount("specs", d.specs.length)).catch(() => {});
+}
+
+/* ── boot ─────────────────────────────────────────────────────── */
+function bindChrome() {
+  $("#sync-btn").addEventListener("click", () => {
+    if (state.status && !state.status.zotero_mode) doSync("demo");
+    else doSync("zotero");
+  });
+}
+window.addEventListener("hashchange", route);
+window.addEventListener("DOMContentLoaded", async () => {
+  bindChrome();
+  await refreshStatus();
+  if (!location.hash) location.hash = "#/library";
+  else route();
+});

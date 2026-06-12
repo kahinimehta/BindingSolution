@@ -1,0 +1,17 @@
+# BindingSolution — core server dependencies (always required)
+fastapi>=0.115
+uvicorn[standard]>=0.30
+python-multipart>=0.0.9     # file uploads (project specs)
+python-dotenv>=1.0          # .env loading
+anthropic>=0.40            # Claude API (structured outputs via messages.parse)
+pydantic>=2.7               # schemas for structured LLM outputs
+pypdf>=4.2                  # text extraction from PDF specs
+
+# Development / tests
+pytest>=8.0
+httpx>=0.27                 # FastAPI TestClient transport
+
+# ── Live Zotero sync (optional) ──────────────────────────────────────
+# pyzotero connects to your real Zotero library. It's optional: the demo
+# library and every AI feature work without it. setup.sh installs it
+# best-effort. To install yourself:  pip install -r requirements-zotero.txt

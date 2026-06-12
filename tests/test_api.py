@@ -1,0 +1,136 @@
+"""End-to-end API tests, running fully offline (MOCK_LLM=true)."""
+from conftest import run_job
+
+
+def _load_demo(client):
+    start = client.post("/api/library/sync", json={"source": "demo"}).json()
+    return run_job(client, start)
+
+
+def test_status_reports_mock_mode(client):
+    body = client.get("/api/status").json()
+    assert body["using_mock_llm"] is True
+    assert body["anthropic_model"]  # a model id is always reported
+
+
+def test_demo_sync_loads_projects(client):
+    result = _load_demo(client)
+    assert result["num_projects"] == 4
+    projects = client.get("/api/projects").json()["projects"]
+    assert len(projects) == 4
+    assert {p["name"] for p in projects} >= {"Graph Neural Networks", "Fairness in ML"}
+
+
+def test_categorize_project(client):
+    _load_demo(client)
+    key = client.get("/api/projects").json()["projects"][0]["key"]
+    start = client.post(f"/api/projects/{key}/categorize").json()
+    run_job(client, start)
+    proj = client.get(f"/api/projects/{key}").json()
+    assert proj["category"]["discipline"]
+    assert proj["category"]["themes"]
+    assert proj["category"]["keywords"]
+
+
+def test_connections_need_two_projects(client):
+    # Empty library → 400
+    resp = client.post("/api/connections")
+    assert resp.status_code == 400
+
+
+def test_connections_after_demo(client):
+    _load_demo(client)
+    start = client.post("/api/connections").json()
+    run_job(client, start)
+    conn = client.get("/api/connections").json()["connections"]
+    assert conn["overview"]
+    # The demo data deliberately shares tags ('recommenders', 'causal', ...) across projects.
+    assert len(conn["shared_threads"]) >= 1
+    assert conn["suggested_combination"]
+
+
+def test_reading_strategy_manual(client):
+    _load_demo(client)
+    keys = [p["key"] for p in client.get("/api/projects").json()["projects"][:2]]
+    start = client.post("/api/strategies", json={"goal": "connect these", "mode": "manual", "project_keys": keys}).json()
+    saved = run_job(client, start)
+    assert saved["plan"]["sequence"]
+    listed = client.get("/api/strategies").json()["strategies"]
+    assert len(listed) == 1
+    # delete
+    sid = listed[0]["id"]
+    assert client.delete(f"/api/strategies/{sid}").status_code == 200
+    assert client.get("/api/strategies").json()["strategies"] == []
+
+
+def test_reading_strategy_auto_mode(client):
+    _load_demo(client)
+    start = client.post("/api/strategies", json={"goal": "", "mode": "auto"}).json()
+    saved = run_job(client, start)
+    assert saved["plan"]["sequence"]
+    assert saved["mode"] == "auto"
+
+
+def test_spec_upload_text_and_analyze(client):
+    _load_demo(client)
+    spec = client.post(
+        "/api/specs",
+        data={"text": "We study fairness and calibration in recommender systems using causal inference and graphs.", "title": "My grant aim"},
+    ).json()
+    assert spec["id"]
+    start = client.post(f"/api/specs/{spec['id']}/analyze", json={}).json()
+    result = run_job(client, start)
+    assert result["assessed"] > 0
+    full = client.get(f"/api/specs/{spec['id']}").json()
+    assert full["status"] == "analyzed"
+    # every paper got a relevance verdict + score
+    for assessment in full["analysis"].values():
+        assert "relevance" in assessment
+        assert 0 <= assessment["score"] <= 100
+
+
+def test_spec_rejects_too_short(client):
+    resp = client.post("/api/specs", data={"text": "too short"})
+    assert resp.status_code == 400
+
+
+def test_spec_pdf_upload(client):
+    _load_demo(client)
+    pdf_bytes = _tiny_pdf("Fairness and causal inference in recommender systems")
+    resp = client.post(
+        "/api/specs",
+        files={"file": ("aim.pdf", pdf_bytes, "application/pdf")},
+        data={"title": "PDF aim"},
+    )
+    assert resp.status_code == 200, resp.text
+    assert resp.json()["title"] == "PDF aim"
+
+
+def _tiny_pdf(text: str) -> bytes:
+    """Build a minimal one-page PDF with a line of text (no external deps)."""
+    content = f"BT /F1 24 Tf 72 700 Td ({text}) Tj ET".encode()
+    objs = [
+        b"<< /Type /Catalog /Pages 2 0 R >>",
+        b"<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
+        b"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 5 0 R >> >> /Contents 4 0 R >>",
+        b"<< /Length %d >>\nstream\n" % len(content) + content + b"\nendstream",
+        b"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
+    ]
+    pdf = b"%PDF-1.4\n"
+    offsets = []
+    for i, obj in enumerate(objs, start=1):
+        offsets.append(len(pdf))
+        pdf += b"%d 0 obj\n" % i + obj + b"\nendobj\n"
+    xref_pos = len(pdf)
+    pdf += b"xref\n0 %d\n" % (len(objs) + 1)
+    pdf += b"0000000000 65535 f \n"
+    for off in offsets:
+        pdf += b"%010d 00000 n \n" % off
+    pdf += b"trailer\n<< /Size %d /Root 1 0 R >>\nstartxref\n%d\n%%%%EOF" % (len(objs) + 1, xref_pos)
+    return pdf
+
+
+def test_index_page_served(client):
+    resp = client.get("/")
+    assert resp.status_code == 200
+    assert "BindingSolution" in resp.text

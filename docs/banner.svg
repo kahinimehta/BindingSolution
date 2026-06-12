@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 320" width="1200" height="320" role="img" aria-label="BindingSolution — your AI reading room">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1f4636"/>
+      <stop offset="1" stop-color="#142f24"/>
+    </linearGradient>
+    <linearGradient id="foil" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#e2c578"/>
+      <stop offset="0.5" stop-color="#b3892f"/>
+      <stop offset="1" stop-color="#8f6c22"/>
+    </linearGradient>
+    <linearGradient id="paper" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f7f2e6"/>
+      <stop offset="1" stop-color="#ece3cf"/>
+    </linearGradient>
+  </defs>
+
+  <!-- cover -->
+  <rect width="1200" height="320" rx="28" fill="url(#bg)"/>
+  <!-- soft light -->
+  <ellipse cx="240" cy="60" rx="520" ry="260" fill="#ffffff" opacity="0.05"/>
+  <!-- foil frame, like a bound cover -->
+  <rect x="34" y="34" width="1132" height="252" rx="18" fill="none" stroke="url(#foil)" stroke-width="2" opacity="0.5"/>
+
+  <!-- emblem: a small shelf of books -->
+  <g transform="translate(96,104)">
+    <rect x="0"  y="6"  width="20" height="108" rx="4" fill="url(#paper)"/>
+    <rect x="26" y="0"  width="20" height="114" rx="4" fill="url(#foil)"/>
+    <rect x="52" y="14" width="20" height="100" rx="4" fill="#cf7a52"/>
+    <rect x="78" y="2"  width="20" height="112" rx="4" fill="url(#paper)"/>
+    <!-- open-book overlay -->
+    <g transform="translate(34,40)" fill="none" stroke="#1f4636" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M16 6 C 9 1, -1 1, -6 4 L -6 34 C -1 31, 9 31, 16 36"/>
+      <path d="M16 6 C 23 1, 33 1, 38 4 L 38 34 C 33 31, 23 31, 16 36"/>
+      <path d="M16 6 L 16 36"/>
+    </g>
+  </g>
+
+  <!-- wordmark -->
+  <text x="232" y="150" font-family="Georgia, 'Times New Roman', serif" font-size="74" font-weight="700" fill="url(#paper)" letter-spacing="0.5">Binding<tspan fill="url(#foil)">Solution</tspan></text>
+  <text x="236" y="198" font-family="Georgia, serif" font-size="24" font-style="italic" fill="#c9d8cf">your AI reading room</text>
+
+  <!-- thread dots tying the projects together -->
+  <g transform="translate(238,232)">
+    <line x1="6" y1="6" x2="430" y2="6" stroke="url(#foil)" stroke-width="1.4" opacity="0.45"/>
+    <circle cx="6"   cy="6" r="5" fill="url(#foil)"/>
+    <circle cx="150" cy="6" r="5" fill="url(#foil)"/>
+    <circle cx="294" cy="6" r="5" fill="url(#foil)"/>
+    <circle cx="430" cy="6" r="5" fill="url(#foil)"/>
+    <text x="448" y="11" font-family="'Hanken Grotesk', system-ui, sans-serif" font-size="15" fill="#9fb3a8" letter-spacing="2">CATEGORIZE · CONNECT · READ · MATCH</text>
+  </g>
+</svg>
