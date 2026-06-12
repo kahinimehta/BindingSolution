@@ -156,9 +156,9 @@ filled by the model.
 ## 5. 💬 Chat — *Chat*
 
 Open **Chat** after syncing your library. A compact **overview** at the top
-lists what the assistant **can** and **cannot** use from your local store (no
-KPI strip on this view). Type a question and press **Enter** or click the large
-circular **↑** send button (bottom-right of the compose box).
+shows collection counts and what the assistant **can** and **cannot** use from
+your local store (no KPI strip on this view). Type a question and press **Enter**
+or click the **↑** send button (bottom-right of the compose box).
 
 **Can use:** collection names and counts; categorizations (themes, summaries);
 saved connections, paper groups, reading plans, and spec screenings; titles and

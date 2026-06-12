@@ -6,8 +6,6 @@
 
 *Categorize collections, find cross-project threads, group papers without duplication, plan what to read, and match papers to a project spec — locally, with Claude.*
 
-Paper groups batch your shelf into **varied thematic sets** (≥10 papers each, **≥90% grouped**, no per-set cap — balanced sizes, not uniform chunks or mega-sets).
-
 </div>
 
 ---
@@ -24,72 +22,66 @@ Add `ANTHROPIC_API_KEY`, `ZOTERO_LIBRARY_ID`, and `ZOTERO_API_KEY` to the gitign
 
 **No keys?** `make run` → **Load demo library** (heuristic “demo AI”, full UI).
 
-## API cost (read this)
-
-Claude usage bills to **your** Anthropic account (per token). Zotero sync and re-opening saved results are free.
-
-| Heavy | Light |
-| --- | --- |
-| **Find in library** (first run) — one call **per active paper** | Categorize one project, upload spec validation, **PubMed discovery** |
-| **Re-screen library** after sync — **new papers only** | One reading plan, connections, paper groups, or **Chat** message |
-
-**Tips:** try demo mode first; tidy Zotero (only collections with **2+ papers** are active); read the spec-screening confirmation before starting; set a [spend limit](https://console.anthropic.com/settings/billing). Full detail: [docs/BILLING.md](docs/BILLING.md).
-
 ## Features
 
-Use any view in any order.
+Six sidebar views — use in any order:
 
-- **Large-type layout** — 3× scaled typography and spacing for ultrawide / high-DPI displays; project cards show full summaries (no inner scroll)
-- **Zotero sync** — Web API or local Zotero 7; bundled demo library; **Sync library** / **Purge library** in the hero toolbar
-- **Running** — sidebar dropdown tracks background jobs (opens upward, opaque over nav); **indeterminate** bars for single-shot Claude steps (reading plans, categorize) and the **analyze** phase of connections/groups; close the progress popup to keep working — cancel only via **✕** on a running row here (not the popup)
-- **Active vs excluded** — only folders with 2+ papers are analyzed; empty, single-paper, and unfiled collections are reference-only
-- **Categorize** — discipline, themes, methods, keywords, summary per collection
-- **Connections** — shared threads and suggested groupings across projects; phase-based progress (prepare → analyze → apply)
-- **Groups** — thematic paper sets (**≥90% of papers grouped**, min 10 per set, varied sizes), **2–3 sentence summaries** per set, drop suggestions; **Papers** KPI matches Library *(including standalone papers)*; summary line shows unique-item split
-- **Chat** — ask Claude about your synced shelf using **local store metadata only** (no PDFs/full text); compact can/cannot overview; **↑** send button or Enter
-- **Groups (large shelves)** — structured grouping streams at 32k tokens so long Claude runs complete without SDK timeout errors
-- **Reading strategies** — ordered path + synthesis prompts; **indeterminate** progress during plan generation; **schedule with estimated hours/days** (medium pace, ~12 pages/h at 2 h/day — see [docs/USAGE.md](docs/USAGE.md#reading-time-assumptions))
-- **Spec** — upload a brief (PDF/Word/MD/text); **Find in library** screens your Zotero shelf (core/supporting only); **Re-screen library** is incremental (new papers only after sync); **Suggested papers** returns up to five ranked PubMed hits *not* in your library, with summaries and relevance notes
-- **Spec → reading plan** — **Build reading plan** from library matches; steps keep relevance notes; plan links back to the spec
-- **Purge library** — wipe local data without touching Zotero (hero toolbar)
+- **Library** — sync Zotero (web API or local Zotero 7) or load demo data; categorize collections; **Sync** / **Purge** in the hero toolbar
+- **Connections** — shared threads and suggested project groupings across active collections
+- **Groups** — cross-project paper sets (≥90% grouped, ≥10 papers per set, varied sizes), set summaries, drop suggestions
+- **Chat** — ask about your synced shelf from local metadata only (no PDFs); compact can/cannot overview
+- **Strategies** — ordered reading plans with schedule estimates
+- **Spec** — upload a brief, screen your library (incremental re-screen), discover papers on PubMed, build a plan from matches
 
-<p align="center">
-  <img src="docs/screenshots/library.svg" alt="Library view with six sidebar tabs, full-height project cards, hero toolbar, and Running dropdown (categorize-all 3/13)" width="1000" />
-</p>
+**Running** — sidebar dropdown tracks background jobs; close the progress popup to keep working; cancel from **✕** on an active row (not the popup). Indeterminate progress for single-shot Claude steps.
 
-<p align="center">
-  <img src="docs/screenshots/connections.svg" alt="Connections view with shared threads, suggested groupings, and Running dropdown at Step 2 of 3 indeterminate analyze" width="1000" />
-</p>
+## Assumptions
 
-<p align="center">
-  <img src="docs/screenshots/groups.svg" alt="Groups view with 90% grouped coverage, varied set sizes, set summaries, and Running dropdown at Step 2 of 3 indeterminate analyze" width="1000" />
-</p>
+- **Local single-user tool** — server binds to `127.0.0.1`; library and analyses live in `./data/library.json` (gitignored).
+- **Active collections** — only folders with **2+ papers** are analyzed; empty, single-paper, and unfiled collections are reference-only.
+- **Metadata, not PDFs** — Claude sees titles, tags, and saved analyses from your local store, not re-uploaded full text.
+- **Paper groups** — non-overlapping sets across projects; ≥90% of papers grouped when possible; balanced set sizes (not uniform chunks).
+- **Reading schedules** — planning hints at ~12 pages/hour, 2 h/day medium pace ([detail](docs/USAGE.md#reading-time-assumptions)).
+- **Display** — large-type layout for ultrawide / high-DPI monitors ([detail](docs/CONFIGURATION.md#display)).
 
-<p align="center">
-  <img src="docs/screenshots/chat.svg" alt="Chat view with compact can/cannot overview, up-arrow send button, and no KPI strip" width="1000" />
-</p>
+After `git pull`, restart the server (`Ctrl+C`, then `make run`) so new routes load.
 
-<p align="center">
-  <img src="docs/screenshots/strategies.svg" alt="Reading strategies compose form, saved plans with schedule estimates, and Running dropdown with indeterminate plan generation" width="1000" />
-</p>
+## Claude API usage
 
-<p align="center">
-  <img src="docs/screenshots/specs-upload.svg" alt="Spec upload with screen-library confirm dialog, library matches, and incremental re-screen" width="1000" />
-  <br /><br />
-  <img src="docs/screenshots/specs.svg" alt="Suggested papers with large-type layout, PubMed discovery tab" width="1000" />
-</p>
+Live AI features bill **your** Anthropic account per token. Zotero sync, PubMed discovery, and re-opening saved results are free.
 
-## Persistence
-
-Data: `./data/library.json` (gitignored). `make run` resumes where you left off.
-After `git pull`, restart the server (Ctrl+C, then `make run`) so new API routes load.
-
-| Action | Effect |
+| Heavier | Lighter |
 | --- | --- |
-| **Purge library** (in-app) | Clears projects, analyses, plans, specs, chats — not Zotero |
-| **Sync library** (in-app) | Pulls collections and papers from Zotero into `./data/library.json`; keeps categorizations for matching collections — not Zotero, no Claude |
-| `make clean` | Full dev reset (`data/`, venv, caches); keeps `.env` |
-| `make setup` again | Reinstalls deps only — does **not** wipe your library |
+| **Find in library** — one call per active paper (first run) | Categorize one project, spec upload validation |
+| **Re-screen library** — new papers only after sync | Connections, groups, reading plan, **Chat** message |
+
+Try demo mode first; tidy thin Zotero folders; read the spec-screening confirmation before a large run; set a [spend limit](https://console.anthropic.com/settings/billing). Full detail: [docs/BILLING.md](docs/BILLING.md).
+
+<p align="center">
+  <img src="docs/screenshots/library.svg" alt="Library view with project cards, hero toolbar, and Running dropdown" width="1000" />
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/connections.svg" alt="Connections view with shared threads and Running dropdown" width="1000" />
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/groups.svg" alt="Groups view with paper sets, summaries, and Running dropdown" width="1000" />
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/chat.svg" alt="Chat view with can/cannot overview and send button" width="1000" />
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/strategies.svg" alt="Reading strategies with plan generation progress" width="1000" />
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/specs-upload.svg" alt="Spec upload, library matches, and re-screen" width="1000" />
+  <br /><br />
+  <img src="docs/screenshots/specs.svg" alt="Suggested papers from PubMed discovery" width="1000" />
+</p>
 
 ## Docs
 
