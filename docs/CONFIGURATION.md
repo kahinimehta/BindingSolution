@@ -81,6 +81,7 @@ Everything synced and generated is written to `./data/library.json`
 To start fresh:
 
 - **In the app:** top toolbar → **Purge library** (wipes the JSON store; Zotero is untouched)
+- **In the app:** top toolbar → **Sync library** (reads your Zotero collections and papers into the JSON store; refreshes local project lists and keeps categorizations for collections that still exist — does not modify Zotero or call Claude)
 - **On disk:** delete `./data/` or run `make clean` (also removes the virtualenv)
 - **`make setup` again** only reinstalls dependencies — it does not delete your library
 

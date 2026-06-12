@@ -33,6 +33,14 @@ categorizations, connections, paper groups, saved reading plans, and project spe
 the dialog, then sync again or load the demo library. The button is hidden when
 the shelf is already empty.
 
+**Sync library:** pulls your latest Zotero **collections and papers** into the
+local store (`./data/library.json`) — via the Zotero Web API or local Zotero 7,
+depending on your `.env` setup. Each collection becomes a project; paper lists
+and counts refresh to match Zotero. Existing **categorizations** for collections
+that still exist are kept. Sync does **not** call Claude and does **not** change
+anything in Zotero. With no Zotero credentials, use **Load demo library** on the
+empty state instead (same sync endpoint, bundled sample data).
+
 ## 2. 📂 Categorize projects — *Library*
 
 Open the **Library** view. Click **✦ Categorize** on an active card (or

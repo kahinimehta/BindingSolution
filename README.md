@@ -72,6 +72,7 @@ Data: `./data/library.json` (gitignored). `make run` resumes where you left off.
 | Action | Effect |
 | --- | --- |
 | **Purge library** (in-app) | Clears projects, analyses, plans, specs — not Zotero |
+| **Sync library** (in-app) | Pulls collections and papers from Zotero into `./data/library.json`; keeps categorizations for matching collections — not Zotero, no Claude |
 | `make clean` | Full dev reset (`data/`, venv, caches); keeps `.env` |
 | `make setup` again | Reinstalls deps only — does **not** wipe your library |
 
