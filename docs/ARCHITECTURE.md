@@ -140,8 +140,10 @@ The **Groups** view calls `POST /api/groups` (`app/grouping.py`):
    or collapsed into one or two buckets. Structured output
    uses the lean `PaperGroupingMapSpec` schema (paper keys + per-set `summary` only
    — no echoed paper rows) so large shelves do not hit parse/max_tokens overflow. On
-   truncation, the analyzer retries with a compact title/tags prompt and higher
-   `max_tokens` (32k). Returns `groups` (non-overlapping `paper_keys`), `drops`, and
+   truncation or invalid JSON, the analyzer retries with compact title/tags prompts
+   and shorter summaries (adaptive **thinking is off** for grouping so the token
+   budget goes to the large `paper_keys` JSON). `max_tokens` is 32k. Returns
+   `groups` (non-overlapping `paper_keys`), `drops`, and
    server-filled `ungrouped` for papers in neither list. `finalize_shelf_coverage`
    then places every remaining library paper into standalone (single-paper
    collections, unfiled items, and any active stragglers) so

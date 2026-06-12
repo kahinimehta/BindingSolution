@@ -13,6 +13,8 @@ from __future__ import annotations
 import textwrap
 from typing import Any, Callable
 
+from pydantic import ValidationError
+
 from .config import Settings
 from .reading_schedule import attach_reading_schedule
 from .grouping import complete_paper_groups, enrich_group_summaries, heuristic_paper_groups
@@ -80,6 +82,7 @@ class Analyzer:
         *,
         heavy: bool,
         max_tokens: int | None = None,
+        thinking: bool | None = None,
     ) -> Any:
         """Single structured-output call returning a validated `schema` instance."""
         import anthropic
@@ -93,12 +96,17 @@ class Analyzer:
             "messages": [{"role": "user", "content": prompt}],
             "output_format": schema,
         }
-        if heavy:
+        use_thinking = heavy if thinking is None else thinking
+        if use_thinking:
             # Cross-project reasoning benefits from adaptive thinking.
             kwargs["thinking"] = {"type": "adaptive"}
 
         try:
             response = self._client.messages.parse(**kwargs)
+        except ValidationError as exc:
+            raise AnalysisError(
+                "Structured output was truncated or invalid JSON — retrying with a more compact prompt."
+            ) from exc
         except anthropic.APIStatusError as exc:
             raise AnalysisError(f"Claude API error ({exc.status_code}): {exc.message}") from exc
         except anthropic.APIConnectionError as exc:
@@ -109,13 +117,17 @@ class Analyzer:
         if response.parsed_output is None:
             if response.stop_reason == "max_tokens":
                 raise AnalysisError(
-                    "Grouping output was cut off (max_tokens) — the structured response was too large. "
-                    "Retrying with a compact prompt."
+                    "Structured output was cut off (max_tokens) — retrying with a more compact prompt."
                 )
             raise AnalysisError(
                 "The model did not return valid structured output (parse overflow or truncated JSON)."
             )
-        return response.parsed_output
+        try:
+            return response.parsed_output
+        except ValidationError as exc:
+            raise AnalysisError(
+                "Structured output was truncated or invalid JSON — retrying with a more compact prompt."
+            ) from exc
 
     def _reply_text(self, response: Any) -> str:
         parts = [
@@ -180,7 +192,7 @@ class Analyzer:
         else:
             try:
                 data = self._claude_paper_groups(projects)
-            except AnalysisError:
+            except (AnalysisError, ValidationError):
                 data = heuristic_paper_groups(projects)
                 used_mock = True
         if used_mock:
@@ -190,16 +202,17 @@ class Analyzer:
         return data
 
     def _claude_paper_groups(self, projects: list[dict]) -> dict:
-        """Claude grouping with compact retry when structured output would overflow."""
+        """Claude grouping with compact retries when structured JSON would overflow."""
         last_error: AnalysisError | None = None
-        for compact in (False, True):
-            prompt = _paper_groups_prompt(projects, compact=compact)
+        for compact, brief in ((False, False), (True, False), (True, True)):
+            prompt = _paper_groups_prompt(projects, compact=compact, brief=brief)
             try:
                 result: PaperGroupingMapSpec = self._parse(
                     prompt,
                     PaperGroupingMapSpec,
                     heavy=True,
                     max_tokens=_MAX_TOKENS_GROUPS,
+                    thinking=False,
                 )
                 data = complete_paper_groups(result.model_dump(), projects)
                 return enrich_group_summaries(data, projects)
@@ -273,7 +286,9 @@ def _categorize_prompt(project: dict) -> str:
     )
 
 
-def _paper_groups_prompt(projects: list[dict], *, compact: bool = False) -> str:
+def _paper_groups_prompt(
+    projects: list[dict], *, compact: bool = False, brief: bool = False,
+) -> str:
     blocks = []
     total = 0
     for proj in projects:
@@ -287,7 +302,14 @@ def _paper_groups_prompt(projects: list[dict], *, compact: bool = False) -> str:
     compact_note = (
         "\n- Input is compact (titles and tags only) — still return full paper_keys lists "
         "and a 2-3 sentence `summary` per group.\n"
-        if compact
+        if compact and not brief
+        else ""
+    )
+    brief_note = (
+        "\n- Keep `overview` to 2 short sentences.\n"
+        "- Keep each group `summary` to ONE sentence (max 30 words).\n"
+        "- Still return every paper_key in full — do not truncate lists.\n"
+        if brief
         else ""
     )
     return (
@@ -313,6 +335,7 @@ def _paper_groups_prompt(projects: list[dict], *, compact: bool = False) -> str:
         "collections, redundant surveys superseded by newer work, weak fits, or outdated "
         "papers that no longer match the shelf.\n"
         f"{compact_note}"
+        f"{brief_note}"
         "Use bracketed paper_key and project_key values exactly as given."
     )
 
