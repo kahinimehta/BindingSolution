@@ -8,14 +8,6 @@
 
 </div>
 
-<p align="center">
-  <a href="docs/demo.mp4">
-    <img src="docs/demo.gif" alt="BindingSolution demo walkthrough — click for full video with audio" width="1000" />
-  </a>
-  <br />
-  <em><a href="docs/demo.mp4">▶ Watch full demo</a></em>
-</p>
-
 ---
 
 ## Quick start
@@ -33,6 +25,14 @@ Add `ANTHROPIC_API_KEY`, `ZOTERO_LIBRARY_ID`, and `ZOTERO_API_KEY` to the gitign
 ## Features
 
 Six sidebar views (Library → Connections → Groups → Spec → Strategies → Chat):
+
+<p align="center">
+  <a href="docs/demo.mp4">
+    <img src="docs/demo.gif" alt="BindingSolution demo walkthrough — click for full video with audio" width="1000" />
+  </a>
+  <br />
+  <em><a href="docs/demo.mp4">▶ Watch full demo</a></em>
+</p>
 
 - **Library** — sync Zotero (web API or local Zotero 7) or load demo data; categorize collections; **Sync** / **Purge** in the hero toolbar
 - **Connections** — shared threads and suggested project groupings across active collections
@@ -64,32 +64,6 @@ Live AI features bill **your** Anthropic account per token. Zotero sync, PubMed 
 | **Re-screen library** — new papers only after sync | Connections, groups, reading plan, **Chat** message |
 
 Try demo mode first; tidy thin Zotero folders; read the spec-screening confirmation before a large run; set a [spend limit](https://console.anthropic.com/settings/billing). Full detail: [docs/BILLING.md](docs/BILLING.md).
-
-<p align="center">
-  <img src="docs/screenshots/library.svg" alt="Library view with project cards and Running cancel rows" width="1000" />
-</p>
-
-<p align="center">
-  <img src="docs/screenshots/connections.svg" alt="Connections view with shared threads and Running row cancel" width="1000" />
-</p>
-
-<p align="center">
-  <img src="docs/screenshots/groups.svg" alt="Groups view with paper sets, summaries, and Running dropdown" width="1000" />
-</p>
-
-<p align="center">
-  <img src="docs/screenshots/specs-upload.svg" alt="Spec upload, library matches, and re-screen" width="1000" />
-  <br /><br />
-  <img src="docs/screenshots/specs.svg" alt="Suggested papers from PubMed discovery" width="1000" />
-</p>
-
-<p align="center">
-  <img src="docs/screenshots/strategies.svg" alt="Reading strategies with progress dialog and Cancel job" width="1000" />
-</p>
-
-<p align="center">
-  <img src="docs/screenshots/chat.svg" alt="Chat view with wide bubbles, bold YOU and ASSISTANT labels, and large footer send button" width="1000" />
-</p>
 
 ## Docs
 
