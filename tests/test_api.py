@@ -120,6 +120,29 @@ def test_spec_pdf_upload(client):
     assert resp.json()["title"] == "PDF aim"
 
 
+def test_spec_docx_upload(client):
+    from tests.test_specs import _docx_bytes
+
+    _load_demo(client)
+    body = (
+        "We study fairness and calibration in recommender systems using causal "
+        "inference and graph-based methods for literature review planning."
+    )
+    resp = client.post(
+        "/api/specs",
+        files={
+            "file": (
+                "grant_aim.docx",
+                _docx_bytes(body),
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            )
+        },
+        data={"title": "Word aim"},
+    )
+    assert resp.status_code == 200, resp.text
+    assert resp.json()["title"] == "Word aim"
+
+
 def _tiny_pdf(text: str) -> bytes:
     """Build a minimal one-page PDF with a line of text (no external deps)."""
     content = f"BT /F1 24 Tf 72 700 Td ({text}) Tj ET".encode()

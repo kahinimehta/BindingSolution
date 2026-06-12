@@ -67,8 +67,9 @@ Plans are saved; open or delete them from the same screen.
 
 ## 5. ✦ Match papers to a project — *Project specs*
 
-Open **Project specs**. Drop in a **PDF, Markdown, or text** file — a grant
-aim, proposal, or one-paragraph description — or paste the text. Then click
+Open **Project specs**. Drop in a **PDF, Word (.doc/.docx), Markdown, or text**
+file — a grant aim, proposal, or one-paragraph description — or paste the text.
+Then click
 **Analyze**. Every paper in your library (or a chosen subset) is:
 
 - **summarized** in 2–3 sentences

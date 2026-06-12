@@ -47,8 +47,12 @@ Data lives in `./data/library.json` (gitignored). `make run` picks up where you 
 - **Project categorization** — discipline, themes, methods, summary per collection
 - **Cross-project connections** — shared threads and suggested groupings
 - **Reading strategies** — ordered paths with synthesis prompts
-- **Project-spec matching** — score and summarize every paper against your aim
+- **Project-spec matching** — drop a PDF, Word (`.doc`/`.docx`), or text spec; score every paper against your aim
 - **Zotero sync** — Web API or local Zotero 7; demo library included
+
+<p align="center">
+  <img src="docs/screenshots/specs.svg" alt="Project specs tab accepting PDF and Word uploads" width="720" />
+</p>
 
 ## Docs
 

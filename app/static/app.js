@@ -625,7 +625,7 @@ async function renderSpecs() {
   await renderKpiStrip("specs");
   const wrap = el("div", {});
   wrap.append(viewHero("Match papers to a project",
-    "Drop in a project spec, grant aim, or a paragraph describing what you're working on. Every paper gets summarized and scored for relevance."));
+    "Drop in a project spec (PDF, Word, Markdown, or text) or paste a grant aim. Every paper gets summarized and scored for relevance."));
   wrap.append(specUploader());
   wrap.append(el("div", { class: "section-head mt-3" }, el("div", {}, el("h2", {}, "Your specs"))));
   wrap.append(el("div", { id: "spec-list" }, el("div", { class: "muted" }, "Loading…")));
@@ -637,9 +637,9 @@ function specUploader() {
   const card = el("div", { class: "card panel", style: "padding:22px" });
   const drop = el("div", { class: "dropzone" },
     el("div", { class: "emoji" }, "✦"),
-    el("p", { style: "margin:8px 0 4px;font-weight:600" }, "Drop a PDF, Markdown, or text file"),
-    el("p", { class: "muted", style: "margin:0;font-size:.84rem" }, "…or paste your project description below"),
-    el("input", { type: "file", id: "spec-file", accept: ".pdf,.md,.txt,.markdown", style: "display:none" }));
+    el("p", { style: "margin:8px 0 4px;font-weight:600" }, "Drop a PDF, Word, Markdown, or text file"),
+    el("p", { class: "muted", style: "margin:0;font-size:.84rem" }, ".pdf · .doc · .docx · .md · .txt — or paste below"),
+    el("input", { type: "file", id: "spec-file", accept: ".pdf,.doc,.docx,.md,.txt,.markdown", style: "display:none" }));
   drop.addEventListener("click", () => $("#spec-file", drop).click());
   drop.addEventListener("dragover", (e) => { e.preventDefault(); drop.classList.add("drag"); });
   drop.addEventListener("dragleave", () => drop.classList.remove("drag"));

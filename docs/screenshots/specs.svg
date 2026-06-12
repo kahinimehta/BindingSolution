@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 420" width="980" height="420" role="img" aria-label="Project specs view with Word document upload">
+  <defs>
+    <linearGradient id="hero" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1f4636"/>
+      <stop offset="1" stop-color="#254f3f"/>
+    </linearGradient>
+    <filter id="shadow" x="-8%" y="-8%" width="116%" height="116%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#1f4636" flood-opacity="0.1"/>
+    </filter>
+  </defs>
+
+  <rect width="980" height="420" fill="#f4efe4"/>
+  <rect x="0" y="0" width="200" height="420" fill="#1f4636"/>
+  <rect x="200" y="0" width="780" height="72" fill="url(#hero)"/>
+  <text x="222" y="30" fill="#caa14a" font-family="system-ui, sans-serif" font-size="9" letter-spacing="1.1">STEP 4</text>
+  <text x="222" y="52" fill="#fff" font-family="Georgia, serif" font-size="22" font-weight="600">Project specs</text>
+
+  <g transform="translate(222, 92)">
+    <rect x="0" y="0" width="716" height="72" rx="10" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
+    <rect x="0" y="0" width="4" height="72" rx="10" fill="#caa14a"/>
+    <text x="16" y="24" fill="#8a8478" font-family="system-ui, sans-serif" font-size="8" letter-spacing="0.8">OVERVIEW</text>
+    <text x="16" y="42" fill="#1f4636" font-family="Georgia, serif" font-size="13" font-weight="600">Match papers to a project</text>
+    <text x="16" y="58" fill="#5a564c" font-family="system-ui, sans-serif" font-size="9">Drop a PDF, Word, Markdown, or text spec  every paper scored for relevance.</text>
+
+    <rect x="0" y="88" width="716" height="150" rx="12" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
+    <rect x="18" y="106" width="680" height="88" rx="10" fill="#faf6ec" stroke="#d3c8b0" stroke-dasharray="6 4"/>
+    <text x="358" y="136" fill="#211f1a" font-family="system-ui, sans-serif" font-size="11" font-weight="600" text-anchor="middle">Drop a PDF, Word, Markdown, or text file</text>
+    <text x="358" y="154" fill="#8a8478" font-family="system-ui, sans-serif" font-size="9" text-anchor="middle">.pdf · .doc · .docx · .md · .txt  or paste below</text>
+    <rect x="300" y="166" width="116" height="18" rx="9" fill="#e6efe9" stroke="#c4dccd"/>
+    <text x="358" y="178" fill="#1f4636" font-family="system-ui, sans-serif" font-size="8" text-anchor="middle">grant_aim.docx</text>
+
+    <text x="18" y="214" fill="#5a564c" font-family="system-ui, sans-serif" font-size="9" font-weight="600">Title</text>
+    <rect x="18" y="220" width="680" height="24" rx="6" fill="#fff" stroke="#d3c8b0"/>
+    <rect x="18" y="258" width="96" height="28" rx="8" fill="#1f4636"/>
+    <text x="66" y="276" fill="#f2f7f3" font-family="system-ui, sans-serif" font-size="9" font-weight="600" text-anchor="middle">& Save spec</text>
+  </g>
+
+  <text x="222" y="404" fill="#8a8478" font-family="system-ui, sans-serif" font-size="9">Illustrative UI mock  no real files or API keys.</text>
+</svg>

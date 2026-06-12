@@ -6,6 +6,8 @@ python-dotenv>=1.0          # .env loading
 anthropic>=0.40            # Claude API (structured outputs via messages.parse)
 pydantic>=2.7               # schemas for structured LLM outputs
 pypdf>=4.2                  # text extraction from PDF specs
+python-docx>=1.1.0          # text extraction from .docx specs
+olefile>=0.47               # fallback text extraction from legacy .doc specs
 
 # Development / tests
 pytest>=8.0

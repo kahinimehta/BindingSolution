@@ -17,7 +17,7 @@ human-readable JSON store, no build step) over scale.
 │   │    └─ mock.py  deterministic offline fallback           │
 │   ├─ zotero_client.py   pyzotero (Web API / local Zotero 7) │
 │   ├─ demo_data.py       bundled sample library              │
-│   ├─ specs.py     PDF/MD/text extraction                    │
+│   ├─ specs.py     PDF/Word/MD/text extraction               │
 │   └─ store.py     thread-safe JSON persistence (data/)      │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -91,7 +91,7 @@ until `status` is `done` (then read `result`) or `error`.
 ## Tests
 
 `tests/test_api.py` drives the full API through FastAPI's `TestClient` in
-offline mode (`MOCK_LLM=true`), including a self-contained PDF-spec upload.
+offline mode (`MOCK_LLM=true`), including self-contained PDF/Word spec uploads.
 Run with `make test`.
 
 ## Project layout
