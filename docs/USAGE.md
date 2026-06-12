@@ -147,26 +147,31 @@ filled by the model.
 
 ## 5. 💬 Chat — *Chat*
 
-Open **Chat** after syncing your library. Type a question and press **Enter**
-or click the **↑** send button in the compose box. BindingSolution assembles
-context from your **local store** —
-synced papers, categorizations, saved connections, paper groups, reading
-strategies, and spec screenings — and sends it to Claude with your message.
-**Nothing is re-uploaded**; the server reads what is already in
+Open **Chat** after syncing your library. A compact **overview** at the top
+lists what the assistant **can** and **cannot** use from your local store (no
+KPI strip on this view). Type a question and press **Enter** or click the **↑**
+send button in the compose box.
+
+**Can use:** collection names and counts; categorizations (themes, summaries);
+saved connections, paper groups, reading plans, and spec screenings; titles and
+tags for papers explicitly named in those analyses.
+
+**Cannot access:** full paper text or PDFs; abstracts, authors, or findings for
+most papers unless already present in a saved analysis; anything not in
 `./data/library.json`.
 
 - **Multi-turn** — replies stay in one thread until you click **New chat**.
-- **Grounded answers** — the assistant is instructed to cite only what is in
-  your shelf context and to suggest running a view (categorize, connections,
-  groups, spec screening) when data is missing.
+- **Grounded answers** — Claude is instructed not to claim it read full text or
+  abstracts unless an excerpt appears in context; it should suggest running
+  categorize, connections, groups, or spec screening to fill gaps.
 - **Cost** — one Claude call per message (lightweight compared to per-paper
   spec screening). Demo mode uses heuristic replies when no API key is set.
 
-Example questions: *How do my fairness and causal collections overlap?* · *What
-should I read first for population coding?* · *Which papers matched my spec?*
+Example questions: *Which collections share drift-diffusion themes?* · *What is in
+the Cortex paper group?* · *Which papers matched my spec?*
 
 <p align="center">
-  <img src="screenshots/chat.svg" alt="Chat view with multi-turn replies, up-arrow send button, and context from the local synced library store" width="1000" />
+  <img src="screenshots/chat.svg" alt="Chat view with compact can/cannot overview, up-arrow send button, and no KPI strip" width="1000" />
 </p>
 
 ## 6. ↯ Plan your reading — *Strategies*

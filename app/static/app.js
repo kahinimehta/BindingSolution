@@ -523,7 +523,7 @@ const viewMeta = {
   },
   chat: {
     title: "Chat",
-    subtitle: "Ask Claude about your synced library — papers, connections, groups, plans, and specs.",
+    subtitle: "Local store context only — no PDFs or full paper text.",
   },
   strategies: {
     title: "Reading strategies",
@@ -540,6 +540,8 @@ function setView(route, actions = []) {
   $("#view-title").textContent = meta.title;
   $("#view-subtitle").textContent = meta.subtitle;
   $("#view-actions").replaceChildren(...actions);
+  const kpi = $("#kpi-strip");
+  if (kpi) kpi.hidden = route === "chat";
 }
 
 function viewHero(title, text) {
@@ -909,6 +911,57 @@ function renderConnectionMap(c) {
 }
 
 /* ── 2b. CHAT ─────────────────────────────────────────────────── */
+function chatSendButton() {
+  const btn = el("button", {
+    type: "button",
+    class: "chat-send",
+    id: "chat-send",
+    onclick: sendChatMessage,
+    "aria-label": "Send message",
+    title: "Send message",
+  });
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("viewBox", "0 0 24 24");
+  svg.setAttribute("width", "18");
+  svg.setAttribute("height", "18");
+  svg.setAttribute("aria-hidden", "true");
+  const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  path.setAttribute("d", "M12 19V5M5 12l7-7 7 7");
+  path.setAttribute("fill", "none");
+  path.setAttribute("stroke", "currentColor");
+  path.setAttribute("stroke-width", "2.25");
+  path.setAttribute("stroke-linecap", "round");
+  path.setAttribute("stroke-linejoin", "round");
+  svg.appendChild(path);
+  btn.appendChild(svg);
+  return btn;
+}
+
+function chatOverviewPanel() {
+  const active = usableProjects();
+  const unique = uniquePaperCount(true);
+  const total = state.projects.length;
+  const source = state.status?.library?.source || state.status?.zotero_mode || "local";
+  return el("div", { class: "chat-overview" },
+    el("p", { class: "chat-overview-lead" },
+      `${total} collections (${active.length} active), ${unique} unique papers in your local store (${source}). No PDFs re-uploaded.`),
+    el("div", { class: "chat-overview-cols" },
+      el("div", { class: "chat-overview-col" },
+        el("div", { class: "chat-overview-heading" }, "Can use"),
+        el("ul", {},
+          el("li", {}, "Collection names, paper counts, categorizations (themes, summaries)"),
+          el("li", {}, "Saved connections, paper groups, reading plans, spec screenings"),
+          el("li", {}, "Titles and tags for papers named in those analyses"))),
+      el("div", { class: "chat-overview-col chat-overview-cant" },
+        el("div", { class: "chat-overview-heading" }, "Cannot access"),
+        el("ul", {},
+          el("li", {}, "Full paper text or PDFs"),
+          el("li", {}, "Abstracts, authors, or findings for most papers"),
+          el("li", {}, "Anything not already in your synced store")))),
+    el("p", { class: "chat-overview-foot muted" },
+      "Run categorize, connections, groups, or spec screening to enrich what chat can cite."));
+}
+
 function chatBubble(role, text) {
   return el("div", { class: `chat-msg ${role}` },
     el("div", { class: "chat-msg-role" }, role === "user" ? "You" : "Assistant"),
@@ -920,8 +973,8 @@ function renderChatMessages(messages) {
   if (!host) return;
   if (!messages?.length) {
     host.replaceChildren(el("div", { class: "chat-welcome muted" },
-      "Ask about your synced collections, paper themes, saved connections, reading sets, "
-      + "strategies, or specs. Context comes from your local library — nothing to re-upload."));
+      "Ask about collections, themes, connections, groups, plans, or specs. "
+      + "Answers use your local store only — not full paper text."));
     return;
   }
   host.replaceChildren(...messages.map((m) => chatBubble(m.role, m.content)));
@@ -966,7 +1019,6 @@ async function sendChatMessage() {
       const note = $("#chat-mock-note");
       if (note) note.hidden = false;
     }
-    await renderKpiStrip("chat");
   } catch (e) {
     const msg = /not found/i.test(e.message || "")
       ? "Chat API not available — stop the server (Ctrl+C) and run make run again after updating."
@@ -999,8 +1051,6 @@ async function renderChat() {
   setView("chat", serverSupportsChat()
     ? [el("button", { class: "btn btn-sm", onclick: startNewChat }, "New chat")]
     : []);
-  await renderKpiStrip("chat");
-
   if (!serverSupportsChat()) {
     view().replaceChildren(chatUnavailableView());
     return;
@@ -1016,10 +1066,9 @@ async function renderChat() {
   }
 
   view().replaceChildren(
-    viewHero("Your research assistant",
-      "Questions are answered using your synced BindingSolution store. No files to re-upload."),
+    chatOverviewPanel(),
     state.status?.using_mock_llm
-      ? el("p", { class: "mock-note", id: "chat-mock-note", style: "margin:0 0 36px" },
+      ? el("p", { class: "mock-note", id: "chat-mock-note", style: "margin:0 0 24px" },
         "demo AI — connect a Claude API key for full answers")
       : el("p", { id: "chat-mock-note", hidden: true }),
     el("div", { class: "chat-panel card panel" },
@@ -1030,20 +1079,12 @@ async function renderChat() {
             id: "chat-input",
             class: "chat-input",
             rows: "3",
-            placeholder: "e.g. How do fairness and causal inference papers connect? Which collection should I read first?",
+            placeholder: "e.g. Which collections overlap on drift-diffusion? What did grouping put in the Cortex set?",
             onkeydown: (e) => {
               if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendChatMessage(); }
             },
           }),
-          el("button", {
-            type: "button",
-            class: "chat-send",
-            id: "chat-send",
-            onclick: sendChatMessage,
-            "aria-label": "Send message",
-            title: "Send message",
-            html: '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/></svg>',
-          })),
+          chatSendButton()),
         el("span", { class: "muted chat-hint" }, "Enter to send · Shift+Enter for newline"))));
 
   if (state.chatThreadId) {

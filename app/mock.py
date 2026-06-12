@@ -370,7 +370,8 @@ def chat_reply(message: str, context: str, history: list[dict]) -> str:
     names = ", ".join(collections[:4])
     if names:
         return (
-            f"I can see your synced shelf ({names}{'…' if len(collections) > 4 else ''}). "
+            f"I can see your synced shelf ({names}{'…' if len(collections) > 4 else ''}) — "
+            "metadata and saved analyses only, not full paper text. "
             "Ask about a collection, paper theme, connections between projects, reading "
             "order, or how a spec matches your library — everything comes from your "
             "local store."

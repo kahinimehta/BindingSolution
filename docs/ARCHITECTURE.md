@@ -197,10 +197,13 @@ The **Chat** view calls `POST /api/chat` (`app/chat_context.py`, `app/analysis.p
 3. **Persist** — threads live in `chat_threads` on the store (`id`, `title`,
    `messages[]`) until purge. `GET /api/chat/threads` lists saved conversations.
 
-The compose box uses a circular **↑** send control (bottom-right of the input);
-**Enter** sends, **Shift+Enter** inserts a newline. `GET /api/status` exposes
-`capabilities.chat` so the UI can detect a stale server missing chat routes and
-prompt a restart after updates.
+The Chat view hides the KPI strip and shows a compact **can / cannot** overview
+(local store metadata only — no PDFs or full paper text). The compose box uses a
+circular **↑** send control (bottom-right of the input); **Enter** sends,
+**Shift+Enter** inserts a newline. `GET /api/status` exposes `capabilities.chat`
+so the UI can detect a stale server missing chat routes and prompt a restart
+after updates. The system prompt instructs Claude not to claim access to full
+text or abstracts unless an excerpt is in the assembled context.
 
 No file re-upload: everything comes from `library.json` already on disk.
 
