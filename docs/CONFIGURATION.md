@@ -94,3 +94,10 @@ cancels in-flight jobs.
 Nothing is sent anywhere except the Anthropic API (for analysis) and Zotero
 (to read your library). The server binds to `127.0.0.1` by default, so it's
 only reachable from your own machine.
+
+## Display
+
+On wide monitors the UI is a **centered panel** (max width about 1680px) with
+cream margins on the sides — not browser zoom. Use the browser’s zoom
+(Cmd/Ctrl + / −) if you want everything larger; the app does not expose a
+separate zoom setting in `.env`.

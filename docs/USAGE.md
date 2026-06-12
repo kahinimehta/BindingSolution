@@ -91,7 +91,8 @@ active paper across your projects (progress tracks papers on your shelf, e.g.
   every paper from single-paper collections** (those collections are excluded from
   grouping but still appear here). If a thematic set looks short, check standalone
   and **Suggested drops** — the summary line accounts for the full shelf
-  (`N grouped · M standalone · …`).
+  (`N grouped · M standalone · … · P papers on shelf` — standalone includes
+  single-paper collections).
 - **Suggested drops** — papers to remove or archive: duplicates filed in more
   than one collection, redundant surveys, weak fits, or entries that no longer
   match your shelf.
@@ -104,7 +105,7 @@ Demo mode uses deterministic heuristics (title deduping and tag clustering); wit
 a Claude key the same schema is filled by the model.
 
 <p align="center">
-  <img src="screenshots/groups.svg" alt="Groups view with paper sets and drop suggestions" width="1000" />
+  <img src="screenshots/groups.svg" alt="Groups view with paper sets, standalone papers, and drop suggestions" width="1000" />
 </p>
 
 ## 5. ↯ Plan your reading — *Strategies*

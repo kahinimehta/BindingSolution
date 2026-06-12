@@ -42,7 +42,7 @@ Use any view in any order.
 - **Active vs excluded** — only folders with 2+ papers are analyzed; empty, single-paper, and unfiled collections are reference-only
 - **Categorize** — discipline, themes, methods, keywords, summary per collection
 - **Connections** — shared threads and suggested groupings across projects
-- **Groups** — thematic paper sets across collections (with per-set counts), **standalone** papers not in any set, and drop suggestions; progress shows papers (e.g. `72/184`)
+- **Groups** — thematic paper sets (per-set counts, flat lists), **standalone** papers not in a set (including single-paper collections), drop suggestions, and shelf accounting; progress shows papers (e.g. `72/184`)
 - **Reading strategies** — ordered path + synthesis prompts; **schedule with estimated hours/days** (medium pace, ~12 pages/h at 2 h/day — see [docs/USAGE.md](docs/USAGE.md#reading-time-assumptions))
 - **Spec** — upload a brief (PDF/Word/MD/text); **Find in library** screens your Zotero shelf (core/supporting only); **Re-screen library** is incremental (new papers only after sync); **Suggested papers** returns up to five ranked PubMed hits *not* in your library, with summaries and relevance notes
 - **Spec → reading plan** — **Build reading plan** from library matches; steps keep relevance notes; plan links back to the spec
@@ -53,7 +53,7 @@ Use any view in any order.
 </p>
 
 <p align="center">
-  <img src="docs/screenshots/groups.svg" alt="Groups view with paper sets and prune suggestions" width="1000" />
+  <img src="docs/screenshots/groups.svg" alt="Groups view with paper sets, standalone papers, and prune suggestions" width="1000" />
 </p>
 
 <p align="center">

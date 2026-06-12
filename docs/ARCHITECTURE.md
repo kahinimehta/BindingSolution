@@ -123,8 +123,9 @@ The **Groups** view calls `POST /api/groups` (`app/grouping.py`):
    total active **paper** count as the denominator.
 2. **Validate** — `complete_paper_groups` drops invalid keys, ensures each paper
    appears in at most one group, computes `ungrouped` + `stats` (`total_papers`,
-   `papers_grouped`, `num_ungrouped`, `num_drops`), and enriches groups with
-   `papers` display refs and `num_papers`.
+   `papers_grouped`, `num_ungrouped`, `num_drops`, `shelf_papers`), enriches groups
+   with `papers` display refs and `num_papers`, and tags single-collection rows
+   with `source: single_paper_collection`.
 3. **Persist** — saved in `paper_groups` on the store until purge.
 
 Offline heuristics: normalized-title duplicate detection across collections,

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 560" width="1000" height="560" role="img" aria-label="Groups view with paper sets and drop suggestions">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 640" width="1000" height="640" role="img" aria-label="Groups view with paper sets, standalone papers, and drop suggestions">
   <defs>
     <linearGradient id="green" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#1f4636"/>
@@ -17,12 +17,12 @@
     </filter>
   </defs>
 
-  <rect width="1000" height="560" fill="#f4efe4"/>
+  <rect width="1000" height="640" fill="#f4efe4"/>
 
   <g filter="url(#shellShadow)">
-    <rect x="50" y="0" width="900" height="560" fill="#f4efe4"/>
-    <rect x="50" y="0" width="288" height="560" fill="url(#green)"/>
-    <line x1="338" y1="0" x2="338" y2="560" stroke="#caa14a" stroke-width="2" stroke-opacity="0.42"/>
+    <rect x="50" y="0" width="900" height="640" fill="#f4efe4"/>
+    <rect x="50" y="0" width="288" height="640" fill="url(#green)"/>
+    <line x1="338" y1="0" x2="338" y2="640" stroke="#caa14a" stroke-width="2" stroke-opacity="0.42"/>
 
     <g transform="translate(50, 0)">
       <text x="58" y="30" fill="#eef3ee" font-family="Georgia, serif" font-size="14" font-weight="700">BindingSolution</text>
@@ -30,58 +30,66 @@
       <text x="30" y="174" fill="#fff" font-family="system-ui, sans-serif" font-size="11" font-weight="600">Groups</text>
       <text x="30" y="187" fill="#b8cfc4" font-family="system-ui, sans-serif" font-size="7.5">Paper sets &amp; prune</text>
 
-      <rect x="18" y="468" width="252" height="26" rx="10" fill="rgba(0,0,0,0.32)" stroke="rgba(202,161,74,0.4)"/>
-      <text x="30" y="485" fill="#fff" font-family="system-ui, sans-serif" font-size="7.5" font-weight="600" letter-spacing="0.6">RUNNING</text>
-      <rect x="228" y="476" width="18" height="14" rx="7" fill="rgba(179,137,47,0.45)"/>
-      <text x="237" y="486" fill="#fff8e8" font-size="7" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="700">1</text>
-      <rect x="18" y="500" width="252" height="34" rx="9" fill="rgba(0,0,0,0.18)" stroke="rgba(255,255,255,0.06)"/>
-      <text x="28" y="516" fill="#eef3ee" font-size="8" font-weight="600" font-family="system-ui, sans-serif">Group papers</text>
-      <text x="210" y="516" fill="#9fb3a8" font-size="7" font-family="system-ui, sans-serif">72/184</text>
-      <text x="28" y="528" fill="#9fb3a8" font-size="7" font-family="system-ui, sans-serif">Grouping 184 papers&#x2026;</text>
-      <rect x="28" y="530" width="140" height="3" rx="1.5" fill="rgba(255,255,255,0.1)"/>
-      <rect x="28" y="530" width="55" height="3" rx="1.5" fill="#b3892f"/>
-
-      <rect x="18" y="540" width="88" height="14" rx="7" fill="rgba(0,0,0,0.2)"/>
-      <circle cx="28" cy="547" r="3" fill="#7fce9b"/>
-      <text x="36" y="550" fill="#cbdbd1" font-size="6.5" font-family="system-ui, sans-serif" font-weight="600">claude opus</text>
-      <rect x="112" y="540" width="52" height="14" rx="7" fill="rgba(0,0,0,0.2)"/>
-      <circle cx="122" cy="547" r="3" fill="#7fce9b"/>
-      <text x="130" y="550" fill="#cbdbd1" font-size="6.5" font-family="system-ui, sans-serif" font-weight="600">Zotero</text>
+      <rect x="18" y="548" width="252" height="26" rx="10" fill="rgba(0,0,0,0.22)" stroke="rgba(255,255,255,0.08)"/>
+      <text x="30" y="565" fill="#d6e2db" font-family="system-ui, sans-serif" font-size="7.5" font-weight="600" letter-spacing="0.6">RUNNING</text>
+      <rect x="18" y="582" width="88" height="14" rx="7" fill="rgba(0,0,0,0.2)"/>
+      <circle cx="28" cy="589" r="3" fill="#7fce9b"/>
+      <text x="36" y="592" fill="#cbdbd1" font-size="6.5" font-family="system-ui, sans-serif" font-weight="600">claude opus</text>
+      <rect x="112" y="582" width="52" height="14" rx="7" fill="rgba(0,0,0,0.2)"/>
+      <circle cx="122" cy="589" r="3" fill="#7fce9b"/>
+      <text x="130" y="592" fill="#cbdbd1" font-size="6.5" font-family="system-ui, sans-serif" font-weight="600">Zotero</text>
     </g>
 
     <rect x="338" y="0" width="612" height="84" fill="url(#hero)"/>
     <text x="358" y="42" fill="#fff" font-family="Georgia, serif" font-size="25" font-weight="600">Groups</text>
-    <text x="358" y="62" fill="#b8cfc4" font-family="system-ui, sans-serif" font-size="10">Optimal paper sets across projects &#x2014; no duplicates &#x2014; plus papers to drop.</text>
+    <text x="358" y="62" fill="#b8cfc4" font-family="system-ui, sans-serif" font-size="10">Optimal paper sets, standalone papers, and prune suggestions.</text>
     <rect x="488" y="24" width="112" height="26" rx="8" fill="#1f4636"/>
     <text x="544" y="41" fill="#fff" font-family="system-ui, sans-serif" font-size="9" font-weight="600" text-anchor="middle">&#x25CE; Group papers</text>
 
     <g transform="translate(358, 96)">
-      <rect x="0" y="0" width="120" height="40" rx="8" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
-      <text x="60" y="19" fill="#1f4636" font-size="16" font-weight="700" text-anchor="middle" font-family="Georgia, serif">3</text>
-      <text x="60" y="33" fill="#8a8478" font-size="7" text-anchor="middle" font-family="system-ui, sans-serif">PAPER SETS</text>
-      <rect x="130" y="0" width="120" height="40" rx="8" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
-      <text x="190" y="19" fill="#1f4636" font-size="16" font-weight="700" text-anchor="middle" font-family="Georgia, serif">2</text>
-      <text x="190" y="33" fill="#8a8478" font-size="7" text-anchor="middle" font-family="system-ui, sans-serif">TO DROP</text>
+      <rect x="0" y="0" width="88" height="40" rx="8" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
+      <text x="44" y="19" fill="#1f4636" font-size="16" font-weight="700" text-anchor="middle" font-family="Georgia, serif">18</text>
+      <text x="44" y="33" fill="#8a8478" font-size="6.5" text-anchor="middle" font-family="system-ui, sans-serif">PAPER SETS</text>
+      <rect x="98" y="0" width="88" height="40" rx="8" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
+      <text x="142" y="19" fill="#1f4636" font-size="16" font-weight="700" text-anchor="middle" font-family="Georgia, serif">52</text>
+      <text x="142" y="33" fill="#8a8478" font-size="6.5" text-anchor="middle" font-family="system-ui, sans-serif">STANDALONE</text>
+      <rect x="196" y="0" width="88" height="40" rx="8" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
+      <text x="240" y="19" fill="#1f4636" font-size="16" font-weight="700" text-anchor="middle" font-family="Georgia, serif">5</text>
+      <text x="240" y="33" fill="#8a8478" font-size="6.5" text-anchor="middle" font-family="system-ui, sans-serif">TO DROP</text>
 
-      <rect x="0" y="52" width="552" height="48" rx="10" fill="#f6edd6" stroke="#e2d9c6"/>
-      <text x="14" y="72" fill="#1f4636" font-family="Georgia, serif" font-size="11.5" font-weight="600">Shelf organization</text>
-      <text x="14" y="88" fill="#5a564c" font-family="system-ui, sans-serif" font-size="8.5">Each paper appears in at most one reading set.</text>
+      <rect x="0" y="52" width="552" height="56" rx="10" fill="#f6edd6" stroke="#e2d9c6"/>
+      <text x="14" y="74" fill="#1f4636" font-family="Georgia, serif" font-size="11.5" font-weight="600">Shelf organization</text>
+      <text x="14" y="92" fill="#5a564c" font-family="system-ui, sans-serif" font-size="8.5">Grouped 47 of 105 active papers into 18 sets, 52 standalone, 5 to drop.</text>
 
-      <text x="0" y="118" fill="#1f4636" font-family="Georgia, serif" font-size="13" font-weight="600">Optimal paper sets</text>
-      <rect x="0" y="128" width="552" height="108" rx="10" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
-      <text x="14" y="150" fill="#211f1a" font-family="Georgia, serif" font-size="12" font-weight="600">Fairness set</text>
-      <rect x="108" y="138" width="52" height="16" rx="8" fill="#efe8d8" stroke="#d3c8b0"/>
-      <text x="134" y="149" fill="#5a564c" font-size="7.5" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="600">4 papers</text>
-      <text x="14" y="166" fill="#8a8478" font-family="system-ui, sans-serif" font-size="8.5">Papers linked by fairness across 2 projects &#x2014; each paper once.</text>
-      <text x="22" y="186" fill="#5a564c" font-family="system-ui, sans-serif" font-size="8.5">&#x2022; Auditing Recommender Systems &#xB7; Fairness in ML</text>
-      <text x="22" y="202" fill="#5a564c" font-family="system-ui, sans-serif" font-size="8.5">&#x2022; Counterfactual Fairness &#xB7; Causal Inference</text>
+      <text x="0" y="124" fill="#8a8478" font-family="system-ui, sans-serif" font-size="8">47 grouped &#xB7; 52 standalone &#xB7; 5 to drop &#xB7; 110 papers on shelf</text>
 
-      <text x="0" y="256" fill="#1f4636" font-family="Georgia, serif" font-size="13" font-weight="600">Suggested drops</text>
-      <rect x="0" y="266" width="552" height="64" rx="9" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
-      <text x="14" y="286" fill="#1f4636" font-family="system-ui, sans-serif" font-size="10" font-weight="600">Auditing Recommender Systems (duplicate)</text>
-      <text x="14" y="312" fill="#1f4636" font-family="system-ui, sans-serif" font-size="8">Same paper in Fairness in ML &#x2014; keep one copy on your shelf.</text>
+      <text x="0" y="148" fill="#1f4636" font-family="Georgia, serif" font-size="13" font-weight="600">Optimal paper sets</text>
+      <rect x="0" y="158" width="552" height="118" rx="10" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
+      <text x="14" y="180" fill="#211f1a" font-family="Georgia, serif" font-size="12" font-weight="600">Neural population dynamics</text>
+      <rect x="210" y="170" width="58" height="16" rx="8" fill="#efe8d8" stroke="#d3c8b0"/>
+      <text x="239" y="181" fill="#5a564c" font-size="7.5" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="600">47 papers</text>
+      <rect x="14" y="188" width="48" height="14" rx="7" fill="#eef4f0" stroke="#cfe0d6"/>
+      <text x="38" y="198" fill="#1f4636" font-size="7" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="600">NDSEG</text>
+      <text x="14" y="218" fill="#211f1a" font-family="system-ui, sans-serif" font-size="9" font-weight="600">Gaussian-Process Factor Analysis for Low-Dimensional&#x2026;</text>
+      <text x="14" y="232" fill="#8a8478" font-family="system-ui, sans-serif" font-size="7.5">NDSEG</text>
+      <line x1="14" y1="240" x2="538" y2="240" stroke="#e2d9c6"/>
+      <text x="14" y="256" fill="#211f1a" font-family="system-ui, sans-serif" font-size="9" font-weight="600">Demixed principal component analysis of neural&#x2026;</text>
+      <text x="14" y="270" fill="#8a8478" font-family="system-ui, sans-serif" font-size="7.5">NDSEG</text>
+
+      <text x="0" y="296" fill="#1f4636" font-family="Georgia, serif" font-size="13" font-weight="600">Standalone papers</text>
+      <rect x="0" y="306" width="552" height="88" rx="10" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
+      <text x="14" y="330" fill="#211f1a" font-family="system-ui, sans-serif" font-size="9" font-weight="600">A Lone Survey on Graph Representation Learning</text>
+      <text x="14" y="344" fill="#8a8478" font-family="system-ui, sans-serif" font-size="7.5">Single paper (demo) &#xB7; single-paper collection</text>
+      <line x1="14" y1="352" x2="538" y2="352" stroke="#e2d9c6"/>
+      <text x="14" y="368" fill="#211f1a" font-family="system-ui, sans-serif" font-size="9" font-weight="600">Stimulus onset quenches neural variability</text>
+      <text x="14" y="382" fill="#8a8478" font-family="system-ui, sans-serif" font-size="7.5">Single Neuron Recordings Memory</text>
+
+      <text x="0" y="412" fill="#1f4636" font-family="Georgia, serif" font-size="13" font-weight="600">Suggested drops</text>
+      <rect x="0" y="422" width="552" height="56" rx="9" fill="#fffdf8" stroke="#e2d9c6" filter="url(#shadow)"/>
+      <text x="14" y="442" fill="#1f4636" font-family="system-ui, sans-serif" font-size="10" font-weight="600">Auditing Recommender Systems (duplicate)</text>
+      <text x="14" y="462" fill="#5a564c" font-family="system-ui, sans-serif" font-size="8">Same paper in Fairness in ML &#x2014; keep one copy on your shelf.</text>
     </g>
   </g>
 
-  <text x="500" y="548" fill="#8a8478" font-family="system-ui, sans-serif" font-size="9" text-anchor="middle">Illustrative UI mock &#x2014; Groups with paper-set progress (72/184 papers) in Running.</text>
+  <text x="500" y="628" fill="#8a8478" font-family="system-ui, sans-serif" font-size="9" text-anchor="middle">Illustrative UI mock &#x2014; Groups with per-set counts, standalone (incl. single-paper collections), shelf accounting.</text>
 </svg>
