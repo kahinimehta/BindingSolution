@@ -1035,7 +1035,13 @@ async function route() {
 }
 
 /* ── boot ─────────────────────────────────────────────────────── */
+function goSuggestPapers() {
+  specsTab = "suggestions";
+  location.hash = "#/specs";
+}
+
 function bindChrome() {
+  $("#suggest-btn")?.addEventListener("click", goSuggestPapers);
   $("#sync-btn").addEventListener("click", () => {
     if (state.status && !state.status.zotero_mode) doSync("demo");
     else doSync("zotero");

@@ -52,18 +52,22 @@
         <a class="nav-item" data-route="specs" href="#/specs">
           <span class="nav-body">
             <span class="nav-label">Project specs</span>
-            <span class="nav-desc">Paper suggestions</span>
+            <span class="nav-desc">Upload spec · suggest papers</span>
           </span>
           <span class="nav-count" data-count="specs"></span>
         </a>
       </nav>
 
-      <div class="rail-foot">
-        <button type="button" class="btn btn-ghost btn-sync" id="sync-btn">
+      <div class="rail-actions">
+        <button type="button" class="btn btn-rail btn-rail-suggest" id="suggest-btn">✦ Suggest papers</button>
+        <button type="button" class="btn btn-rail" id="sync-btn">
           <span class="sync-spin" aria-hidden="true"></span>
           <span class="sync-label">Sync library</span>
         </button>
-        <button type="button" class="btn btn-ghost btn-purge hidden" id="purge-btn">Purge library</button>
+        <button type="button" class="btn btn-rail btn-rail-purge hidden" id="purge-btn">Purge library</button>
+      </div>
+
+      <div class="rail-foot">
         <div class="status-chips" id="status-chips"></div>
       </div>
     </aside>
