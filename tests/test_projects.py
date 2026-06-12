@@ -1,5 +1,5 @@
 """Tests for project usability rules."""
-from app.projects import UNFILED_KEY, inactive_reason, is_usable_project, usable_projects
+from app.projects import UNFILED_KEY, inactive_reason, is_usable_project, total_papers, usable_projects
 
 
 def test_usable_project_with_papers():
@@ -35,3 +35,11 @@ def test_usable_projects_filters():
     usable = usable_projects(projects)
     assert len(usable) == 1
     assert usable[0]["key"] == "a"
+
+
+def test_total_papers_sums_usable_items():
+    projects = [
+        {"key": "a", "num_items": 3, "items": [{}, {}, {}]},
+        {"key": "b", "num_items": 2, "items": [{}, {}]},
+    ]
+    assert total_papers(projects) == 5

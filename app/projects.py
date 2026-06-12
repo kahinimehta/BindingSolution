@@ -33,3 +33,7 @@ def summary_fields(proj: dict) -> dict:
 
 def usable_projects(projects: dict[str, dict]) -> list[dict]:
     return [p for p in projects.values() if is_usable_project(p)]
+
+
+def total_papers(projects: list[dict]) -> int:
+    return sum(item_count(p) for p in projects)
