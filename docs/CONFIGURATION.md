@@ -99,7 +99,7 @@ only reachable from your own machine.
 
 ## Display
 
-On wide monitors the UI is a **centered panel** (max width about 6400px, or
-viewport minus 0.5rem) with cream margins on the sides — not browser zoom. Use the
-browser’s zoom (Cmd/Ctrl + / −) if you want everything larger; the shell width
-is set in `app/static/styles.css` (`--app-max`), not in `.env`.
+On wide monitors the UI is a **centered panel** (max width about 19200px, or
+viewport minus 0.5rem) with cream margins on the sides. Base typography and
+layout spacing are scaled for large / high-DPI displays (`html` root font-size and
+`--app-max`, `--rail-w` in `app/static/styles.css`), not in `.env`.
