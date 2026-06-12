@@ -183,6 +183,11 @@ The **Chat** view calls `POST /api/chat` (`app/chat_context.py`, `app/analysis.p
 3. **Persist** — threads live in `chat_threads` on the store (`id`, `title`,
    `messages[]`) until purge. `GET /api/chat/threads` lists saved conversations.
 
+The compose box uses a circular **↑** send control (bottom-right of the input);
+**Enter** sends, **Shift+Enter** inserts a newline. `GET /api/status` exposes
+`capabilities.chat` so the UI can detect a stale server missing chat routes and
+prompt a restart after updates.
+
 No file re-upload: everything comes from `library.json` already on disk.
 
 ### Reading schedule
@@ -203,7 +208,7 @@ a corrupt file is set aside rather than crashing. No database to run.
 
 | Method | Path | Purpose |
 |---|---|---|
-| `GET` | `/api/status` | Config + library summary |
+| `GET` | `/api/status` | Config, `capabilities` (chat/groups/jobs_list/spec_discover), library summary |
 | `POST` | `/api/library/sync` | Sync Zotero (`{"source":"zotero"}`) or load demo (`{"source":"demo"}`) → job |
 | `DELETE` | `/api/library` | Purge all local data (projects, analyses, plans, specs, chats) |
 | `GET` | `/api/projects` | List projects (summaries) |

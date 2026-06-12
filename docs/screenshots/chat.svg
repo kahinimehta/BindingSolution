@@ -64,9 +64,10 @@
       <text x="30" y="300" fill="#5a564c" font-size="10.2" font-family="system-ui, sans-serif">Run Groups to batch your shelf into varied thematic sets (&#x2265;90% grouped).</text>
 
       <rect x="14" y="360" width="524" height="56" rx="10" fill="#fff" stroke="#e2d9c6"/>
-      <text x="26" y="392" fill="#8a8478" font-size="10.5" font-family="system-ui, sans-serif">Ask about collections, themes, reading order, or spec matches&#x2026;</text>
+      <text x="26" y="392" fill="#8a8478" font-size="10.5" font-family="system-ui, sans-serif">Ask about collections, themes, reading order, or spec matches</text>
       <circle cx="518" cy="388" r="14" fill="#e8e8e8"/>
       <path d="M518 395 V381 M512 386 l6-6 6 6" fill="none" stroke="#1a1a1a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="14" y="432" fill="#8a8478" font-size="8.8" font-family="system-ui, sans-serif">Enter to send &#xB7; Shift+Enter for newline</text>
     </g>
   </g>
 

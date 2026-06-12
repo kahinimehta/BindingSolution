@@ -100,6 +100,11 @@ while each project is categorized), and spec screening per paper. After a run,
 the server enforces **≥90% grouped** (minimum 10 papers per set, no maximum,
 varied set sizes — not uniform chunks or mega-sets).
 
+After pulling updates, **restart** the server (`Ctrl+C`, then `make run`) so new
+API routes and `GET /api/status` `capabilities` match the UI. **Chat** uses a
+circular **↑** send button; if chat endpoints 404, an old process is usually
+still bound to port 8765.
+
 Nothing is sent anywhere except the Anthropic API (for analysis) and Zotero
 (to read your library). The server binds to `127.0.0.1` by default, so it's
 only reachable from your own machine.

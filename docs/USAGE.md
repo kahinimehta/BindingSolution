@@ -142,7 +142,8 @@ filled by the model.
 ## 5. 💬 Chat — *Chat*
 
 Open **Chat** after syncing your library. Type a question and press **Enter**
-(or **Send**). BindingSolution assembles context from your **local store** —
+or click the **↑** send button in the compose box. BindingSolution assembles
+context from your **local store** —
 synced papers, categorizations, saved connections, paper groups, reading
 strategies, and spec screenings — and sends it to Claude with your message.
 **Nothing is re-uploaded**; the server reads what is already in
@@ -159,7 +160,7 @@ Example questions: *How do my fairness and causal collections overlap?* · *What
 should I read first for population coding?* · *Which papers matched my spec?*
 
 <p align="center">
-  <img src="screenshots/chat.svg" alt="Chat view with Claude answering questions using the local synced library store" width="1000" />
+  <img src="screenshots/chat.svg" alt="Chat view with multi-turn replies, up-arrow send button, and context from the local synced library store" width="1000" />
 </p>
 
 ## 6. ↯ Plan your reading — *Strategies*

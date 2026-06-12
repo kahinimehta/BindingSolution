@@ -41,12 +41,12 @@ Use any view in any order.
 
 - **Large-type layout** — 3× scaled typography and spacing for ultrawide / high-DPI displays; project cards show full summaries (no inner scroll)
 - **Zotero sync** — Web API or local Zotero 7; bundled demo library; **Sync library** / **Purge library** in the hero toolbar
-- **Running** — sidebar panel tracks background jobs; close the progress window or switch views without stopping work
+- **Running** — sidebar panel tracks background jobs (indeterminate bars for single-shot Claude steps); close the progress window or switch views without stopping work
 - **Active vs excluded** — only folders with 2+ papers are analyzed; empty, single-paper, and unfiled collections are reference-only
 - **Categorize** — discipline, themes, methods, keywords, summary per collection
 - **Connections** — shared threads and suggested groupings across projects
 - **Groups** — thematic paper sets (**≥90% of papers grouped**, min 10 per set, varied sizes), **2–3 sentence summaries** per set, drop suggestions; **Papers** KPI matches Library *(including standalone papers)*; summary line shows unique-item split
-- **Chat** — ask Claude about your synced shelf (papers, connections, groups, plans, specs) using the **local store** — no re-upload
+- **Chat** — ask Claude about your synced shelf (papers, connections, groups, plans, specs) using the **local store** — no re-upload; **↑** send button or Enter
 - **Reading strategies** — ordered path + synthesis prompts; **schedule with estimated hours/days** (medium pace, ~12 pages/h at 2 h/day — see [docs/USAGE.md](docs/USAGE.md#reading-time-assumptions))
 - **Spec** — upload a brief (PDF/Word/MD/text); **Find in library** screens your Zotero shelf (core/supporting only); **Re-screen library** is incremental (new papers only after sync); **Suggested papers** returns up to five ranked PubMed hits *not* in your library, with summaries and relevance notes
 - **Spec → reading plan** — **Build reading plan** from library matches; steps keep relevance notes; plan links back to the spec
@@ -61,7 +61,7 @@ Use any view in any order.
 </p>
 
 <p align="center">
-  <img src="docs/screenshots/chat.svg" alt="Chat view with Claude answering questions using the local synced library store" width="1000" />
+  <img src="docs/screenshots/chat.svg" alt="Chat view with multi-turn replies, up-arrow send button, and context from the local synced library store" width="1000" />
 </p>
 
 <p align="center">
@@ -77,6 +77,7 @@ Use any view in any order.
 ## Persistence
 
 Data: `./data/library.json` (gitignored). `make run` resumes where you left off.
+After `git pull`, restart the server (Ctrl+C, then `make run`) so new API routes load.
 
 | Action | Effect |
 | --- | --- |
