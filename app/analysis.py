@@ -19,6 +19,7 @@ from .schemas import (
     PaperRelevance,
     ProjectCategory,
     ReadingStrategy,
+    SpecValidation,
 )
 from . import mock
 
@@ -111,7 +112,15 @@ class Analyzer:
         result: ReadingStrategy = self._parse(prompt, ReadingStrategy, heavy=True)
         return result.model_dump()
 
-    # ── 4. relevance of one paper to a project spec ──────────────────
+    # ── 4. validate an uploaded project spec ─────────────────────────
+    def validate_spec(self, spec_text: str) -> dict:
+        if self.use_mock:
+            return mock.validate_spec(spec_text)
+        prompt = _validate_spec_prompt(spec_text)
+        result: SpecValidation = self._parse(prompt, SpecValidation, heavy=False)
+        return result.model_dump()
+
+    # ── 5. relevance of one paper to a project spec ──────────────────
     def assess_paper(self, spec_text: str, paper: dict) -> dict:
         if self.use_mock:
             return mock.assess_paper(spec_text, paper)
@@ -185,6 +194,29 @@ def _strategy_prompt(projects: list[dict], goal: str) -> str:
         "come from the lists below.\n\n"
         f"{body}\n\n"
         "Produce a sequence that a person could actually follow this week."
+    )
+
+
+def _validate_spec_prompt(spec_text: str) -> str:
+    excerpt = textwrap.shorten(spec_text.strip(), width=6000, placeholder=" …")
+    return (
+        "A researcher is uploading text to BindingSolution's Project specs feature. "
+        "That feature scores papers in their reference library against a PROJECT "
+        "SPECIFICATION — a grant aim, proposal summary, research plan, or short "
+        "description of what they are trying to build or investigate.\n\n"
+        "Read the upload below and decide whether it belongs in that feature.\n\n"
+        "ACCEPT as project_spec when the text states research goals, questions, "
+        "methods, or deliverables — even if informal or only a paragraph.\n\n"
+        "REJECT as academic_paper when it is clearly a published paper (abstract, "
+        "introduction, results, references) rather than the user's own project brief.\n\n"
+        "REJECT as personal_document for resumes, invoices, emails, meeting notes, "
+        "recipes, shopping lists, legal forms, or other everyday documents.\n\n"
+        "REJECT as unrelated for random text, placeholder filler, or content with "
+        "no research project described.\n\n"
+        "When rejecting, write message as direct feedback to the user: say what you "
+        "think they uploaded and ask for a grant aim, proposal, or project description "
+        "instead. Be polite but clear.\n\n"
+        f"UPLOADED TEXT:\n{excerpt}"
     )
 
 

@@ -69,7 +69,8 @@ Plans are saved; open or delete them from the same screen.
 
 Open **Project specs**. Drop in a **PDF, Word (.doc/.docx), Markdown, or text**
 file — a grant aim, proposal, or one-paragraph description — or paste the text.
-Then click
+Irrelevant uploads (shopping lists, filler text, published papers, admin docs) are
+rejected with a short explanation of what to upload instead. Then click
 **Analyze**. Every paper in your library (or a chosen subset) is:
 
 - **summarized** in 2–3 sentences

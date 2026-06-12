@@ -233,6 +233,10 @@ def create_app() -> FastAPI:
         if len(content) < 20:
             raise HTTPException(400, "The specification is too short to analyze.")
 
+        validation = get_analyzer(get_settings()).validate_spec(content)
+        if not validation.get("is_project_spec"):
+            raise HTTPException(400, validation.get("message", "This does not look like a project specification."))
+
         spec = get_store().add_spec({"title": spec_title, "text": content})
         return spec
 

@@ -153,6 +153,124 @@ def reading_strategy(projects: list[dict], goal: str) -> dict:
     }
 
 
+_IRRELEVANT_PHRASES = (
+    "lorem ipsum",
+    "shopping list",
+    "grocery list",
+    "buy milk",
+    "happy birthday",
+    "dear diary",
+    "invoice #",
+    "rent payment",
+    "to-do list",
+    "todo list",
+)
+
+_SPEC_SIGNALS = {
+    "research", "project", "study", "objectives", "objective", "hypothesis",
+    "methods", "method", "methodology", "grant", "proposal", "literature",
+    "investigate", "investigating", "examines", "examining", "aims", "aim",
+    "goal", "goals", "questions", "analysis", "review", "papers", "paper",
+    "thesis", "dissertation", "experiment", "findings", "contribution",
+    "fairness", "causal", "inference", "calibration", "recommender",
+    "develop", "design", "evaluate", "understanding", "explore", "exploring",
+}
+
+_PAPER_SIGNALS = (
+    "in this paper",
+    "we present",
+    "we propose",
+    "our results",
+    "related work",
+    "we show that",
+    "figure 1",
+    "table 1",
+    "references",
+    "et al.",
+    "et al ",
+)
+
+
+def validate_spec(text: str) -> dict:
+    lower = (text or "").lower()
+    tokens = set(_tokens(text))
+
+    for phrase in _IRRELEVANT_PHRASES:
+        if phrase in lower:
+            return {
+                "is_project_spec": False,
+                "detected_kind": "unrelated",
+                "message": (
+                    "This doesn't look like a project specification — it reads like "
+                    "everyday notes or filler text. Upload a grant aim, proposal summary, "
+                    "or short description of your research project instead."
+                ),
+                "_mock": True,
+            }
+
+    paper_hits = sum(1 for phrase in _PAPER_SIGNALS if phrase in lower)
+    if paper_hits >= 3 or (paper_hits >= 2 and "abstract" in lower):
+        return {
+            "is_project_spec": False,
+            "detected_kind": "academic_paper",
+            "message": (
+                "This looks like a published paper, not your own project brief. "
+                "Paste or upload a grant aim, proposal, or project description "
+                "so we can score which library papers matter for your work."
+            ),
+            "_mock": True,
+        }
+
+    personal_phrases = (
+        "meeting notes",
+        "action items",
+        "please find attached",
+        "dear ",
+        "sincerely",
+        "resume",
+        "curriculum vitae",
+    )
+    if any(phrase in lower for phrase in personal_phrases):
+        return {
+            "is_project_spec": False,
+            "detected_kind": "personal_document",
+            "message": (
+                "This looks like a personal or administrative document, not a research "
+                "project spec. Upload a grant aim, proposal, or short description of "
+                "what you are trying to investigate."
+            ),
+            "_mock": True,
+        }
+
+    spec_hits = len(tokens & _SPEC_SIGNALS)
+    if spec_hits >= 2 or (spec_hits >= 1 and len(text) >= 60):
+        return {
+            "is_project_spec": True,
+            "detected_kind": "project_spec",
+            "message": "Looks like a project specification.",
+            "_mock": True,
+        }
+
+    if spec_hits == 0:
+        return {
+            "is_project_spec": False,
+            "detected_kind": "unrelated",
+            "message": (
+                "This doesn't look like a project specification. Describe your research "
+                "goals, questions, or methods — for example a grant aim or one-paragraph "
+                "proposal — and try again."
+            ),
+            "_mock": True,
+        }
+
+    return {
+        "is_project_spec": True,
+        "detected_kind": "project_spec",
+        "message": "Looks like a project specification.",
+        "_mock": True,
+    }
+
+
 def assess_paper(spec_text: str, paper: dict) -> dict:
     spec_tokens = set(_tokens(spec_text))
     paper_tokens = set(_tokens(paper.get("title", "")) + _tokens(paper.get("abstract", "")))

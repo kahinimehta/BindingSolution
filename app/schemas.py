@@ -77,6 +77,23 @@ class ReadingStrategy(BaseModel):
     )
 
 
+class SpecValidation(BaseModel):
+    """Whether uploaded text is a usable project specification."""
+
+    is_project_spec: bool = Field(
+        description="True only if this text describes a research project, grant aim, or proposal "
+        "the user wants to match papers against."
+    )
+    detected_kind: str = Field(
+        description="One of: 'project_spec', 'academic_paper', 'personal_document', 'unrelated'."
+    )
+    message: str = Field(
+        description="If is_project_spec is false, a plain-language explanation for the user "
+        "(1-2 sentences) saying what was detected and what to upload instead. "
+        "If true, a brief confirmation such as 'Looks like a project specification.'"
+    )
+
+
 class PaperRelevance(BaseModel):
     """How one paper relates to an uploaded project specification."""
 

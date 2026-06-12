@@ -108,6 +108,33 @@ def test_spec_rejects_too_short(client):
     assert resp.status_code == 400
 
 
+def test_spec_rejects_irrelevant_text(client):
+    resp = client.post(
+        "/api/specs",
+        data={
+            "text": (
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
+                "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+            ),
+            "title": "Not a spec",
+        },
+    )
+    assert resp.status_code == 400
+    assert "project specification" in resp.json()["detail"].lower()
+
+
+def test_spec_rejects_shopping_list(client):
+    resp = client.post(
+        "/api/specs",
+        data={
+            "text": "Shopping list for Saturday: buy milk, eggs, bread, butter, and bananas.",
+            "title": "Groceries",
+        },
+    )
+    assert resp.status_code == 400
+    assert resp.json()["detail"]
+
+
 def test_spec_pdf_upload(client):
     _load_demo(client)
     pdf_bytes = _tiny_pdf("Fairness and causal inference in recommender systems")
