@@ -1108,9 +1108,12 @@ function chatOverviewPanel() {
 }
 
 function chatBubble(role, text) {
+  const label = role === "user" ? "You" : "Assistant";
   const body = el("div", { class: "chat-msg-body" });
   body.innerHTML = formatChatText(text);
-  return el("div", { class: `chat-msg ${role}` }, body);
+  return el("div", { class: `chat-msg ${role}` },
+    el("div", { class: "chat-msg-role" }, label),
+    body);
 }
 
 function renderChatMessages(messages) {
@@ -1228,9 +1231,10 @@ async function renderChat() {
             onkeydown: (e) => {
               if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendChatMessage(); }
             },
-          }),
-          chatSendButton()),
-        el("span", { class: "muted chat-hint" }, "Enter to send · Shift+Enter for newline"))));
+          })),
+        el("div", { class: "chat-compose-foot" },
+          el("span", { class: "muted chat-hint" }, "Enter to send · Shift+Enter for newline"),
+          chatSendButton()))));
 
   if (state.chatThreadId) {
     try {
