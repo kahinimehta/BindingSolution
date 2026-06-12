@@ -93,14 +93,26 @@ class Analyzer:
             return True
         return max_tokens > _NONSTREAMING_TIME_TOKEN_LIMIT
 
-    def _structured_response(self, kwargs: dict[str, Any]) -> Any:
+    def _structured_response(
+        self,
+        kwargs: dict[str, Any],
+        *,
+        cancel_check: Callable[[], None] | None = None,
+    ) -> Any:
         """Call Claude with structured output; stream when the SDK requires it."""
         import anthropic
 
+        def _poll_cancel() -> None:
+            if cancel_check:
+                cancel_check()
+
         max_tokens = kwargs["max_tokens"]
+        use_stream = self._needs_streaming(max_tokens) or cancel_check is not None
         try:
-            if self._needs_streaming(max_tokens):
+            if use_stream:
                 with self._client.messages.stream(**kwargs) as stream:
+                    for _ in stream:
+                        _poll_cancel()
                     return stream.get_final_message()
             return self._client.messages.parse(**kwargs)
         except ValidationError as exc:
@@ -111,6 +123,8 @@ class Analyzer:
             if "Streaming is required" not in str(exc):
                 raise
             with self._client.messages.stream(**kwargs) as stream:
+                for _ in stream:
+                    _poll_cancel()
                 return stream.get_final_message()
         except anthropic.APIStatusError as exc:
             raise AnalysisError(f"Claude API error ({exc.status_code}): {exc.message}") from exc
@@ -125,6 +139,7 @@ class Analyzer:
         heavy: bool,
         max_tokens: int | None = None,
         thinking: bool | None = None,
+        cancel_check: Callable[[], None] | None = None,
     ) -> Any:
         """Single structured-output call returning a validated `schema` instance."""
         if max_tokens is None:
@@ -141,7 +156,7 @@ class Analyzer:
             # Cross-project reasoning benefits from adaptive thinking.
             kwargs["thinking"] = {"type": "adaptive"}
 
-        response = self._structured_response(kwargs)
+        response = self._structured_response(kwargs, cancel_check=cancel_check)
 
         if response.stop_reason == "refusal":
             raise AnalysisError("The model declined to analyze this content.")
@@ -199,30 +214,49 @@ class Analyzer:
         return self._reply_text(response)
 
     # ── 1. categorize one project ────────────────────────────────────
-    def categorize_project(self, project: dict) -> dict:
+    def categorize_project(
+        self,
+        project: dict,
+        *,
+        cancel_check: Callable[[], None] | None = None,
+    ) -> dict:
         if self.use_mock:
             return mock.categorize_project(project)
         prompt = _categorize_prompt(project)
-        result: ProjectCategory = self._parse(prompt, ProjectCategory, heavy=False)
+        result: ProjectCategory = self._parse(
+            prompt, ProjectCategory, heavy=False, cancel_check=cancel_check,
+        )
         return result.model_dump()
 
     # ── 2. connections across projects ───────────────────────────────
-    def find_connections(self, projects: list[dict]) -> dict:
+    def find_connections(
+        self,
+        projects: list[dict],
+        *,
+        cancel_check: Callable[[], None] | None = None,
+    ) -> dict:
         if self.use_mock:
             return mock.find_connections(projects)
         prompt = _connections_prompt(projects)
-        result: ConnectionMap = self._parse(prompt, ConnectionMap, heavy=True)
+        result: ConnectionMap = self._parse(
+            prompt, ConnectionMap, heavy=True, cancel_check=cancel_check,
+        )
         return result.model_dump()
 
     # ── 3. cross-project paper groups (no duplication) ───────────────
-    def find_paper_groups(self, projects: list[dict]) -> dict:
+    def find_paper_groups(
+        self,
+        projects: list[dict],
+        *,
+        cancel_check: Callable[[], None] | None = None,
+    ) -> dict:
         used_mock = False
         if self.use_mock:
             data = heuristic_paper_groups(projects)
             used_mock = True
         else:
             try:
-                data = self._claude_paper_groups(projects)
+                data = self._claude_paper_groups(projects, cancel_check=cancel_check)
             except (AnalysisError, ValidationError):
                 data = heuristic_paper_groups(projects)
                 used_mock = True
@@ -232,7 +266,12 @@ class Analyzer:
             data.pop("_mock", None)
         return data
 
-    def _claude_paper_groups(self, projects: list[dict]) -> dict:
+    def _claude_paper_groups(
+        self,
+        projects: list[dict],
+        *,
+        cancel_check: Callable[[], None] | None = None,
+    ) -> dict:
         """Claude grouping with compact retries when structured JSON would overflow."""
         last_error: AnalysisError | None = None
         for compact, brief in ((False, False), (True, False), (True, True)):
@@ -244,6 +283,7 @@ class Analyzer:
                     heavy=True,
                     max_tokens=_MAX_TOKENS_GROUPS,
                     thinking=False,
+                    cancel_check=cancel_check,
                 )
                 data = complete_paper_groups(result.model_dump(), projects)
                 return enrich_group_summaries(data, projects)
@@ -252,13 +292,21 @@ class Analyzer:
         raise last_error or AnalysisError("Paper grouping failed.")
 
     # ── 4. reading strategy over chosen projects ─────────────────────
-    def reading_strategy(self, projects: list[dict], goal: str) -> dict:
+    def reading_strategy(
+        self,
+        projects: list[dict],
+        goal: str,
+        *,
+        cancel_check: Callable[[], None] | None = None,
+    ) -> dict:
         if self.use_mock:
             data = mock.reading_strategy(projects, goal)
         else:
             try:
                 prompt = _strategy_prompt(projects, goal)
-                result: ReadingStrategy = self._parse(prompt, ReadingStrategy, heavy=True)
+                result: ReadingStrategy = self._parse(
+                    prompt, ReadingStrategy, heavy=True, cancel_check=cancel_check,
+                )
                 data = result.model_dump()
             except AnalysisError:
                 data = mock.reading_strategy(projects, goal)

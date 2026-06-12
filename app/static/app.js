@@ -181,25 +181,14 @@ function failJobEntry(entry, message) {
 
 function cancelJobEntry(entry, message = "Cancelled") {
   const handlers = entry.handlers.splice(0);
-  entry.status = "cancelled";
-  entry.error = message;
-  entry.progress = {
-    ...(entry.progress || {}),
-    message: "Cancelled",
-    indeterminate: false,
-  };
-  renderJobRail();
   dismissProgressModalIfJob(entry.id);
-  persistJobStore();
   const err = new Error(message);
   err.cancelled = true;
   handlers.forEach((h) => h.reject(err));
   toast(`${entry.label} cancelled.`, "ok");
-  setTimeout(() => {
-    jobStore.byId.delete(entry.id);
-    persistJobStore();
-    renderJobRail();
-  }, 8000);
+  jobStore.byId.delete(entry.id);
+  persistJobStore();
+  renderJobRail();
 }
 
 function jobWasCancelled(err) {
@@ -288,7 +277,7 @@ function renderJobRail() {
 
   const visible = [...jobStore.byId.values()].filter((e) => !e.hidden);
   const running = visible.filter((e) => jobIsActive(e.status));
-  const recent = visible.filter((e) => e.status === "done" || e.status === "error" || e.status === "cancelled");
+  const recent = visible.filter((e) => e.status === "done" || e.status === "error");
 
   if (badge) {
     badge.hidden = !running.length;
@@ -1041,14 +1030,12 @@ function chatSendButton() {
   });
   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   svg.setAttribute("viewBox", "0 0 24 24");
-  svg.setAttribute("width", "20");
-  svg.setAttribute("height", "20");
   svg.setAttribute("aria-hidden", "true");
   const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
   path.setAttribute("d", "M12 19V5M5 12l7-7 7 7");
   path.setAttribute("fill", "none");
   path.setAttribute("stroke", "currentColor");
-  path.setAttribute("stroke-width", "1.75");
+  path.setAttribute("stroke-width", "2");
   path.setAttribute("stroke-linecap", "round");
   path.setAttribute("stroke-linejoin", "round");
   svg.appendChild(path);

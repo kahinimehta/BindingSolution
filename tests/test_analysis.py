@@ -64,6 +64,55 @@ def test_structured_response_uses_stream_for_large_max_tokens(monkeypatch):
     assert stream_calls and not parse_calls
 
 
+def test_structured_response_polls_cancel_check_during_stream(monkeypatch):
+    from app.schemas import ConnectionMap
+
+    analyzer = _analyzer(monkeypatch)
+    cancel_checks: list[int] = []
+
+    class FakeParsed:
+        stop_reason = "end_turn"
+        parsed_output = ConnectionMap(
+            overview="ok",
+            shared_threads=[],
+            clusters=[],
+            suggested_combination=[],
+        )
+
+    class FakeStream:
+        def __iter__(self):
+            yield from range(3)
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args):
+            return False
+
+        def get_final_message(self):
+            return FakeParsed()
+
+    parse_calls: list[dict] = []
+
+    monkeypatch.setattr(analyzer._client.messages, "stream", lambda **_kwargs: FakeStream())
+    monkeypatch.setattr(
+        analyzer._client.messages,
+        "parse",
+        lambda **kwargs: parse_calls.append(kwargs),
+    )
+
+    result = analyzer._structured_response({
+        "model": analyzer.model,
+        "max_tokens": 4000,
+        "system": "sys",
+        "messages": [{"role": "user", "content": "hi"}],
+        "output_format": ConnectionMap,
+    }, cancel_check=lambda: cancel_checks.append(1))
+    assert result.parsed_output.overview == "ok"
+    assert cancel_checks == [1, 1, 1]
+    assert not parse_calls
+
+
 def test_parse_wraps_validation_error(monkeypatch):
     analyzer = _analyzer(monkeypatch)
 

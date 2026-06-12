@@ -688,7 +688,7 @@ a { color: inherit; text-decoration: none; }
 .chat-compose-box { position: relative; }
 .chat-input {
   width: 100%; resize: vertical; min-height: 96px;
-  padding: 24px 58px 22px 30px; border-radius: 18px;
+  padding: 24px 132px 22px 30px; border-radius: 18px;
   border: 3px solid var(--rule); background: #fff;
   font: inherit; font-size: .92rem; line-height: 1.5;
 }
@@ -697,23 +697,28 @@ a { color: inherit; text-decoration: none; }
   box-shadow: 0 0 0 4px rgba(31,70,54,.12);
 }
 .chat-send {
-  position: absolute; right: 10px; bottom: 10px;
-  width: 36px; height: 36px; padding: 0;
+  position: absolute; right: 12px; bottom: 12px;
+  width: 108px; height: 108px; padding: 0;
   border: none; border-radius: 50%;
-  background: rgba(0, 0, 0, 0.06); color: #1a1a1a;
+  appearance: none;
+  background: var(--bind-green); color: #eef3ee;
   display: flex; align-items: center; justify-content: center;
   cursor: pointer;
   z-index: 2;
   flex-shrink: 0;
-  transition: background .15s, opacity .15s, transform .1s;
+  box-shadow: 0 4px 14px rgba(31, 70, 54, 0.22);
+  transition: background .15s, opacity .15s, transform .1s, box-shadow .15s;
 }
 .chat-send svg {
   display: block;
-  width: 20px;
-  height: 20px;
+  width: 60px;
+  height: 60px;
   pointer-events: none;
 }
-.chat-send:hover:not(:disabled) { background: rgba(0, 0, 0, 0.1); }
+.chat-send:hover:not(:disabled) {
+  background: var(--bind-green-2);
+  box-shadow: 0 6px 18px rgba(31, 70, 54, 0.28);
+}
 .chat-send:active:not(:disabled) { transform: scale(0.96); }
 .chat-send:disabled { opacity: .38; cursor: not-allowed; }
 .chat-hint { font-size: .78rem; }
