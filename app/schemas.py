@@ -70,7 +70,7 @@ class PaperGroupSpec(BaseModel):
     name: str = Field(description="Short name for this reading set.")
     paper_keys: list[str] = Field(
         description=(
-            "Paper keys in this group (10–30 items). Each paper_key may appear in at most one group."
+            "Paper keys in this group (minimum 10; no maximum). Each paper_key may appear in at most one group."
         ),
     )
     project_keys: list[str] = Field(description="Project keys the papers come from.")
@@ -124,7 +124,7 @@ class PaperGroupingMapSpec(BaseModel):
     groups: list[PaperGroupSpec] = Field(
         description=(
             "Non-overlapping paper sets across projects; each paper appears at most once. "
-            "Each set has 10–30 paper_keys — minimize standalone papers."
+            "Each set has at least 10 paper_keys; group ≥90% of papers with varied set sizes."
         ),
     )
     drops: list[PaperDropSuggestion] = Field(

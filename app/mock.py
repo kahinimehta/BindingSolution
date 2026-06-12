@@ -329,7 +329,7 @@ def chat_reply(message: str, context: str, history: list[dict]) -> str:
     if any(w in msg for w in ("group", "set", "standalone", "prune", "drop")):
         if "## Paper groups" in ctx:
             return (
-                "Your saved **Groups** run proposes 10–30 paper reading sets and flags "
+                "Your saved **Groups** run proposes varied thematic reading sets (≥90% grouped) and flags "
                 "duplicates to drop. Check the group summaries in the context for themes; "
                 "re-run **◎ Group papers** after adding collections."
             )

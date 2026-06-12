@@ -1,8 +1,8 @@
 from app.projects import UNFILED_KEY
 
 from app.grouping import (
-    GROUP_MAX_PAPERS,
     GROUP_MIN_PAPERS,
+    GROUP_TARGET_COVERAGE,
     append_single_paper_collections,
     complete_paper_groups,
     enrich_group_summaries,
@@ -72,6 +72,12 @@ def _sized_project(key: str, name: str, n: int) -> dict:
     }
 
 
+def _coverage(out: dict) -> float:
+    return out["stats"].get("grouping_coverage") or (
+        out["stats"]["papers_grouped"] / out["stats"].get("groupable_papers", out["stats"]["total_papers"])
+    )
+
+
 def test_complete_paper_groups_preserves_summary():
     projects = [_sized_project("A", "Fairness", 12)]
     keys = [f"A{i}" for i in range(12)]
@@ -95,15 +101,14 @@ def test_heuristic_groups_include_multi_sentence_summary():
     result = heuristic_paper_groups(projects)
     assert result["groups"]
     for grp in result["groups"]:
-        assert GROUP_MIN_PAPERS <= grp["num_papers"] <= GROUP_MAX_PAPERS
+        assert grp["num_papers"] >= GROUP_MIN_PAPERS
         assert grp.get("summary")
         assert len(grp["summary"].split(".")) >= 2
+    assert _coverage(result) >= GROUP_TARGET_COVERAGE
 
 
 def test_synthesize_group_summary_mentions_themes():
     projects = _projects()
-    index = {it["key"]: it for p in projects for it in p["items"]}
-    # build proper index via complete
     from app.grouping import _paper_index
     idx = _paper_index(projects)
     text = synthesize_group_summary("Fairness set", ["P1", "P2"], idx)
@@ -155,8 +160,8 @@ def test_complete_paper_groups_enriches_papers():
     assert out["stats"]["total_papers"] == 12
 
 
-def test_complete_paper_groups_lists_ungrouped():
-    projects = [_sized_project("A", "Alpha", 12), _sized_project("B", "Beta", 2)]
+def test_complete_paper_groups_meets_coverage_target():
+    projects = [_sized_project("A", "Alpha", 12), _sized_project("B", "Beta", 11)]
     keys = [f"A{i}" for i in range(12)]
     raw = {
         "overview": "",
@@ -164,31 +169,27 @@ def test_complete_paper_groups_lists_ungrouped():
         "drops": [],
     }
     out = complete_paper_groups(raw, projects)
-    ungrouped_keys = {p["paper_key"] for p in out["ungrouped"]}
-    assert "B0" in ungrouped_keys
-    assert out["stats"]["num_ungrouped"] == len(out["ungrouped"])
-    assert (
-        out["stats"]["papers_grouped"]
-        + out["stats"]["num_ungrouped"]
-        + out["stats"]["num_drops"]
-        == out["stats"]["total_papers"]
-    )
+    assert _coverage(out) >= GROUP_TARGET_COVERAGE
+    assert out["stats"]["papers_grouped"] + out["stats"]["num_ungrouped"] + out["stats"]["num_drops"] == out["stats"]["total_papers"]
 
 
-def test_normalize_group_sizes_splits_and_dissolves():
+def test_normalize_group_sizes_splits_mega_sets():
     projects = [_sized_project("A", "Big", 35)]
     index = {f"A{i}": {"paper_key": f"A{i}", "title": f"t{i}", "project_key": "A",
                         "project_name": "Big", "tags": ["big"], "year": "", "norm_title": f"t{i}"}
              for i in range(35)}
     raw = [{"name": "Huge", "paper_keys": [f"A{i}" for i in range(35)], "project_keys": ["A"], "summary": "x"}]
     sized = normalize_group_sizes(raw, index)
-    assert len(sized) == 1
-    assert sized[0]["paper_keys"] == [f"A{i}" for i in range(30)]
-    # Remaining 5 papers are too few for a valid set and stay ungrouped.
+    assert len(sized) >= 3
+    assert sum(len(g["paper_keys"]) for g in sized) >= int(35 * GROUP_TARGET_COVERAGE)
+    sizes = sorted(len(g["paper_keys"]) for g in sized)
+    assert sizes[-1] < 35
+    assert sizes[0] != sizes[-1] or len(sized) == 1
 
+    tiny_index = {k: index[k] for k in ("A0", "A1")}
     tiny = normalize_group_sizes(
         [{"name": "Tiny", "paper_keys": ["A0", "A1"], "project_keys": ["A"], "summary": ""}],
-        index,
+        tiny_index,
     )
     assert tiny == []
 

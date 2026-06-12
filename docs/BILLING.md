@@ -20,7 +20,7 @@ Pricing depends on the model you set in `ANTHROPIC_MODEL` — see
 | **Categorize one project** | 1 per project | Low | One structured call per collection. |
 | **Categorize all** | 1 per active project | Low–medium | Same as clicking every card. |
 | **Find connections** | 1 | Medium | One heavy cross-library call (adaptive thinking). |
-| **Group papers** | 1 | Medium | One cross-library call over unique item keys; non-overlapping 10–30 paper sets + drop list. Progress is phase-based, not per-paper. |
+| **Group papers** | 1 | Medium | One cross-library call over unique item keys; non-overlapping varied sets (≥90% grouped) + drop list. Progress is phase-based, not per-paper. |
 | **Chat** | 1 per message | Low–medium | One call per send; context is assembled from your local store (no re-upload). Grows with shelf size and thread length. |
 | **Reading strategy** | 1 per plan | Medium | One heavy call; grows with papers in chosen projects. |
 | **Build reading plan** (from spec) | 1 per plan | Medium | Same as a manual strategy, but only spec-relevant papers are included — not a per-paper screen. |

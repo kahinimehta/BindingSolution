@@ -133,7 +133,7 @@ def test_reading_strategy_auto_mode(client):
 
 
 def test_paper_groups(client):
-    from app.grouping import GROUP_MAX_PAPERS, GROUP_MIN_PAPERS
+    from app.grouping import GROUP_MIN_PAPERS, GROUP_TARGET_COVERAGE
 
     _load_demo(client)
     start = client.post("/api/groups").json()
@@ -143,12 +143,14 @@ def test_paper_groups(client):
     grouped_keys: list[str] = []
     for grp in result["groups"]:
         grouped_keys.extend(grp["paper_keys"])
-        assert GROUP_MIN_PAPERS <= grp["num_papers"] <= GROUP_MAX_PAPERS
+        assert grp["num_papers"] >= GROUP_MIN_PAPERS
         assert grp["papers"]
         assert len(grp["papers"]) == len(grp["paper_keys"])
         assert grp.get("summary")
         assert len(grp["summary"].split(".")) >= 2
     assert len(grouped_keys) == len(set(grouped_keys))
+    groupable = result["stats"].get("groupable_papers", result["stats"]["total_papers"])
+    assert result["stats"]["papers_grouped"] / groupable >= GROUP_TARGET_COVERAGE
     stored = client.get("/api/groups").json()["paper_groups"]
     assert stored["stats"]["num_groups"] == len(result["groups"])
     ungrouped_keys = {p["paper_key"] for p in stored.get("ungrouped") or []}

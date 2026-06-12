@@ -98,9 +98,9 @@ whole shelf, not one API call per paper. Track it in the dialog or **Running**
 panel. It returns:
 
 - **Optimal paper sets** — thematic reading groups that may span multiple
-  Zotero collections. Each set is sized for a real reading batch: **10–30 papers**
-  (minimum 10, maximum 30). The grouper merges and splits themes to hit that
-  range and **minimize standalone** papers left uncategorized. Each set shows a
+  Zotero collections. The grouper places **at least 90%** of papers into sets
+  (minimum **10 papers** per set, **no maximum**). Set sizes are **varied** —
+  not uniform chunks and not one or two mega-sets. Each set shows a
   **2–3 sentence summary** of what the set contains and why to read it together,
   a **paper count**, and a flat list (no bullets). A paper appears in **at most
   one** set. Summaries are filled by Claude
@@ -123,12 +123,12 @@ panel. It returns:
 which collections to combine). *Groups* organizes **individual papers** without
 duplication and tells you what to prune.
 
-Demo mode uses deterministic heuristics (title deduping, whole-collection sets
-when a folder has 10–30 papers, and tag clustering across collections); with a
-Claude key the same 10–30 paper schema is filled by the model.
+Demo mode uses deterministic heuristics (title deduping, whole-collection sets,
+tag clustering, and coverage balancing); with a Claude key the same schema is
+filled by the model.
 
 <p align="center">
-  <img src="screenshots/groups.svg" alt="Groups view with large-type layout, 10–30 papers per set, Papers KPI matching Library, set summaries, standalone papers, and drop suggestions" width="1000" />
+  <img src="screenshots/groups.svg" alt="Groups view with large-type layout, 90% grouped coverage, varied set sizes, Papers KPI matching Library, set summaries, standalone papers, and drop suggestions" width="1000" />
 </p>
 
 ## 5. 💬 Chat — *Chat*

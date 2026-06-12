@@ -41,7 +41,7 @@
 
       <rect x="18" y="182" width="286" height="44" rx="12" fill="rgba(0,0,0,0.08)"/>
       <text x="32" y="200" fill="#d6e2db" font-family="system-ui, sans-serif" font-size="12.5" font-weight="600">Groups</text>
-      <text x="32" y="214" fill="#9fb3a8" font-family="system-ui, sans-serif" font-size="9">10&#x2013;30 papers per set</text>
+      <text x="32" y="214" fill="#9fb3a8" font-family="system-ui, sans-serif" font-size="9">&#x2265;90% grouped</text>
 
       <rect x="18" y="232" width="286" height="44" rx="12" fill="rgba(0,0,0,0.08)"/>
       <text x="32" y="250" fill="#d6e2db" font-family="system-ui, sans-serif" font-size="12.5" font-weight="600">Chat</text>

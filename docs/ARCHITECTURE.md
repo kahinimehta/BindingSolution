@@ -128,9 +128,10 @@ The **Groups** view calls `POST /api/groups` (`app/grouping.py`):
 
 1. **Analyze** — Claude (or `heuristic_paper_groups` offline) receives **all**
    papers in active projects (not a per-collection sample). Each optimal set must
-   contain **10–30 papers** (`GROUP_MIN_PAPERS` / `GROUP_MAX_PAPERS`); the prompt
-   and `normalize_group_sizes` merge undersized clusters, split oversized ones, and
-   absorb thematic stragglers to **minimize standalone** papers. Structured output
+   contain at least **10 papers** (`GROUP_MIN_PAPERS`, no maximum); the prompt
+   and `normalize_group_sizes` target **≥90% grouped** (`GROUP_TARGET_COVERAGE`),
+   split mega-sets on large shelves, and balance set sizes so they are not uniform
+   or collapsed into one or two buckets. Structured output
    uses the lean `PaperGroupingMapSpec` schema (paper keys + per-set `summary` only
    — no echoed paper rows) so large shelves do not hit parse/max_tokens overflow. On
    truncation, the analyzer retries with a compact title/tags prompt and higher
@@ -156,9 +157,9 @@ The **Groups** view calls `POST /api/groups` (`app/grouping.py`):
 3. **Persist** — saved in `paper_groups` on the store until purge.
 
 Offline heuristics: normalized-title duplicate detection across collections;
-whole-collection sets when a project has 10–30 papers (chunked at 30); tag/title
-clustering into cross-project sets of 10–30; `normalize_group_sizes` enforces the
-same bounds on Claude output. Papers that cannot join a valid set remain standalone.
+whole-collection sets; tag/title clustering; `normalize_group_sizes` enforces
+≥90% coverage, minimum set size, and balanced variety on Claude output. Up to
+~10% of papers may remain standalone.
 
 ### Chat (local shelf assistant)
 

@@ -6,7 +6,7 @@
 
 *Categorize collections, find cross-project threads, group papers without duplication, plan what to read, and match papers to a project spec — locally, with Claude.*
 
-Paper groups batch your shelf into **10–30 paper reading sets** (split oversized themes, merge small clusters, absorb stragglers) to **minimize standalone** leftovers.
+Paper groups batch your shelf into **varied thematic sets** (≥10 papers each, **≥90% grouped**, no per-set cap — balanced sizes, not uniform chunks or mega-sets).
 
 </div>
 
@@ -45,7 +45,7 @@ Use any view in any order.
 - **Active vs excluded** — only folders with 2+ papers are analyzed; empty, single-paper, and unfiled collections are reference-only
 - **Categorize** — discipline, themes, methods, keywords, summary per collection
 - **Connections** — shared threads and suggested groupings across projects
-- **Groups** — thematic paper sets (**10–30 papers** each, sized to minimize standalone), **2–3 sentence summaries** per set, drop suggestions; **Papers** KPI matches Library *(including standalone papers)*; summary line shows unique-item split
+- **Groups** — thematic paper sets (**≥90% of papers grouped**, min 10 per set, varied sizes), **2–3 sentence summaries** per set, drop suggestions; **Papers** KPI matches Library *(including standalone papers)*; summary line shows unique-item split
 - **Chat** — ask Claude about your synced shelf (papers, connections, groups, plans, specs) using the **local store** — no re-upload
 - **Reading strategies** — ordered path + synthesis prompts; **schedule with estimated hours/days** (medium pace, ~12 pages/h at 2 h/day — see [docs/USAGE.md](docs/USAGE.md#reading-time-assumptions))
 - **Spec** — upload a brief (PDF/Word/MD/text); **Find in library** screens your Zotero shelf (core/supporting only); **Re-screen library** is incremental (new papers only after sync); **Suggested papers** returns up to five ranked PubMed hits *not* in your library, with summaries and relevance notes
@@ -57,7 +57,7 @@ Use any view in any order.
 </p>
 
 <p align="center">
-  <img src="docs/screenshots/groups.svg" alt="Groups view with large-type layout, 10–30 papers per set, Papers KPI matching Library, set summaries, standalone papers, and drop suggestions" width="1000" />
+  <img src="docs/screenshots/groups.svg" alt="Groups view with large-type layout, 90% grouped coverage, varied set sizes, Papers KPI matching Library, set summaries, standalone papers, and drop suggestions" width="1000" />
 </p>
 
 <p align="center">
