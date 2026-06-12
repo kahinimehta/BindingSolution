@@ -19,7 +19,8 @@ to interrupt the server process in your terminal (e.g. Ctrl+C on `make run`).
 Progress bars are **indeterminate** (animated) during steps that are one long
 operation — a single Claude call or PubMed search — and **step-based** when work
 can be counted (sync per collection, spec screening per paper, categorize-all
-per project). **Chat** is synchronous (one request per message) — it does not
+per project). When an indeterminate step finishes, the bar fills and shows
+**Done**. **Chat** is synchronous (one request per message) — it does not
 appear in **Running**. After pulling app updates, **restart the server**
 (Ctrl+C, then `make run`) so new API routes (e.g. chat) are loaded — the browser
 can show new UI while an old process is still answering on port 8765.
@@ -106,8 +107,9 @@ active paper across your projects (deduplicated by Zotero item key). Progress is
 **phase-based** (prepare → analyze → apply; e.g. *Step 2 of 3 — Analyzing 115
 unique papers (184 collection entries in 13 active projects)*) with an
 **indeterminate** bar during the analyze step because grouping is one Claude pass
-over the whole shelf, not one API call per paper. Track it in the dialog or
-**Running** panel. It returns:
+over the whole shelf, not one API call per paper. Large shelves may take several
+minutes — the server **streams** the structured response so long runs are allowed.
+Track progress in the dialog or **Running** panel. It returns:
 
 - **Optimal paper sets** — thematic reading groups that may span multiple
   Zotero collections. The grouper places **at least 90%** of papers into sets
@@ -149,8 +151,8 @@ filled by the model.
 
 Open **Chat** after syncing your library. A compact **overview** at the top
 lists what the assistant **can** and **cannot** use from your local store (no
-KPI strip on this view). Type a question and press **Enter** or click the **↑**
-send button in the compose box.
+KPI strip on this view). Type a question and press **Enter** or click the large
+circular **↑** send button (bottom-right of the compose box).
 
 **Can use:** collection names and counts; categorizations (themes, summaries);
 saved connections, paper groups, reading plans, and spec screenings; titles and
@@ -171,7 +173,7 @@ Example questions: *Which collections share drift-diffusion themes?* · *What is
 the Cortex paper group?* · *Which papers matched my spec?*
 
 <p align="center">
-  <img src="screenshots/chat.svg" alt="Chat view with compact can/cannot overview, up-arrow send button, and no KPI strip" width="1000" />
+  <img src="screenshots/chat.svg" alt="Chat view with compact can/cannot overview, large up-arrow send button, and no KPI strip" width="1000" />
 </p>
 
 ## 6. ↯ Plan your reading — *Strategies*

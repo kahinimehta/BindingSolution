@@ -62,6 +62,11 @@ response = client.messages.parse(
 result = response.parsed_output       # a validated ProjectCategory
 ```
 
+`Analyzer._structured_response()` routes through `messages.stream().get_final_message()`
+when `max_tokens` exceeds the Anthropic SDK non-streaming cap (~21k output
+tokens / ~10 minutes estimated runtime). Paper grouping at **32k** `max_tokens`
+always streams; smaller structured calls still use `messages.parse()`.
+
 The Pydantic models in `app/schemas.py` are the single source of truth: they
 generate the JSON schema sent to the API **and** define the contract the
 frontend renders. Refusals (`stop_reason == "refusal"`) and truncation
@@ -98,7 +103,9 @@ Job progress exposes `current`, `total`, `message`, and `indeterminate`. Steps
 that are a single long API call (or otherwise non-linear) set
 `indeterminate: true` so the UI shows an animated bar instead of a fake
 fraction. Linear jobs advance `current/total` per collection, project, or paper.
-Progress messages omit trailing ellipses.
+Progress messages omit trailing ellipses. When an indeterminate step completes,
+the modal and **Running** rail snap to a full bar with message **Done** (or
+**Up to date** for sync).
 
 ### Spec (library screen + PubMed discovery)
 
@@ -154,7 +161,8 @@ The **Groups** view calls `POST /api/groups` (`app/grouping.py`):
    — no echoed paper rows) so large shelves do not hit parse/max_tokens overflow. On
    truncation or invalid JSON, the analyzer retries with compact title/tags prompts
    and shorter summaries (adaptive **thinking is off** for grouping so the token
-   budget goes to the large `paper_keys` JSON). `max_tokens` is 32k. Returns
+   budget goes to the large `paper_keys` JSON). `max_tokens` is 32k and the call
+   **streams** structured output (required by the SDK for long runs). Returns
    `groups` (non-overlapping `paper_keys`), `drops`, and
    server-filled `ungrouped` for papers in neither list. `finalize_shelf_coverage`
    then places every remaining library paper into standalone (single-paper
@@ -199,7 +207,7 @@ The **Chat** view calls `POST /api/chat` (`app/chat_context.py`, `app/analysis.p
 
 The Chat view hides the KPI strip and shows a compact **can / cannot** overview
 (local store metadata only — no PDFs or full paper text). The compose box uses a
-circular **↑** send control (bottom-right of the input); **Enter** sends,
+large circular **↑** send control (52×52px, bottom-right of the input); **Enter** sends,
 **Shift+Enter** inserts a newline. `GET /api/status` exposes `capabilities.chat`
 so the UI can detect a stale server missing chat routes and prompt a restart
 after updates. The system prompt instructs Claude not to claim access to full

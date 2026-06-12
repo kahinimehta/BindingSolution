@@ -94,16 +94,20 @@ cancels in-flight jobs. Progress bars are **indeterminate** when a step is one
 long operation that cannot be split (single Claude call or PubMed search):
 categorize one project, design a reading plan, discover on PubMed, load demo
 library, and the **analyze** step of **Find connections** and **Group papers**
-(prepare → analyze → apply). **Linear** jobs show `current/total` or *Step N of
-M*: Zotero sync per collection, **Categorize all** per project (indeterminate
-while each project is categorized), and spec screening per paper. After a run,
+(prepare → analyze → apply). **Group papers** streams structured output at 32k
+`max_tokens` — large shelves can run several minutes; keep the server running.
+**Linear** jobs show `current/total` or *Step N of M*: Zotero sync per
+collection, **Categorize all** per project (indeterminate while each project is
+categorized), and spec screening per paper. Indeterminate steps show a full bar
+and **Done** when they finish. After a run,
 the server enforces **≥90% grouped** (minimum 10 papers per set, no maximum,
 varied set sizes — not uniform chunks or mega-sets).
 
 After pulling updates, **restart** the server (`Ctrl+C`, then `make run`) so new
 API routes and `GET /api/status` `capabilities` match the UI. **Chat** uses a
-circular **↑** send button; if chat endpoints 404, an old process is usually
-still bound to port 8765.
+large circular **↑** send button (52×52px, bottom-right of the input); if chat
+endpoints 404 or grouping shows *Streaming is required*, an old process is
+usually still bound to port 8765.
 
 Nothing is sent anywhere except the Anthropic API (for analysis) and Zotero
 (to read your library). The server binds to `127.0.0.1` by default, so it's
