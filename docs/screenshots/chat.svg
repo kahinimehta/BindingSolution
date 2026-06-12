@@ -65,8 +65,8 @@
 
       <rect x="14" y="360" width="524" height="56" rx="10" fill="#fff" stroke="#e2d9c6"/>
       <text x="26" y="392" fill="#8a8478" font-size="10.5" font-family="system-ui, sans-serif">Ask about collections, themes, reading order, or spec matches&#x2026;</text>
-      <rect x="450" y="372" width="76" height="32" rx="8" fill="#1f4636"/>
-      <text x="488" y="393" fill="#fff" font-size="11.2" font-weight="600" text-anchor="middle" font-family="system-ui, sans-serif">Send</text>
+      <circle cx="518" cy="388" r="14" fill="#e8e8e8"/>
+      <path d="M518 395 V381 M512 386 l6-6 6 6" fill="none" stroke="#1a1a1a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
     </g>
   </g>
 

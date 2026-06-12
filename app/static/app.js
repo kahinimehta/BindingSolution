@@ -1014,18 +1014,26 @@ async function renderChat() {
     el("div", { class: "chat-panel card panel" },
       el("div", { class: "chat-messages", id: "chat-messages" }),
       el("div", { class: "chat-compose" },
-        el("textarea", {
-          id: "chat-input",
-          class: "chat-input",
-          rows: "3",
-          placeholder: "e.g. How do fairness and causal inference papers connect? Which collection should I read first?",
-          onkeydown: (e) => {
-            if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendChatMessage(); }
-          },
-        }),
-        el("div", { class: "chat-compose-actions" },
-          el("span", { class: "muted chat-hint" }, "Enter to send · Shift+Enter for newline"),
-          el("button", { class: "btn btn-primary", id: "chat-send", onclick: sendChatMessage }, "Send")))));
+        el("div", { class: "chat-compose-box" },
+          el("textarea", {
+            id: "chat-input",
+            class: "chat-input",
+            rows: "3",
+            placeholder: "e.g. How do fairness and causal inference papers connect? Which collection should I read first?",
+            onkeydown: (e) => {
+              if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendChatMessage(); }
+            },
+          }),
+          el("button", {
+            type: "button",
+            class: "chat-send",
+            id: "chat-send",
+            onclick: sendChatMessage,
+            "aria-label": "Send message",
+            title: "Send message",
+            html: '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+          })),
+        el("span", { class: "muted chat-hint" }, "Enter to send · Shift+Enter for newline"))));
 
   if (state.chatThreadId) {
     try {
