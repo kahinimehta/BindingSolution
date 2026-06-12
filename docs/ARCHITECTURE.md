@@ -124,9 +124,12 @@ The **Spec** view is a two-tab SPA panel (`Upload & manage` · `Suggested papers
 The **Groups** view calls `POST /api/groups` (`app/grouping.py`):
 
 1. **Analyze** — Claude (or `heuristic_paper_groups` offline) receives **all**
-   papers in active projects (not a per-collection sample). Structured output uses
-   the lean `PaperGroupingMapSpec` schema (paper keys + per-set `summary` only — no
-   echoed paper rows) so large shelves do not hit parse/max_tokens overflow. On
+   papers in active projects (not a per-collection sample). Each optimal set must
+   contain **10–30 papers** (`GROUP_MIN_PAPERS` / `GROUP_MAX_PAPERS`); the prompt
+   and `normalize_group_sizes` merge undersized clusters, split oversized ones, and
+   absorb thematic stragglers to **minimize standalone** papers. Structured output
+   uses the lean `PaperGroupingMapSpec` schema (paper keys + per-set `summary` only
+   — no echoed paper rows) so large shelves do not hit parse/max_tokens overflow. On
    truncation, the analyzer retries with a compact title/tags prompt and higher
    `max_tokens` (32k). Returns `groups` (non-overlapping `paper_keys`), `drops`, and
    server-filled `ungrouped` for papers in neither list. `finalize_shelf_coverage`
@@ -149,9 +152,10 @@ The **Groups** view calls `POST /api/groups` (`app/grouping.py`):
    `unfiled`, or `active`).
 3. **Persist** — saved in `paper_groups` on the store until purge.
 
-Offline heuristics: normalized-title duplicate detection across collections,
-tag/title clustering into cross-project sets, weak-fit papers with little shelf
-overlap suggested for archive.
+Offline heuristics: normalized-title duplicate detection across collections;
+whole-collection sets when a project has 10–30 papers (chunked at 30); tag/title
+clustering into cross-project sets of 10–30; `normalize_group_sizes` enforces the
+same bounds on Claude output. Papers that cannot join a valid set remain standalone.
 
 ### Reading schedule
 

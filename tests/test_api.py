@@ -31,13 +31,17 @@ def test_purge_library(client):
 
 def test_demo_sync_loads_projects(client):
     result = _load_demo(client)
-    assert result["num_projects"] == 6
+    assert result["num_projects"] == 7
     projects = client.get("/api/projects").json()["projects"]
-    assert len(projects) == 6
-    assert {p["name"] for p in projects} >= {"Graph Neural Networks", "Fairness in ML"}
+    assert len(projects) == 7
+    assert {p["name"] for p in projects} >= {
+        "Graph Neural Networks",
+        "Fairness in ML",
+        "Neural Population Dynamics",
+    }
     usable = [p for p in projects if p["usable"]]
     inactive = [p for p in projects if not p["usable"]]
-    assert len(usable) == 4
+    assert len(usable) == 5
     assert len(inactive) == 2
     assert {p["inactive_reason"] for p in inactive} == {"empty", "single"}
 
@@ -129,6 +133,8 @@ def test_reading_strategy_auto_mode(client):
 
 
 def test_paper_groups(client):
+    from app.grouping import GROUP_MAX_PAPERS, GROUP_MIN_PAPERS
+
     _load_demo(client)
     start = client.post("/api/groups").json()
     result = run_job(client, start)
@@ -137,6 +143,7 @@ def test_paper_groups(client):
     grouped_keys: list[str] = []
     for grp in result["groups"]:
         grouped_keys.extend(grp["paper_keys"])
+        assert GROUP_MIN_PAPERS <= grp["num_papers"] <= GROUP_MAX_PAPERS
         assert grp["papers"]
         assert len(grp["papers"]) == len(grp["paper_keys"])
         assert grp.get("summary")

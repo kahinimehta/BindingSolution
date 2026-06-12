@@ -16,6 +16,10 @@ _STOP = {
     "under", "over", "from", "into", "using", "as", "at", "by", "is", "are", "we",
 }
 
+# Each optimal paper set should be a substantial reading batch, not a tiny cluster.
+GROUP_MIN_PAPERS = 10
+GROUP_MAX_PAPERS = 30
+
 
 def norm_title(title: str) -> str:
     return re.sub(r"\s+", " ", (title or "").lower()).strip()
@@ -100,6 +104,133 @@ def enrich_group_summaries(result: dict, projects: list[dict]) -> dict:
     return out
 
 
+def _paper_tags(row: dict) -> set[str]:
+    tags = {t.strip().lower() for t in (row.get("tags") or []) if t and t.strip()}
+    tags |= {t for t in _tokens(row.get("title", "")) if t not in _STOP}
+    return tags
+
+
+def _overlap_score(paper_key: str, group_keys: list[str], index: dict[str, dict]) -> int:
+    tags = _paper_tags(index[paper_key])
+    if not tags:
+        return 0
+    score = 0
+    for key in group_keys:
+        score += len(tags & _paper_tags(index[key]))
+    return score
+
+
+def _split_group_chunks(group: dict) -> list[dict]:
+    keys = list(group.get("paper_keys") or [])
+    if len(keys) <= GROUP_MAX_PAPERS:
+        return [group]
+    name = group.get("name") or "Reading set"
+    chunks: list[dict] = []
+    for i, start in enumerate(range(0, len(keys), GROUP_MAX_PAPERS)):
+        chunk_keys = keys[start : start + GROUP_MAX_PAPERS]
+        part = dict(group)
+        part["paper_keys"] = chunk_keys
+        part["name"] = f"{name} ({i + 1})" if len(keys) > GROUP_MAX_PAPERS else name
+        chunks.append(part)
+    return chunks
+
+
+def normalize_group_sizes(groups: list[dict], index: dict[str, dict]) -> list[dict]:
+    """Enforce 10–30 papers per set; merge/split and absorb stragglers to cut standalone count."""
+    expanded: list[dict] = []
+    for group in groups:
+        expanded.extend(_split_group_chunks(group))
+
+    undersized: list[dict] = []
+    sized: list[dict] = []
+    for group in expanded:
+        if len(group.get("paper_keys") or []) >= GROUP_MIN_PAPERS:
+            sized.append(group)
+        else:
+            undersized.append(group)
+
+    # Merge compatible undersized sets when the union is 10–30 papers.
+    undersized.sort(key=lambda g: len(g.get("paper_keys") or []))
+    merged_undersized: list[dict] = []
+    used = [False] * len(undersized)
+    for i, ga in enumerate(undersized):
+        if used[i]:
+            continue
+        keys = list(ga.get("paper_keys") or [])
+        name = ga.get("name") or "Reading set"
+        for j in range(i + 1, len(undersized)):
+            if used[j]:
+                continue
+            gb = undersized[j]
+            combined = keys + [k for k in gb.get("paper_keys") or [] if k not in keys]
+            if GROUP_MIN_PAPERS <= len(combined) <= GROUP_MAX_PAPERS:
+                keys = combined
+                name = f"{name} + {gb.get('name', 'Reading set')}"
+                used[j] = True
+                break
+        used[i] = True
+        if len(keys) >= GROUP_MIN_PAPERS:
+            row = dict(ga)
+            row["paper_keys"] = keys
+            row["name"] = name
+            sized.append(row)
+        else:
+            row = dict(ga)
+            row["paper_keys"] = keys
+            merged_undersized.append(row)
+
+    pool: list[str] = []
+    for group in merged_undersized:
+        pool.extend(group.get("paper_keys") or [])
+
+    # Absorb pooled papers into existing sets with thematic overlap and spare capacity.
+    for group in sized:
+        keys = list(group.get("paper_keys") or [])
+        changed = True
+        while changed and len(keys) < GROUP_MAX_PAPERS and pool:
+            changed = False
+            best_key = None
+            best_score = 0
+            for key in pool:
+                score = _overlap_score(key, keys, index)
+                if score > best_score:
+                    best_score = score
+                    best_key = key
+            if best_key and best_score > 0:
+                keys.append(best_key)
+                pool.remove(best_key)
+                changed = True
+        group["paper_keys"] = keys
+
+    # Form new sets from whatever remains in the pool (same collection / tag affinity first).
+    while len(pool) >= GROUP_MIN_PAPERS:
+        seed = pool.pop(0)
+        keys = [seed]
+        seed_tags = _paper_tags(index[seed])
+        candidates = sorted(
+            pool,
+            key=lambda k: -_overlap_score(k, keys, index),
+        )
+        for key in candidates:
+            if len(keys) >= GROUP_MAX_PAPERS:
+                break
+            if _overlap_score(key, keys, index) > 0 or index[key]["project_key"] == index[seed]["project_key"]:
+                keys.append(key)
+                pool.remove(key)
+        if len(keys) < GROUP_MIN_PAPERS:
+            pool.extend(keys)
+            break
+        sized.append({
+            "name": f"{index[seed].get('project_name', 'Shelf')} cluster",
+            "paper_keys": keys,
+            "project_keys": sorted({index[k]["project_key"] for k in keys}),
+            "summary": "",
+            "rationale": "",
+        })
+
+    return [g for g in sized if len(g.get("paper_keys") or []) >= GROUP_MIN_PAPERS]
+
+
 def _paper_index(projects: list[dict]) -> dict[str, dict]:
     out: dict[str, dict] = {}
     for proj in projects:
@@ -120,7 +251,7 @@ def complete_paper_groups(result: dict, projects: list[dict]) -> dict:
     """Ensure paper keys are valid, unique across groups, and drops reference real papers."""
     index = _paper_index(projects)
     used: set[str] = set()
-    groups: list[dict] = []
+    raw_groups: list[dict] = []
 
     for raw in result.get("groups") or []:
         keys: list[str] = []
@@ -133,6 +264,20 @@ def complete_paper_groups(result: dict, projects: list[dict]) -> dict:
             projects_in.add(index[key]["project_key"])
         if not keys:
             continue
+        raw_groups.append({
+            "name": raw.get("name") or "Reading set",
+            "paper_keys": keys,
+            "project_keys": sorted(projects_in),
+            "summary": raw.get("summary") or raw.get("rationale") or "",
+            "rationale": raw.get("rationale") or "",
+        })
+
+    normalized = normalize_group_sizes(raw_groups, index)
+    used = {key for g in normalized for key in g.get("paper_keys") or []}
+    groups: list[dict] = []
+    for raw in normalized:
+        keys = list(raw.get("paper_keys") or [])
+        projects_in = sorted({index[k]["project_key"] for k in keys})
         papers = [
             {
                 "paper_key": key,
@@ -147,7 +292,7 @@ def complete_paper_groups(result: dict, projects: list[dict]) -> dict:
             "paper_keys": keys,
             "papers": papers,
             "num_papers": len(keys),
-            "project_keys": sorted(projects_in),
+            "project_keys": projects_in,
             "summary": summary,
             "rationale": summary,
         })
@@ -361,33 +506,60 @@ def heuristic_paper_groups(projects: list[dict]) -> dict:
             })
 
     remaining = [r for r in index.values() if r["paper_key"] not in drop_keys]
-    tag_index: dict[str, list[dict]] = defaultdict(list)
-    for row in remaining:
-        tags = set(row["tags"]) | set(_tokens(row["title"]))
-        for tag in tags:
-            if tag not in _STOP and len(tag) >= 3:
-                tag_index[tag].append(row)
-
-    ranked_tags = sorted(tag_index, key=lambda t: (-len(tag_index[t]), t))
     assigned: set[str] = set()
     groups: list[dict] = []
 
+    # Whole-collection sets when a project has 10–30 (or chunk larger folders).
+    by_project: dict[str, list[dict]] = defaultdict(list)
+    for row in remaining:
+        by_project[row["project_key"]].append(row)
+    for proj in projects:
+        candidates = [r for r in by_project.get(proj["key"], []) if r["paper_key"] not in assigned]
+        if len(candidates) < GROUP_MIN_PAPERS:
+            continue
+        for start in range(0, len(candidates), GROUP_MAX_PAPERS):
+            chunk = candidates[start : start + GROUP_MAX_PAPERS]
+            if len(chunk) < GROUP_MIN_PAPERS:
+                break
+            keys = [r["paper_key"] for r in chunk]
+            assigned.update(keys)
+            pname = proj.get("short_name") or proj.get("name") or proj["key"]
+            part = f" ({start // GROUP_MAX_PAPERS + 1})" if len(candidates) > GROUP_MAX_PAPERS else ""
+            summary = (
+                f"This set gathers {len(keys)} papers from the {pname} collection. "
+                f"They share a folder on your shelf and are sized for one focused reading pass. "
+                f"Start here when you want depth in this project before crossing into other sets."
+            )
+            groups.append({
+                "name": f"{pname}{part}",
+                "paper_keys": keys,
+                "project_keys": [proj["key"]],
+                "summary": summary,
+                "rationale": summary,
+            })
+
+    tag_index: dict[str, list[dict]] = defaultdict(list)
+    for row in remaining:
+        if row["paper_key"] in assigned:
+            continue
+        for tag in _paper_tags(row):
+            if len(tag) >= 3:
+                tag_index[tag].append(row)
+
+    ranked_tags = sorted(tag_index, key=lambda t: (-len(tag_index[t]), t))
     for tag in ranked_tags:
         candidates = [r for r in tag_index[tag] if r["paper_key"] not in assigned]
-        if len(candidates) < 2:
+        if len(candidates) < GROUP_MIN_PAPERS:
             continue
-        project_keys = sorted({r["project_key"] for r in candidates})
-        if len(project_keys) < 2 and len(candidates) < 3:
-            continue
-        keys = [r["paper_key"] for r in candidates[:10]]
-        for key in keys:
-            assigned.add(key)
+        keys = [r["paper_key"] for r in candidates[:GROUP_MAX_PAPERS]]
+        assigned.update(keys)
         label = tag.replace("-", " ").title()
-        sample = ", ".join(f"\"{r['title']}\"" for r in candidates[:2])
+        project_keys = sorted({index[k]["project_key"] for k in keys})
+        sample = ", ".join(f"\"{index[k]['title']}\"" for k in keys[:2])
         proj_note = (
             f"{len(project_keys)} collections"
             if len(project_keys) != 1
-            else "multiple papers in one collection"
+            else index[keys[0]]["project_name"]
         )
         summary = (
             f"This set groups {len(keys)} papers on {label} drawn from {proj_note}. "
@@ -401,27 +573,6 @@ def heuristic_paper_groups(projects: list[dict]) -> dict:
             "summary": summary,
             "rationale": summary,
         })
-        if len(groups) >= 6:
-            break
-
-    for row in remaining:
-        if row["paper_key"] in assigned:
-            continue
-        tags = set(row["tags"]) | set(_tokens(row["title"]))
-        overlap = sum(1 for t in tags if len(tag_index.get(t, [])) >= 2)
-        if overlap == 0 and len(tags) <= 2:
-            drop_keys.add(row["paper_key"])
-            drops.append({
-                "paper_key": row["paper_key"],
-                "title": row["title"],
-                "project_key": row["project_key"],
-                "drop_kind": "weak_fit",
-                "reason": (
-                    f"Limited overlap with the rest of your shelf — "
-                    f"consider archiving or moving out of {row['project_name']}."
-                ),
-            })
-            continue
 
     result = complete_paper_groups({"overview": "", "groups": groups, "drops": drops}, projects)
     result["_mock"] = True

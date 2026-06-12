@@ -1,12 +1,15 @@
 from app.projects import UNFILED_KEY
 
 from app.grouping import (
+    GROUP_MAX_PAPERS,
+    GROUP_MIN_PAPERS,
     append_single_paper_collections,
     complete_paper_groups,
     enrich_group_summaries,
     finalize_shelf_coverage,
     heuristic_paper_groups,
     norm_title,
+    normalize_group_sizes,
     synthesize_group_summary,
 )
 
@@ -54,13 +57,29 @@ def test_groups_do_not_duplicate_papers():
         assert len(grp["papers"]) == len(grp["paper_keys"])
 
 
+def _keys(n: int, prefix: str = "K") -> list[str]:
+    return [f"{prefix}{i}" for i in range(n)]
+
+
+def _sized_project(key: str, name: str, n: int) -> dict:
+    return {
+        "key": key,
+        "name": name,
+        "items": [
+            {"key": f"{key}{i}", "title": f"{name} paper {i}", "tags": [name.lower(), "theme"]}
+            for i in range(n)
+        ],
+    }
+
+
 def test_complete_paper_groups_preserves_summary():
-    projects = _projects()
+    projects = [_sized_project("A", "Fairness", 12)]
+    keys = [f"A{i}" for i in range(12)]
     raw = {
         "overview": "Test overview.",
         "groups": [{
             "name": "Set",
-            "paper_keys": ["P2"],
+            "paper_keys": keys,
             "project_keys": ["A"],
             "summary": "Shared fairness theme. Methods overlap. Read together for audit patterns.",
         }],
@@ -72,8 +91,11 @@ def test_complete_paper_groups_preserves_summary():
 
 
 def test_heuristic_groups_include_multi_sentence_summary():
-    result = heuristic_paper_groups(_projects())
+    projects = [_sized_project("A", "Neural", 12), _sized_project("B", "Behavior", 11)]
+    result = heuristic_paper_groups(projects)
+    assert result["groups"]
     for grp in result["groups"]:
+        assert GROUP_MIN_PAPERS <= grp["num_papers"] <= GROUP_MAX_PAPERS
         assert grp.get("summary")
         assert len(grp["summary"].split(".")) >= 2
 
@@ -90,10 +112,11 @@ def test_synthesize_group_summary_mentions_themes():
 
 
 def test_complete_paper_groups_synthesizes_missing_summary():
-    projects = _projects()
+    projects = [_sized_project("A", "Methods", 12)]
+    keys = [f"A{i}" for i in range(12)]
     raw = {
         "overview": "",
-        "groups": [{"name": "Methods", "paper_keys": ["P2", "P4"], "project_keys": ["A", "B"]}],
+        "groups": [{"name": "Methods", "paper_keys": keys, "project_keys": ["A"]}],
         "drops": [],
     }
     out = complete_paper_groups(raw, projects)
@@ -102,9 +125,14 @@ def test_complete_paper_groups_synthesizes_missing_summary():
 
 
 def test_enrich_group_summaries_repairs_stored_rows():
-    projects = _projects()
+    projects = [_sized_project("A", "Methods", 12)]
+    keys = [f"A{i}" for i in range(12)]
     stored = complete_paper_groups(
-        {"overview": "ok", "groups": [{"name": "Set", "paper_keys": ["P2"], "project_keys": ["A"], "summary": "x"}], "drops": []},
+        {
+            "overview": "ok",
+            "groups": [{"name": "Set", "paper_keys": keys, "project_keys": ["A"], "summary": "x"}],
+            "drops": [],
+        },
         projects,
     )
     stored["groups"][0]["summary"] = ""
@@ -114,28 +142,30 @@ def test_enrich_group_summaries_repairs_stored_rows():
 
 
 def test_complete_paper_groups_enriches_papers():
-    projects = _projects()
+    projects = [_sized_project("A", "Alpha", 12)]
+    keys = [f"A{i}" for i in range(12)]
     raw = {
         "overview": "Test overview.",
-        "groups": [{"name": "Set", "paper_keys": ["P2", "P4"], "project_keys": ["A", "B"], "rationale": "Shared methods."}],
+        "groups": [{"name": "Set", "paper_keys": keys, "project_keys": ["A"], "rationale": "Shared methods."}],
         "drops": [],
     }
     out = complete_paper_groups(raw, projects)
-    assert out["groups"][0]["papers"][0]["title"] == "Counterfactual Fairness"
-    assert out["groups"][0]["num_papers"] == 2
-    assert out["stats"]["total_papers"] == 4
+    assert out["groups"][0]["papers"][0]["title"] == "Alpha paper 0"
+    assert out["groups"][0]["num_papers"] == 12
+    assert out["stats"]["total_papers"] == 12
 
 
 def test_complete_paper_groups_lists_ungrouped():
-    projects = _projects()
+    projects = [_sized_project("A", "Alpha", 12), _sized_project("B", "Beta", 2)]
+    keys = [f"A{i}" for i in range(12)]
     raw = {
         "overview": "",
-        "groups": [{"name": "Set", "paper_keys": ["P2"], "project_keys": ["A"], "rationale": "One cluster."}],
+        "groups": [{"name": "Set", "paper_keys": keys, "project_keys": ["A"], "rationale": "One cluster."}],
         "drops": [],
     }
     out = complete_paper_groups(raw, projects)
     ungrouped_keys = {p["paper_key"] for p in out["ungrouped"]}
-    assert "P4" in ungrouped_keys
+    assert "B0" in ungrouped_keys
     assert out["stats"]["num_ungrouped"] == len(out["ungrouped"])
     assert (
         out["stats"]["papers_grouped"]
@@ -143,6 +173,24 @@ def test_complete_paper_groups_lists_ungrouped():
         + out["stats"]["num_drops"]
         == out["stats"]["total_papers"]
     )
+
+
+def test_normalize_group_sizes_splits_and_dissolves():
+    projects = [_sized_project("A", "Big", 35)]
+    index = {f"A{i}": {"paper_key": f"A{i}", "title": f"t{i}", "project_key": "A",
+                        "project_name": "Big", "tags": ["big"], "year": "", "norm_title": f"t{i}"}
+             for i in range(35)}
+    raw = [{"name": "Huge", "paper_keys": [f"A{i}" for i in range(35)], "project_keys": ["A"], "summary": "x"}]
+    sized = normalize_group_sizes(raw, index)
+    assert len(sized) == 1
+    assert sized[0]["paper_keys"] == [f"A{i}" for i in range(30)]
+    # Remaining 5 papers are too few for a valid set and stay ungrouped.
+
+    tiny = normalize_group_sizes(
+        [{"name": "Tiny", "paper_keys": ["A0", "A1"], "project_keys": ["A"], "summary": ""}],
+        index,
+    )
+    assert tiny == []
 
 
 def test_append_single_paper_collections():
