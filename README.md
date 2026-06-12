@@ -80,7 +80,7 @@ Try demo mode first; tidy thin Zotero folders; read the spec-screening confirmat
 </p>
 
 <p align="center">
-  <img src="docs/screenshots/chat.svg" alt="Chat view with wide bubbles, bold YOU and ASSISTANT labels, and footer send button" width="1000" />
+  <img src="docs/screenshots/chat.svg" alt="Chat view with wide bubbles, bold YOU and ASSISTANT labels, and large footer send button" width="1000" />
 </p>
 
 ## Docs

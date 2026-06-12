@@ -281,7 +281,7 @@ Example questions: *Which collections share drift-diffusion themes?* · *What is
 the Cortex paper group?* · *Which papers matched my spec?*
 
 <p align="center">
-  <img src="screenshots/chat.svg" alt="Chat view with wide bubbles, bold YOU and ASSISTANT labels, markdown bold, and footer send button" width="1000" />
+  <img src="screenshots/chat.svg" alt="Chat view with wide bubbles, bold YOU and ASSISTANT labels, markdown bold, and large footer send button" width="1000" />
 </p>
 
 ---
