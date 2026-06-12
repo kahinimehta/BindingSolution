@@ -3,9 +3,11 @@ from app.projects import UNFILED_KEY
 from app.grouping import (
     append_single_paper_collections,
     complete_paper_groups,
+    enrich_group_summaries,
     finalize_shelf_coverage,
     heuristic_paper_groups,
     norm_title,
+    synthesize_group_summary,
 )
 
 
@@ -74,6 +76,41 @@ def test_heuristic_groups_include_multi_sentence_summary():
     for grp in result["groups"]:
         assert grp.get("summary")
         assert len(grp["summary"].split(".")) >= 2
+
+
+def test_synthesize_group_summary_mentions_themes():
+    projects = _projects()
+    index = {it["key"]: it for p in projects for it in p["items"]}
+    # build proper index via complete
+    from app.grouping import _paper_index
+    idx = _paper_index(projects)
+    text = synthesize_group_summary("Fairness set", ["P1", "P2"], idx)
+    assert "2 papers" in text
+    assert "fairness" in text.lower() or "Auditing" in text
+
+
+def test_complete_paper_groups_synthesizes_missing_summary():
+    projects = _projects()
+    raw = {
+        "overview": "",
+        "groups": [{"name": "Methods", "paper_keys": ["P2", "P4"], "project_keys": ["A", "B"]}],
+        "drops": [],
+    }
+    out = complete_paper_groups(raw, projects)
+    assert out["groups"][0]["summary"]
+    assert len(out["groups"][0]["summary"].split(".")) >= 2
+
+
+def test_enrich_group_summaries_repairs_stored_rows():
+    projects = _projects()
+    stored = complete_paper_groups(
+        {"overview": "ok", "groups": [{"name": "Set", "paper_keys": ["P2"], "project_keys": ["A"], "summary": "x"}], "drops": []},
+        projects,
+    )
+    stored["groups"][0]["summary"] = ""
+    out = enrich_group_summaries(stored, projects)
+    assert out["groups"][0]["summary"]
+    assert len(out["groups"][0]["summary"]) > 40
 
 
 def test_complete_paper_groups_enriches_papers():

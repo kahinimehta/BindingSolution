@@ -139,6 +139,8 @@ def test_paper_groups(client):
         grouped_keys.extend(grp["paper_keys"])
         assert grp["papers"]
         assert len(grp["papers"]) == len(grp["paper_keys"])
+        assert grp.get("summary")
+        assert len(grp["summary"].split(".")) >= 2
     assert len(grouped_keys) == len(set(grouped_keys))
     stored = client.get("/api/groups").json()["paper_groups"]
     assert stored["stats"]["num_groups"] == len(result["groups"])

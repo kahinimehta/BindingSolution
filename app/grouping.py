@@ -21,14 +21,83 @@ def norm_title(title: str) -> str:
     return re.sub(r"\s+", " ", (title or "").lower()).strip()
 
 
-def _group_summary(raw: dict) -> str:
-    text = (raw.get("summary") or raw.get("rationale") or "").strip()
-    if text:
-        return text
-    return (
-        "These papers share a coherent theme on your shelf. "
-        "Reading them together should surface shared methods or questions without overlapping other sets."
+_GENERIC_SUMMARY = (
+    "These papers share a coherent theme on your shelf. "
+    "Reading them together should surface shared methods or questions without overlapping other sets."
+)
+
+
+def _summary_is_usable(text: str) -> bool:
+    cleaned = (text or "").strip()
+    if len(cleaned) < 40:
+        return False
+    return cleaned != _GENERIC_SUMMARY
+
+
+def synthesize_group_summary(name: str, keys: list[str], index: dict[str, dict]) -> str:
+    """Build a 2-sentence blurb from titles, tags, and collections when the model omits one."""
+    rows = [index[k] for k in keys if k in index]
+    if not rows:
+        label = (name or "This set").strip()
+        return (
+            f"{label} groups related papers from your shelf. "
+            "Read them together to compare how the theme shows up across collections."
+        )
+
+    project_names = sorted({r.get("project_name") or r["project_key"] for r in rows})
+    proj_note = (
+        f"{len(project_names)} collections ({', '.join(project_names[:3])}"
+        f"{'…' if len(project_names) > 3 else ''})"
+        if len(project_names) != 1
+        else project_names[0]
     )
+
+    tag_counts: dict[str, int] = defaultdict(int)
+    for row in rows:
+        for tag in row.get("tags") or []:
+            t = tag.strip().lower()
+            if t and t not in _STOP and len(t) >= 3:
+                tag_counts[t] += 1
+        for token in _tokens(row.get("title", "")):
+            if token not in _STOP:
+                tag_counts[token] += 1
+    themes = [t for t, _ in sorted(tag_counts.items(), key=lambda kv: (-kv[1], kv[0]))[:4]]
+    theme_note = ", ".join(themes) if themes else (name or "a shared theme").lower()
+
+    sample_titles = "; ".join(f"\"{r['title']}\"" for r in rows[:3])
+    if len(rows) > 3:
+        sample_titles += f"; and {len(rows) - 3} more"
+
+    return (
+        f"This set gathers {len(rows)} papers on {theme_note} from {proj_note}. "
+        f"Representative work includes {sample_titles}. "
+        f"Read them as one arc to compare methods and findings across your shelf."
+    )
+
+
+def _group_summary(raw: dict, *, keys: list[str] | None = None, index: dict[str, dict] | None = None) -> str:
+    text = (raw.get("summary") or raw.get("rationale") or "").strip()
+    if _summary_is_usable(text):
+        return text
+    if keys and index is not None:
+        return synthesize_group_summary(raw.get("name") or "Reading set", keys, index)
+    return _GENERIC_SUMMARY
+
+
+def enrich_group_summaries(result: dict, projects: list[dict]) -> dict:
+    """Ensure every group has a 2+ sentence summary (repairs old or truncated Claude runs)."""
+    index = _paper_index(projects)
+    groups: list[dict] = []
+    for grp in result.get("groups") or []:
+        row = dict(grp)
+        keys = list(row.get("paper_keys") or [])
+        summary = _group_summary(row, keys=keys, index=index)
+        row["summary"] = summary
+        row["rationale"] = summary
+        groups.append(row)
+    out = dict(result)
+    out["groups"] = groups
+    return out
 
 
 def _paper_index(projects: list[dict]) -> dict[str, dict]:
@@ -72,7 +141,7 @@ def complete_paper_groups(result: dict, projects: list[dict]) -> dict:
             }
             for key in keys
         ]
-        summary = _group_summary(raw)
+        summary = _group_summary(raw, keys=keys, index=index)
         groups.append({
             "name": raw.get("name") or "Reading set",
             "paper_keys": keys,

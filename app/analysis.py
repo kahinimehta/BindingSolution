@@ -15,10 +15,10 @@ from typing import Any, Callable
 
 from .config import Settings
 from .reading_schedule import attach_reading_schedule
-from .grouping import complete_paper_groups, heuristic_paper_groups
+from .grouping import complete_paper_groups, enrich_group_summaries, heuristic_paper_groups
 from .schemas import (
     ConnectionMap,
-    PaperGroupingMap,
+    PaperGroupingMapSpec,
     PaperRelevance,
     ProjectCategory,
     ReadingStrategy,
@@ -30,6 +30,8 @@ from . import mock
 _MAX_TOKENS_LIGHT = 4000
 # Cross-project reasoning and planning → give the model room.
 _MAX_TOKENS_HEAVY = 16000
+# Paper grouping returns many paper_keys + per-set summaries — avoid parse truncation.
+_MAX_TOKENS_GROUPS = 32000
 
 _SYSTEM = (
     "You are a meticulous research librarian and methodologist helping a "
@@ -60,11 +62,19 @@ class Analyzer:
             self._client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
 
     # ── low-level call ───────────────────────────────────────────────
-    def _parse(self, prompt: str, schema, *, heavy: bool) -> Any:
+    def _parse(
+        self,
+        prompt: str,
+        schema,
+        *,
+        heavy: bool,
+        max_tokens: int | None = None,
+    ) -> Any:
         """Single structured-output call returning a validated `schema` instance."""
         import anthropic
 
-        max_tokens = _MAX_TOKENS_HEAVY if heavy else _MAX_TOKENS_LIGHT
+        if max_tokens is None:
+            max_tokens = _MAX_TOKENS_HEAVY if heavy else _MAX_TOKENS_LIGHT
         kwargs: dict[str, Any] = {
             "model": self.model,
             "max_tokens": max_tokens,
@@ -87,8 +97,13 @@ class Analyzer:
             raise AnalysisError("The model declined to analyze this content.")
         if response.parsed_output is None:
             if response.stop_reason == "max_tokens":
-                raise AnalysisError("The response was cut off (max_tokens). Try fewer papers per batch.")
-            raise AnalysisError("The model did not return valid structured output.")
+                raise AnalysisError(
+                    "Grouping output was cut off (max_tokens) — the structured response was too large. "
+                    "Retrying with a compact prompt."
+                )
+            raise AnalysisError(
+                "The model did not return valid structured output (parse overflow or truncated JSON)."
+            )
         return response.parsed_output
 
     # ── 1. categorize one project ────────────────────────────────────
@@ -115,9 +130,7 @@ class Analyzer:
             used_mock = True
         else:
             try:
-                prompt = _paper_groups_prompt(projects)
-                result: PaperGroupingMap = self._parse(prompt, PaperGroupingMap, heavy=True)
-                data = complete_paper_groups(result.model_dump(), projects)
+                data = self._claude_paper_groups(projects)
             except AnalysisError:
                 data = heuristic_paper_groups(projects)
                 used_mock = True
@@ -126,6 +139,24 @@ class Analyzer:
         else:
             data.pop("_mock", None)
         return data
+
+    def _claude_paper_groups(self, projects: list[dict]) -> dict:
+        """Claude grouping with compact retry when structured output would overflow."""
+        last_error: AnalysisError | None = None
+        for compact in (False, True):
+            prompt = _paper_groups_prompt(projects, compact=compact)
+            try:
+                result: PaperGroupingMapSpec = self._parse(
+                    prompt,
+                    PaperGroupingMapSpec,
+                    heavy=True,
+                    max_tokens=_MAX_TOKENS_GROUPS,
+                )
+                data = complete_paper_groups(result.model_dump(), projects)
+                return enrich_group_summaries(data, projects)
+            except AnalysisError as exc:
+                last_error = exc
+        raise last_error or AnalysisError("Paper grouping failed.")
 
     # ── 4. reading strategy over chosen projects ─────────────────────
     def reading_strategy(self, projects: list[dict], goal: str) -> dict:
@@ -161,7 +192,13 @@ class Analyzer:
 
 
 # ── prompt builders ──────────────────────────────────────────────────
-def _render_papers(items: list[dict], *, abstracts: bool = True, limit: int | None = None) -> str:
+def _render_papers(
+    items: list[dict],
+    *,
+    abstracts: bool = True,
+    abstract_width: int = 600,
+    limit: int | None = None,
+) -> str:
     lines = []
     for it in (items[:limit] if limit else items):
         head = f"- [{it['key']}] \"{it['title']}\""
@@ -172,7 +209,7 @@ def _render_papers(items: list[dict], *, abstracts: bool = True, limit: int | No
         if it.get("tags"):
             lines.append(f"    tags: {', '.join(it['tags'][:10])}")
         if abstracts and it.get("abstract"):
-            abs = textwrap.shorten(it["abstract"], width=600, placeholder=" …")
+            abs = textwrap.shorten(it["abstract"], width=abstract_width, placeholder=" …")
             lines.append(f"    abstract: {abs}")
     return "\n".join(lines)
 
@@ -187,7 +224,7 @@ def _categorize_prompt(project: dict) -> str:
     )
 
 
-def _paper_groups_prompt(projects: list[dict]) -> str:
+def _paper_groups_prompt(projects: list[dict], *, compact: bool = False) -> str:
     blocks = []
     total = 0
     for proj in projects:
@@ -195,9 +232,15 @@ def _paper_groups_prompt(projects: list[dict]) -> str:
         total += len(items)
         blocks.append(
             f"### Project [{proj['key']}] — {proj['name']} ({len(items)} papers)\n"
-            f"{_render_papers(items, abstracts=True)}"
+            f"{_render_papers(items, abstracts=not compact, abstract_width=220 if compact else 400)}"
         )
     body = "\n\n".join(blocks)
+    compact_note = (
+        "\n- Input is compact (titles and tags only) — still return full paper_keys lists "
+        "and a 2-3 sentence `summary` per group.\n"
+        if compact
+        else ""
+    )
     return (
         f"Organize this researcher's Zotero shelf across projects ({total} papers total).\n\n"
         f"{body}\n\n"
@@ -207,12 +250,14 @@ def _paper_groups_prompt(projects: list[dict]) -> str:
         "- Include every paper you can place in a coherent thematic set — list ALL "
         "paper_keys for each group, not just examples.\n"
         "- Do not duplicate the same paper across groups.\n"
+        "- Return only paper_keys per group — do NOT echo paper titles in the JSON.\n"
         "- For each group, write a `summary` of **2-3 sentences**: the shared theme, "
         "what the papers cover, and why they belong in one reading set.\n"
         "- Papers you do not group or drop will appear as standalone on the shelf.\n"
         "- In `drops`, flag papers to remove or archive: duplicates filed in multiple "
         "collections, redundant surveys superseded by newer work, weak fits, or outdated "
         "papers that no longer match the shelf.\n"
+        f"{compact_note}"
         "Use bracketed paper_key and project_key values exactly as given."
     )
 

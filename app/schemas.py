@@ -64,6 +64,19 @@ class GroupedPaperRef(BaseModel):
     project_key: str = Field(description="Project the paper belongs to.")
 
 
+class PaperGroupSpec(BaseModel):
+    """Lean group shape for Claude structured output — keys + summary only (no paper rows)."""
+
+    name: str = Field(description="Short name for this reading set.")
+    paper_keys: list[str] = Field(
+        description="Paper keys in this group. Each paper_key may appear in at most one group."
+    )
+    project_keys: list[str] = Field(description="Project keys the papers come from.")
+    summary: str = Field(
+        description="Exactly 2-3 sentences: the shared theme, what the papers cover, and why read them together.",
+    )
+
+
 class PaperGroup(BaseModel):
     """A non-overlapping set of papers worth reading together across projects."""
 
@@ -95,6 +108,20 @@ class PaperDropSuggestion(BaseModel):
         description="One of: 'duplicate', 'redundant', 'weak_fit', 'outdated'."
     )
     reason: str = Field(description="1-2 sentences explaining why to drop or archive it.")
+
+
+class PaperGroupingMapSpec(BaseModel):
+    """Lean map for Claude structured output — server fills paper rows and standalone list."""
+
+    overview: str = Field(
+        description="2-4 sentences summarizing how the shelf was organized and what to prune."
+    )
+    groups: list[PaperGroupSpec] = Field(
+        description="Non-overlapping paper sets across projects; each paper appears at most once."
+    )
+    drops: list[PaperDropSuggestion] = Field(
+        description="Papers to consider removing — duplicates across collections, redundant surveys, or weak fits."
+    )
 
 
 class PaperGroupingMap(BaseModel):

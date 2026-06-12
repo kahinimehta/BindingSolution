@@ -43,7 +43,7 @@ Use any view in any order.
 - **Active vs excluded** — only folders with 2+ papers are analyzed; empty, single-paper, and unfiled collections are reference-only
 - **Categorize** — discipline, themes, methods, keywords, summary per collection
 - **Connections** — shared threads and suggested groupings across projects
-- **Groups** — thematic paper sets, **standalone** papers, drop suggestions; **Papers** KPI matches Library *(including standalone papers)*; summary line shows unique-item split
+- **Groups** — thematic paper sets with **2–3 sentence summaries** per set, **standalone** papers, drop suggestions; **Papers** KPI matches Library *(including standalone papers)*; summary line shows unique-item split
 - **Reading strategies** — ordered path + synthesis prompts; **schedule with estimated hours/days** (medium pace, ~12 pages/h at 2 h/day — see [docs/USAGE.md](docs/USAGE.md#reading-time-assumptions))
 - **Spec** — upload a brief (PDF/Word/MD/text); **Find in library** screens your Zotero shelf (core/supporting only); **Re-screen library** is incremental (new papers only after sync); **Suggested papers** returns up to five ranked PubMed hits *not* in your library, with summaries and relevance notes
 - **Spec → reading plan** — **Build reading plan** from library matches; steps keep relevance notes; plan links back to the spec

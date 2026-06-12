@@ -122,8 +122,11 @@ The **Spec** view is a two-tab SPA panel (`Upload & manage` · `Suggested papers
 The **Groups** view calls `POST /api/groups` (`app/grouping.py`):
 
 1. **Analyze** — Claude (or `heuristic_paper_groups` offline) receives **all**
-   papers in active projects (not a per-collection sample). Returns a
-   `PaperGroupingMap`: `groups` (non-overlapping `paper_keys`), `drops`, and
+   papers in active projects (not a per-collection sample). Structured output uses
+   the lean `PaperGroupingMapSpec` schema (paper keys + per-set `summary` only — no
+   echoed paper rows) so large shelves do not hit parse/max_tokens overflow. On
+   truncation, the analyzer retries with a compact title/tags prompt and higher
+   `max_tokens` (32k). Returns `groups` (non-overlapping `paper_keys`), `drops`, and
    server-filled `ungrouped` for papers in neither list. `finalize_shelf_coverage`
    then places every remaining library paper into standalone (single-paper
    collections, unfiled items, and any active stragglers) so

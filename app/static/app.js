@@ -973,10 +973,8 @@ function renderPaperGroups(g) {
           el("h4", { style: "margin:0" }, grp.name),
           el("span", { class: "pill ink" }, `${n} paper${n === 1 ? "" : "s"}`)),
         el("div", { class: "links tag-row" }, ...grp.project_keys.map((k) => el("span", { class: "pill green" }, projName(k)))),
+        el("p", { class: "group-set-summary" }, setSummary || "This set groups related papers from your shelf — re-run grouping if this blurb looks incomplete."),
       ];
-      if (setSummary) {
-        cardKids.push(el("p", { class: "group-set-summary", style: "margin:24px 0 36px;font-size:.9rem;line-height:1.55;color:var(--ink-2)" }, setSummary));
-      }
       const card = el("div", { class: "card spine cluster" }, ...cardKids);
       const list = el("div", { class: "group-paper-lines" });
       for (const p of grp.papers || []) {

@@ -15,7 +15,7 @@ from fastapi.staticfiles import StaticFiles
 
 from . import __version__, jobs
 from .analysis import AnalysisError, get_analyzer
-from .grouping import finalize_shelf_coverage
+from .grouping import enrich_group_summaries, finalize_shelf_coverage
 from .config import STATIC_DIR, get_settings
 from .projects import (
     collection_entry_count,
@@ -225,7 +225,12 @@ def create_app() -> FastAPI:
 
     @app.get("/api/groups")
     def get_paper_groups() -> dict:
-        return {"paper_groups": get_store().get_paper_groups()}
+        store = get_store()
+        groups = store.get_paper_groups()
+        if groups:
+            projects = usable_projects(store.get_projects())
+            groups = enrich_group_summaries(groups, projects)
+        return {"paper_groups": groups}
 
     # ── AI: reading strategy ─────────────────────────────────────────
     @app.post("/api/strategies")
