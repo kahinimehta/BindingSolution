@@ -87,6 +87,8 @@ def test_reading_strategy_manual(client):
     start = client.post("/api/strategies", json={"goal": "connect these", "mode": "manual", "project_keys": keys}).json()
     saved = run_job(client, start)
     assert len(saved["plan"]["sequence"]) == paper_count
+    assert saved["plan"]["schedule"]["total_minutes"] > 0
+    assert all(step.get("read_minutes") for step in saved["plan"]["sequence"])
     listed = client.get("/api/strategies").json()["strategies"]
     assert len(listed) == 1
     # delete
@@ -114,6 +116,8 @@ def test_strategy_from_spec(client):
     for step in saved["plan"]["sequence"]:
         assert step.get("spec_relevance") in {"core", "supporting"}
         assert step.get("spec_why")
+        assert step.get("scheduled_day")
+    assert saved["plan"]["schedule"]["estimated_days"] >= 1
 
 
 def test_reading_strategy_auto_mode(client):

@@ -4,8 +4,7 @@
 
 **Point it at your Zotero library and it makes sense of it.**
 
-*Categorize collections, find cross-project threads, plan what to read, and get
-paper suggestions for a project spec — locally, with Claude.*
+*Categorize collections, find cross-project threads, plan what to read, and match papers to a project spec — locally, with Claude.*
 
 </div>
 
@@ -19,67 +18,62 @@ cd bindingsolution
 make setup && make run    # → http://127.0.0.1:8765
 ```
 
-Add keys to the gitignored `.env` created by setup (`ANTHROPIC_API_KEY`, `ZOTERO_LIBRARY_ID`, `ZOTERO_API_KEY`). See [docs/CONFIGURATION.md](docs/CONFIGURATION.md).
+Add `ANTHROPIC_API_KEY`, `ZOTERO_LIBRARY_ID`, and `ZOTERO_API_KEY` to the gitignored `.env` from setup — see [docs/CONFIGURATION.md](docs/CONFIGURATION.md).
 
-**No keys?** `make run` → **Load demo library**. Everything works on bundled sample data.
+**No keys?** `make run` → **Load demo library** (heuristic “demo AI”, full UI).
 
-**API billing:** Claude usage is billed to your Anthropic account (pay per token). Zotero sync and saved results are free to revisit. Spec screening calls Claude once per paper — see [docs/BILLING.md](docs/BILLING.md) for cost drivers and tips.
+## API cost (read this)
 
-## Library layout
+Claude usage bills to **your** Anthropic account (per token). Zotero sync and re-opening saved results are free.
 
-After sync, collections split into **active** (2+ papers) and **excluded** (reference only):
-
-| Group | Examples | Analyzed? |
-| --- | --- | --- |
-| **Active** | Collections with 2+ papers | Yes |
-| **Excluded** | Empty folders, single-paper collections, unfiled papers | No |
-
-Excluded items appear in a separate section at the bottom of **Library**. Add papers or merge collections in Zotero, then re-sync.
-
-<p align="center">
-  <img src="docs/screenshots/library.svg" alt="Library view with KPI bar above active and excluded collections" width="920" />
-</p>
-
-## Persistence & reset
-
-Data lives in `./data/library.json` (gitignored). `make run` picks up where you left off — no re-sync or re-analysis needed unless you want fresh results.
-
-| Action | What it does |
+| Heavy | Light |
 | --- | --- |
-| **Purge library** (in-app, sidebar) | Wipes local projects, categorizations, connections, reading plans, and specs. Your Zotero library is untouched. Sync or load the demo again afterward. |
-| `make clean` | Removes `data/`, the virtualenv, and caches — full dev reset. Keeps `.env`. |
-| `make setup` again | Reinstalls dependencies only — does **not** delete your library. |
+| **Find relevant papers** — one call **per active paper** | Categorize one project, upload spec validation |
+| Re-screening after every small sync | One reading plan, one connections pass |
+
+**Tips:** try demo mode first; tidy Zotero (only collections with **2+ papers** are active); read the spec-screening confirmation before starting; set a [spend limit](https://console.anthropic.com/settings/billing). Full detail: [docs/BILLING.md](docs/BILLING.md).
 
 ## Features
 
-Use any view in any order — nothing is sequential.
+Use any view in any order.
 
-- **Zotero sync** — Web API or local Zotero 7; bundled demo library for trying without keys
-- **Active vs excluded collections** — only folders with 2+ papers are used in analysis; empty, single-paper, and unfiled collections are shown separately for reference
-- **Project categorization** — discipline, themes, methods, keywords, and summary per collection
-- **Cross-project connections** — shared threads across projects and suggested groupings to read together
-- **Reading strategies** — pick projects (or let the agent choose), set a goal, get an ordered reading path with synthesis prompts; saved plans persist across sessions
-- **Project-spec paper suggestions** — two tabs on **Project specs**:
-  - **Upload & manage** — drop a PDF, Word (`.doc`/`.docx`), Markdown, or text spec. Irrelevant uploads (shopping lists, published papers, admin docs) are rejected with guidance.
-  - **Suggested papers** — **Find relevant papers** screens your active library and lists only **core** and **supporting** hits, each with a short **why it's relevant** note. Runtime scales with library size; you can keep using the app while it runs.
-- **Spec ↔ reading plan mapping** — from **Suggested papers**, **Build reading plan** turns only spec-relevant papers into an ordered path (core before supporting). Each step keeps its relevance note; opening the plan links back to the spec.
-- **Purge library** — start from scratch without touching Zotero (sidebar → **Purge library**)
+- **Zotero sync** — Web API or local Zotero 7; bundled demo library
+- **Active vs excluded** — only folders with 2+ papers are analyzed; empty, single-paper, and unfiled collections are reference-only
+- **Categorize** — discipline, themes, methods, keywords, summary per collection
+- **Connections** — shared threads and suggested groupings across projects
+- **Reading strategies** — ordered path + synthesis prompts; **schedule with estimated hours/days** (medium pace, ~12 pages/h at 2 h/day — see [docs/USAGE.md](docs/USAGE.md#reading-time-assumptions))
+- **Project specs** — upload a brief (PDF/Word/MD/text); irrelevant uploads rejected; **Suggested papers** lists only core/supporting hits with why each matters
+- **Spec → reading plan** — **Build reading plan** from suggestions; steps keep relevance notes; plan links back to the spec
+- **Purge library** — wipe local data without touching Zotero (sidebar)
 
 <p align="center">
-  <img src="docs/screenshots/strategies.svg" alt="Reading strategies compose form" width="920" />
+  <img src="docs/screenshots/library.svg" alt="Library view" width="920" />
 </p>
 
 <p align="center">
-  <img src="docs/screenshots/specs-upload.svg" alt="Project specs Upload and manage tab" width="920" />
+  <img src="docs/screenshots/strategies.svg" alt="Reading strategies with schedule" width="920" />
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/specs-upload.svg" alt="Project specs upload" width="920" />
   <br /><br />
-  <img src="docs/screenshots/specs.svg" alt="Project specs Suggested papers tab" width="920" />
+  <img src="docs/screenshots/specs.svg" alt="Suggested papers" width="920" />
 </p>
+
+## Persistence
+
+Data: `./data/library.json` (gitignored). `make run` resumes where you left off.
+
+| Action | Effect |
+| --- | --- |
+| **Purge library** (in-app) | Clears projects, analyses, plans, specs — not Zotero |
+| `make clean` | Full dev reset (`data/`, venv, caches); keeps `.env` |
+| `make setup` again | Reinstalls deps only — does **not** wipe your library |
 
 ## Docs
 
-- [docs/USAGE.md](docs/USAGE.md) · [docs/CONFIGURATION.md](docs/CONFIGURATION.md) · [docs/BILLING.md](docs/BILLING.md) · [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
-- `make setup` · `make run` · `make dev` · `make test`
+[USAGE](docs/USAGE.md) · [CONFIGURATION](docs/CONFIGURATION.md) · [BILLING](docs/BILLING.md) · [ARCHITECTURE](docs/ARCHITECTURE.md) · `make test`
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT — [LICENSE](LICENSE).

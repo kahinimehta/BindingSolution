@@ -565,6 +565,19 @@ a { color: inherit; text-decoration: none; }
   background: #eef4f0; border: 1px solid #cfe0d6; border-radius: 9px;
   font-size: .86rem; color: var(--ink-2);
 }
+.schedule-banner {
+  margin-bottom: 12px; padding: 10px 12px;
+  background: #faf6ec; border: 1px solid #e2d9c6; border-radius: 9px;
+  font-size: .86rem; color: var(--ink-2); line-height: 1.5;
+}
+.schedule-day {
+  margin: 14px 0 6px; font-size: .78rem; font-weight: 700; letter-spacing: .04em;
+  text-transform: uppercase; color: var(--accent);
+}
+.read-time {
+  font-size: .72rem; font-weight: 600; padding: 3px 8px; border-radius: 10px;
+  background: #faf6ec; border: 1px solid #e2d9c6; color: var(--ink-2); white-space: nowrap;
+}
 
 /* ── specs / relevance ──────────────────────────────────────── */
 .dropzone {

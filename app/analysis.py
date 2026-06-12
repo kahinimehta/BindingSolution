@@ -14,6 +14,7 @@ import textwrap
 from typing import Any, Callable
 
 from .config import Settings
+from .reading_schedule import attach_reading_schedule
 from .schemas import (
     ConnectionMap,
     PaperRelevance,
@@ -115,7 +116,8 @@ class Analyzer:
                 data = result.model_dump()
             except AnalysisError:
                 data = mock.reading_strategy(projects, goal)
-        return complete_reading_strategy(data, projects, goal)
+        plan = complete_reading_strategy(data, projects, goal)
+        return attach_reading_schedule(plan, projects)
 
     # ── 4. validate an uploaded project spec ─────────────────────────
     def validate_spec(self, spec_text: str) -> dict:

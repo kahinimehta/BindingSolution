@@ -136,6 +136,17 @@ document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal
 /* ── global state ─────────────────────────────────────────────── */
 const state = { status: null, projects: [], busy: false };
 const fmtTime = (t) => t ? new Date(t * 1000).toLocaleString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }) : "—";
+const fmtReadMinutes = (m) => {
+  if (!m) return "";
+  if (m < 60) return `${m} min`;
+  const h = m / 60;
+  return Number.isInteger(h) ? `${h} h` : `${h.toFixed(1)} h`;
+};
+const planScheduleLabel = (plan) => {
+  const s = plan?.schedule;
+  if (!s?.total_minutes) return "";
+  return `${fmtReadMinutes(s.total_minutes)} · ${s.estimated_days} day${s.estimated_days === 1 ? "" : "s"}`;
+};
 const isUsable = (p) => p.usable !== false;
 const usableProjects = () => state.projects.filter(isUsable);
 const inactiveProjects = () => state.projects.filter((p) => !isUsable(p));
@@ -696,7 +707,12 @@ function strategyRow(s) {
   return el("div", { class: "row-item linkish" },
     el("div", { onclick: () => openStrategy(s), style: "cursor:pointer;flex:1" },
       el("h4", {}, plan.title || "Reading plan"),
-      el("div", { class: "muted" }, `${plan.sequence?.length || 0} papers · ${strategyModeLabel(s)} · ${fmtTime(s.created_at)}`)),
+      el("div", { class: "muted" }, [
+        `${plan.sequence?.length || 0} papers`,
+        planScheduleLabel(plan),
+        strategyModeLabel(s),
+        fmtTime(s.created_at),
+      ].filter(Boolean).join(" · "))),
     el("div", { style: "display:flex;gap:8px" },
       el("button", { class: "btn btn-ghost btn-sm", onclick: () => openStrategy(s) }, "Open"),
       el("button", { class: "btn btn-ghost btn-sm btn-danger", onclick: () => deleteStrategy(s.id) }, "Delete")));
@@ -714,15 +730,27 @@ function openStrategy(s) {
         onclick: () => { closeModal(); selectedSpecId = s.spec_id; specsTab = "suggestions"; location.hash = "#/specs"; },
       }, s.spec_title || "View suggestions"))));
   }
+  if (plan.schedule?.summary) {
+    body.append(el("div", { class: "schedule-banner" },
+      el("strong", {}, "Reading schedule: "),
+      el("span", {}, plan.schedule.summary)));
+  }
   body.append(el("p", { class: "lead" }, plan.approach || ""));
   if (plan.goal_restatement) body.append(el("p", { class: "rel-why", style: "margin:10px 0" }, "Goal: " + plan.goal_restatement));
   const seq = el("div", { class: "sequence" });
+  let lastDay = null;
   (plan.sequence || []).forEach((step, i) => {
+    if (step.scheduled_day && step.scheduled_day !== lastDay) {
+      lastDay = step.scheduled_day;
+      seq.append(el("div", { class: "schedule-day" }, `Day ${lastDay}`));
+    }
     const head = el("div", { class: "spread", style: "align-items:flex-start;gap:10px" },
       el("h4", { style: "margin:0;flex:1" }, step.title),
-      step.spec_relevance
-        ? el("span", { class: `rel-flag rel-${step.spec_relevance}` }, step.spec_relevance.replace("_", " "))
-        : null);
+      el("div", { style: "display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end" },
+        step.read_minutes ? el("span", { class: "read-time" }, fmtReadMinutes(step.read_minutes)) : null,
+        step.spec_relevance
+          ? el("span", { class: `rel-flag rel-${step.spec_relevance}` }, step.spec_relevance.replace("_", " "))
+          : null));
     seq.append(el("div", { class: "step" },
       el("div", { class: "step-n" }, `${i + 1} · ${projName(step.project_key)}`),
       head,

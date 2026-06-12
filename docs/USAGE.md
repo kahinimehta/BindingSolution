@@ -68,11 +68,26 @@ causal inference"*) and click **Generate strategy**. You get:
 
 - an ordered **reading sequence** (foundational/methodological papers first),
   each step explained
+- a **reading schedule** — estimated time per paper, total hours, and a
+  day-by-day layout
 - **synthesis prompts** to hold in mind as you read across the set
 
 Plans are saved; open or delete them from the same screen. Plans built from a
 project spec show **from spec** in the list and a link back to **Suggested
 papers** when you open them.
+
+### Reading time assumptions
+
+Estimates assume a **medium academic reading pace**:
+
+| Assumption | Value |
+| --- | --- |
+| Reading speed | **~12 pages/hour** (~5 min/page) — careful read of dense PDFs |
+| Default paper length | **9 pages** when Zotero has no page count (typical conference/journal article) |
+| Longer papers | Surveys/reviews ~18 pages; theses/books ~35 pages; inferred from tags and abstract length when needed |
+| Daily budget | **2 hours/day** of focused reading to spread steps across **Day 1**, **Day 2**, … |
+
+These are planning hints, not deadlines. Skim faster or read deeper and your real time will differ. The schedule banner on each plan states the assumptions used.
 
 <p align="center">
   <img src="screenshots/strategies.svg" alt="Reading strategies compose form and spec-mapped plan" width="920" />

@@ -19,6 +19,7 @@ human-readable JSON store, no build step) over scale.
 │   ├─ demo_data.py       bundled sample library              │
 │   ├─ specs.py     PDF/Word/MD/text extraction               │
 │   ├─ spec_strategy.py spec → filtered projects + plan map   │
+│   ├─ reading_schedule.py  per-paper time + day schedule     │
 │   └─ store.py     thread-safe JSON persistence (data/)      │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -83,6 +84,14 @@ The **Project specs** view is a two-tab SPA panel (`Upload & manage` ·
    before supporting). Saved strategies store `spec_id` / `spec_title` and the
    plan carries the same fields for round-trip navigation in the SPA.
 
+### Reading schedule
+
+After a plan is finalized, `reading_schedule.attach_reading_schedule` estimates
+minutes per paper (heuristic page count from tags/abstract/type at **12 pages/h**)
+and assigns `scheduled_day` values using a **2 h/day** budget. The plan gets a
+`schedule` object (`total_minutes`, `total_hours`, `estimated_days`, `summary`).
+See [USAGE.md](USAGE.md#reading-time-assumptions).
+
 ## Persistence
 
 `app/store.py` is a thread-safe wrapper over one JSON file
@@ -134,6 +143,7 @@ app/
   demo_data.py     bundled sample library
   specs.py         spec text extraction
   spec_strategy.py spec-relevant project filter + plan mapping
+  reading_schedule.py per-paper estimates and day schedule
   static/          the single-page UI
 scripts/           setup.sh, run.sh
 tests/             API tests (offline)

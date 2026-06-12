@@ -16,6 +16,7 @@ from . import __version__, jobs
 from .analysis import AnalysisError, get_analyzer
 from .config import STATIC_DIR, get_settings
 from .projects import is_usable_project, summary_fields, usable_projects
+from .reading_schedule import attach_reading_schedule
 from .spec_strategy import attach_spec_mapping, projects_from_spec
 from .specs import extract_text
 from .store import Store
@@ -226,6 +227,7 @@ def create_app() -> FastAPI:
             result = analyzer.reading_strategy(projects, plan_goal)
             if spec:
                 result = attach_spec_mapping(result, spec)
+                result = attach_reading_schedule(result, projects)
             saved = store.add_strategy({
                 "goal": goal,
                 "mode": mode,
