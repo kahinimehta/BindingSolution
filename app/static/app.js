@@ -141,9 +141,110 @@ async function loadProjects() {
    VIEWS
    ════════════════════════════════════════════════════════════════ */
 const view = () => $("#view");
-function setView(title, actions = []) {
-  $("#view-title").textContent = title;
+
+const viewMeta = {
+  library: {
+    step: "Step 1",
+    title: "Library",
+    subtitle: "Your Zotero collections, categorized and ready to explore.",
+  },
+  connections: {
+    step: "Step 2",
+    title: "Connections",
+    subtitle: "Where your projects overlap — shared themes, methods, and authors.",
+  },
+  strategies: {
+    step: "Step 3",
+    title: "Reading strategies",
+    subtitle: "Compose ordered reading paths across projects for a specific goal.",
+  },
+  specs: {
+    step: "Step 4",
+    title: "Project specs",
+    subtitle: "Score every paper in your library against a grant aim or project description.",
+  },
+};
+
+function setView(route, actions = []) {
+  const meta = viewMeta[route] || viewMeta.library;
+  $("#view-eyebrow").textContent = meta.step;
+  $("#view-title").textContent = meta.title;
+  $("#view-subtitle").textContent = meta.subtitle;
   $("#view-actions").replaceChildren(...actions);
+}
+
+function viewHero(title, text) {
+  return el("div", { class: "view-hero" },
+    el("div", { class: "section-label" }, "Overview"),
+    el("h2", {}, title),
+    el("p", {}, text));
+}
+
+function kpiItem(val, lbl, sub = "", accent = false) {
+  const kids = [el("div", { class: "val" }, String(val)), el("div", { class: "lbl" }, lbl)];
+  if (sub) kids.push(el("div", { class: "kpi-sub" }, sub));
+  return el("div", { class: `kpi-item${accent ? " accent" : ""}` }, ...kids);
+}
+
+function totalPapers() {
+  return state.projects.reduce((n, p) => n + (p.num_items || 0), 0);
+}
+
+function categorizedCount() {
+  return state.projects.filter((p) => p.category).length;
+}
+
+async function renderKpiStrip(route) {
+  const host = $("#kpi-inner");
+  if (!host) return;
+  const items = [];
+
+  if (route === "library") {
+    items.push(
+      kpiItem(state.projects.length, "Projects", "Zotero collections", true),
+      kpiItem(totalPapers(), "Papers", "Across all projects"),
+      kpiItem(categorizedCount(), "Categorized", categorizedCount() ? "AI-tagged" : "Run categorize"),
+    );
+    const src = state.status?.zotero_mode || (state.projects.length ? "loaded" : "—");
+    items.push(kpiItem(src, "Source", state.status?.using_mock_llm ? "demo AI" : "library sync"));
+  } else if (route === "connections") {
+    items.push(
+      kpiItem(state.projects.length, "Projects", "In library", true),
+      kpiItem(state.projects.length >= 2 ? "Ready" : "Need 2+", "Status", "Minimum for analysis"),
+    );
+    try {
+      const { connections } = await api.get("/connections");
+      if (connections) {
+        items.push(
+          kpiItem(connections.shared_threads?.length || 0, "Threads", "Shared concepts"),
+          kpiItem(connections.clusters?.length || 0, "Groupings", "Suggested clusters"),
+        );
+      } else {
+        items.push(kpiItem("—", "Threads", "Run analysis"), kpiItem("—", "Groupings", "Run analysis"));
+      }
+    } catch {
+      items.push(kpiItem("—", "Threads", "—"), kpiItem("—", "Groupings", "—"));
+    }
+  } else if (route === "strategies") {
+    let n = 0;
+    try { n = (await api.get("/strategies")).strategies.length; } catch { /* ignore */ }
+    items.push(
+      kpiItem(n, "Saved plans", "Reading strategies", true),
+      kpiItem(state.projects.length, "Projects", "Available to combine"),
+      kpiItem(strategyMode === "auto" ? "Agent" : "Manual", "Mode", "Project selection"),
+    );
+  } else if (route === "specs") {
+    let specs = [];
+    try { specs = (await api.get("/specs")).specs; } catch { /* ignore */ }
+    const analyzed = specs.filter((s) => s.status === "analyzed").length;
+    items.push(
+      kpiItem(specs.length, "Specs", "Uploaded descriptions", true),
+      kpiItem(analyzed, "Analyzed", "Scored against library"),
+      kpiItem(state.projects.length ? totalPapers() : "—", "Papers", "Available to score"),
+    );
+  }
+
+  host.replaceChildren(...items);
 }
 
 /* ── 1. LIBRARY ───────────────────────────────────────────────── */
@@ -152,21 +253,19 @@ async function renderLibrary() {
   const actions = state.projects.length
     ? [el("button", { class: "btn btn-brass btn-sm", onclick: categorizeAll }, "✦ Categorize all")]
     : [];
-  setView("Library", actions);
+  setView("library", actions);
+  await renderKpiStrip("library");
 
   if (!state.projects.length) {
     view().replaceChildren(emptyLibrary());
     return;
   }
 
-  const intro = el("div", { class: "section-head" },
-    el("div", {},
-      el("h2", {}, "Your projects"),
-      el("p", {}, "Each Zotero collection is a project. Categorize one to see its discipline, themes, and methods — or categorize the whole shelf at once.")));
-
   const grid = el("div", { class: "grid grid-projects" },
     ...state.projects.map(projectCard));
-  view().replaceChildren(intro, grid);
+  view().replaceChildren(
+    viewHero("Your projects", "Each Zotero collection is a project. Categorize one to see its discipline, themes, and methods — or categorize the whole shelf at once."),
+    grid);
 }
 
 function projectCard(p) {
@@ -264,8 +363,9 @@ function labeledTags(label, items) {
 /* ── 2. CONNECTIONS ───────────────────────────────────────────── */
 async function renderConnections() {
   await loadProjects();
-  setView("Connections", state.projects.length >= 2
+  setView("connections", state.projects.length >= 2
     ? [el("button", { class: "btn btn-primary btn-sm", onclick: findConnections }, "⁂ Find connections")] : []);
+  await renderKpiStrip("connections");
 
   if (state.projects.length < 2) {
     view().replaceChildren(el("div", { class: "empty" },
@@ -276,9 +376,8 @@ async function renderConnections() {
     return;
   }
 
-  view().replaceChildren(el("div", { class: "section-head" },
-    el("div", {}, el("h2", {}, "Cross-project threads"),
-      el("p", {}, "Where your projects overlap — shared concepts, recurring methods, the same authors showing up in different corners of your library."))),
+  view().replaceChildren(
+    viewHero("Cross-project threads", "Shared concepts, recurring methods, and authors that thread through different corners of your library."),
     el("div", { id: "conn-body" }, el("div", { class: "muted" }, "Loading…")));
 
   try {
@@ -308,7 +407,7 @@ function projName(key) { return state.projects.find((p) => p.key === key)?.name 
 
 function renderConnectionMap(c) {
   const root = el("div", {});
-  root.append(el("div", { class: "card", style: "padding:22px;margin-bottom:22px" },
+  root.append(el("div", { class: "card panel view-hero", style: "padding:22px;margin-bottom:22px;border-left-width:4px" },
     c._mock ? el("span", { class: "mock-note", style: "margin-bottom:10px" }, "demo AI — connect a Claude key for real analysis") : null,
     el("p", { class: "lead", style: "margin:0;font-size:1.02rem" }, c.overview)));
 
@@ -342,7 +441,8 @@ let strategyMode = "manual";
 
 async function renderStrategies() {
   await loadProjects();
-  setView("Reading strategies");
+  setView("strategies");
+  await renderKpiStrip("strategies");
   const wrap = el("div", {});
 
   // builder
@@ -364,7 +464,7 @@ function buildStrategyForm() {
       el("p", {}, "Sync or load a library, then pick the projects you want to read together — or let the agent decide."),
       el("div", { class: "row" }, el("button", { class: "btn btn-brass", onclick: () => doSync("demo") }, "Load demo library")));
   }
-  const card = el("div", { class: "card", style: "padding:24px" });
+  const card = el("div", { class: "card panel", style: "padding:24px" });
   const modeToggle = el("div", { class: "mode-toggle" },
     el("button", { class: strategyMode === "manual" ? "on" : "", onclick: () => setMode("manual") }, "I choose projects"),
     el("button", { class: strategyMode === "auto" ? "on" : "", onclick: () => setMode("auto") }, "Let the agent decide"));
@@ -475,11 +575,11 @@ async function deleteStrategy(id) {
 /* ── 4. SPECS ─────────────────────────────────────────────────── */
 async function renderSpecs() {
   await loadProjects();
-  setView("Project specs");
+  setView("specs");
+  await renderKpiStrip("specs");
   const wrap = el("div", {});
-  wrap.append(el("div", { class: "section-head" },
-    el("div", {}, el("h2", {}, "Match papers to a project"),
-      el("p", {}, "Drop in a project spec, grant aim, or a paragraph describing what you're working on. Every paper in your library gets summarized and scored for how it bears on that project."))));
+  wrap.append(viewHero("Match papers to a project",
+    "Drop in a project spec, grant aim, or a paragraph describing what you're working on. Every paper gets summarized and scored for relevance."));
   wrap.append(specUploader());
   wrap.append(el("div", { class: "section-head mt-3" }, el("div", {}, el("h2", {}, "Your specs"))));
   wrap.append(el("div", { id: "spec-list" }, el("div", { class: "muted" }, "Loading…")));
@@ -488,7 +588,7 @@ async function renderSpecs() {
 }
 
 function specUploader() {
-  const card = el("div", { class: "card", style: "padding:22px" });
+  const card = el("div", { class: "card panel", style: "padding:22px" });
   const drop = el("div", { class: "dropzone" },
     el("div", { class: "emoji" }, "✦"),
     el("p", { style: "margin:8px 0 4px;font-weight:600" }, "Drop a PDF, Markdown, or text file"),
