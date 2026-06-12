@@ -389,10 +389,11 @@ async function renderLibrary() {
 }
 
 function projectCard(p, inactive = false) {
-  const body = [
+  const head = el("div", { class: "project-card-head" },
     el("h3", {}, p.name),
-    el("div", { class: "muted" }, `${p.num_items} ${p.num_items === 1 ? "paper" : "papers"}`),
-  ];
+    el("div", { class: "muted" }, `${p.num_items} ${p.num_items === 1 ? "paper" : "papers"}`));
+  const scroll = el("div", { class: "project-card-scroll" });
+
   if (inactive) {
     const labels = { unfiled: "Unfiled", empty: "Empty folder", single: "Single paper" };
     const hints = {
@@ -401,32 +402,34 @@ function projectCard(p, inactive = false) {
       single: "Only one paper — add another to this collection or merge with a related folder.",
     };
     const reason = p.inactive_reason || "empty";
-    body.push(
-      el("div", { class: "project-meta" }, el("span", { class: "pill ink" }, labels[reason] || "Excluded")),
+    scroll.append(
+      el("div", { class: "project-meta", style: "margin-top:0" },
+        el("span", { class: "pill ink" }, labels[reason] || "Excluded")),
       el("p", { class: "inactive-hint" }, hints[reason] || hints.empty));
     const canView = p.num_items > 0;
     return el("div", {
       class: `card spine project-card inactive${canView ? " viewable" : ""}`,
       ...(canView ? { onclick: () => openProject(p.key, { readOnly: true }) } : {}),
-    }, ...body);
+    }, head, scroll);
   }
 
   const cat = p.category;
   if (cat) {
-    body.push(el("p", { class: "lead", style: "margin:12px 0 0;font-size:.88rem" }, cat.summary));
-    const meta = el("div", { class: "project-meta" },
+    scroll.append(el("p", { class: "lead" }, cat.summary));
+    scroll.append(el("div", { class: "project-meta", style: "margin-top:0" },
       el("span", { class: "pill green" }, cat.discipline),
-      el("span", { class: "pill ink" }, cat.maturity));
-    body.push(meta);
-    if (cat.themes?.length) body.push(el("div", { class: "tag-row" }, ...cat.themes.slice(0, 5).map((t) => el("span", { class: "tag" }, t))));
+      el("span", { class: "pill ink" }, cat.maturity)));
+    if (cat.themes?.length) {
+      scroll.append(el("div", { class: "tag-row" }, ...cat.themes.slice(0, 5).map((t) => el("span", { class: "tag" }, t))));
+    }
   } else {
-    body.push(el("div", { class: "project-meta" },
+    scroll.append(el("div", { class: "project-meta", style: "margin-top:0" },
       el("button", {
         class: "btn btn-ghost btn-sm",
         onclick: (e) => { e.stopPropagation(); categorizeOne(p.key, e.currentTarget); },
       }, "✦ Categorize")));
   }
-  return el("div", { class: "card spine linkish project-card", onclick: () => openProject(p.key) }, ...body);
+  return el("div", { class: "card spine linkish project-card", onclick: () => openProject(p.key) }, head, scroll);
 }
 
 function emptyLibrary() {
