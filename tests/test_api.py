@@ -142,6 +142,8 @@ def test_paper_groups(client):
     assert len(grouped_keys) == len(set(grouped_keys))
     stored = client.get("/api/groups").json()["paper_groups"]
     assert stored["stats"]["num_groups"] == len(result["groups"])
+    ungrouped_keys = {p["paper_key"] for p in stored.get("ungrouped") or []}
+    assert "S1" in ungrouped_keys  # demo single-paper collection
 
 
 def test_spec_discover_pubmed(client):

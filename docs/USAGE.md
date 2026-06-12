@@ -87,9 +87,11 @@ active paper across your projects (progress tracks papers on your shelf, e.g.
 - **Optimal paper sets** — thematic reading groups that may span multiple
   Zotero collections. Each set shows a **paper count** and a flat list (no
   bullets). A paper appears in **at most one** set.
-- **Standalone papers** — active papers not placed in any thematic set (not
-  dropped). If a group only shows a handful of papers, the rest are usually here
-  or in **Suggested drops** — check the summary line (`N grouped · M standalone · …`).
+- **Standalone papers** — active papers not placed in any thematic set, **plus
+  every paper from single-paper collections** (those collections are excluded from
+  grouping but still appear here). If a thematic set looks short, check standalone
+  and **Suggested drops** — the summary line accounts for the full shelf
+  (`N grouped · M standalone · …`).
 - **Suggested drops** — papers to remove or archive: duplicates filed in more
   than one collection, redundant surveys, weak fits, or entries that no longer
   match your shelf.

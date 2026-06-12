@@ -15,6 +15,7 @@ from fastapi.staticfiles import StaticFiles
 
 from . import __version__, jobs
 from .analysis import AnalysisError, get_analyzer
+from .grouping import append_single_paper_collections
 from .config import STATIC_DIR, get_settings
 from .projects import is_usable_project, summary_fields, total_papers, usable_projects
 from .discovery import discover_for_spec
@@ -198,6 +199,7 @@ def create_app() -> FastAPI:
             n_papers = total_papers(projects)
             job.set_progress(0, n_papers, f"Grouping {n_papers} papers across projects…")
             result = analyzer.find_paper_groups(projects)
+            result = append_single_paper_collections(result, store.get_projects())
             store.set_paper_groups({**result, "generated_at": _now()})
             job.set_progress(n_papers, n_papers, "Done")
             return result

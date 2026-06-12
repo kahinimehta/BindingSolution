@@ -118,7 +118,8 @@ The **Groups** view calls `POST /api/groups` (`app/grouping.py`):
 1. **Analyze** — Claude (or `heuristic_paper_groups` offline) receives **all**
    papers in active projects (not a per-collection sample). Returns a
    `PaperGroupingMap`: `groups` (non-overlapping `paper_keys`), `drops`, and
-   server-filled `ungrouped` for papers in neither list. Job progress uses the
+   server-filled `ungrouped` for papers in neither list, plus every paper from
+   single-paper collections (excluded from active grouping). Job progress uses the
    total active **paper** count as the denominator.
 2. **Validate** — `complete_paper_groups` drops invalid keys, ensures each paper
    appears in at most one group, computes `ungrouped` + `stats` (`total_papers`,

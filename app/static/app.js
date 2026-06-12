@@ -923,7 +923,7 @@ function renderPaperGroups(g) {
   const stats = g.stats || {};
   if (stats.total_papers) {
     root.append(el("p", { class: "muted", style: "margin:-8px 0 18px;font-size:.86rem" },
-      `${stats.papers_grouped ?? 0} grouped · ${stats.num_ungrouped ?? 0} standalone · ${stats.num_drops ?? 0} to drop · ${stats.total_papers} active papers`));
+      `${stats.papers_grouped ?? 0} grouped · ${stats.num_ungrouped ?? 0} standalone · ${stats.num_drops ?? 0} to drop · ${stats.shelf_papers ?? stats.total_papers} papers on shelf`));
   }
 
   if (g.groups?.length) {
@@ -952,13 +952,16 @@ function renderPaperGroups(g) {
   if (g.ungrouped?.length) {
     root.append(el("h3", { style: "font-family:var(--font-display);margin:22px 0 12px" }, "Standalone papers"));
     root.append(el("p", { class: "muted", style: "margin:-6px 0 14px;font-size:.88rem" },
-      `${g.ungrouped.length} active paper${g.ungrouped.length === 1 ? "" : "s"} not placed in a thematic set — still on your shelf.`));
+      `Not in a thematic set — includes loose active papers and papers from single-paper collections.`));
     const solo = el("div", { class: "card spine cluster" });
     const list = el("div", { class: "group-paper-lines" });
     for (const p of g.ungrouped) {
+      const sub = p.source === "single_paper_collection"
+        ? `${projName(p.project_key)} · single-paper collection`
+        : projName(p.project_key);
       list.append(el("div", { class: "paper-line" },
         el("div", { class: "pt" }, p.title || p.paper_key),
-        el("div", { class: "pm" }, projName(p.project_key))));
+        el("div", { class: "pm" }, sub)));
     }
     solo.append(list);
     root.append(solo);

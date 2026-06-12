@@ -1,4 +1,9 @@
-from app.grouping import complete_paper_groups, heuristic_paper_groups, norm_title
+from app.grouping import (
+    append_single_paper_collections,
+    complete_paper_groups,
+    heuristic_paper_groups,
+    norm_title,
+)
 
 
 def _projects():
@@ -69,3 +74,24 @@ def test_complete_paper_groups_lists_ungrouped():
     assert "P4" in ungrouped_keys
     assert out["stats"]["num_ungrouped"] == len(out["ungrouped"])
     assert out["stats"]["papers_grouped"] + out["stats"]["num_ungrouped"] + out["stats"]["num_drops"] <= out["stats"]["total_papers"]
+
+
+def test_append_single_paper_collections():
+    projects = _projects()
+    all_projects = {
+        **{p["key"]: p for p in projects},
+        "S": {
+            "key": "S",
+            "name": "Lone folder",
+            "items": [{"key": "LONE", "title": "Only Paper"}],
+        },
+    }
+    raw = complete_paper_groups(
+        {"overview": "", "groups": [], "drops": []},
+        projects,
+    )
+    out = append_single_paper_collections(raw, all_projects)
+    keys = {p["paper_key"] for p in out["ungrouped"]}
+    assert "LONE" in keys
+    assert out["stats"]["num_single_collection"] == 1
+    assert out["stats"]["shelf_papers"] == out["stats"]["total_papers"] + 1
