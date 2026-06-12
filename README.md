@@ -8,6 +8,12 @@
 
 </div>
 
+<p align="center">
+  <video src="docs/demo.mp4" controls width="1000" title="BindingSolution demo walkthrough">
+    <a href="docs/demo.mp4">Watch the demo</a>
+  </video>
+</p>
+
 ---
 
 ## Quick start
