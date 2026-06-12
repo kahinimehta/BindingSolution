@@ -66,9 +66,9 @@ Open the **Library** view. Click **✦ Categorize** on an active card (or
 
 Click any card to see its full paper list and categorization.
 
-The **Papers** KPI sums **collection entries** in active folders (the same item
-filed in multiple collections counts more than once). The subtitle shows how many
-**unique** papers that represents when they differ.
+The **Papers** KPI counts papers in **active** collections (same number you will
+see on **Groups**). If the same Zotero item is filed in multiple folders, it can
+count more than once; the subtitle then shows how many **unique** items that is.
 
 ## 3. ⁂ Find connections — *Connections*
 
@@ -94,10 +94,10 @@ panel. It returns:
 - **Optimal paper sets** — thematic reading groups that may span multiple
   Zotero collections. Each set shows a **paper count** and a flat list (no
   bullets). A paper appears in **at most one** set.
-- **Papers** — the top KPI matches **Library** (papers in active collections),
-  with a note that standalone papers are included in the grouping view. The
-  summary line below uses **unique papers** (`N unique papers — … in sets · …
-  standalone · … to drop`) because grouping deduplicates by Zotero item key.
+- **Papers** — same KPI as **Library** (`184` in the screenshot), with smaller
+  subtitle *(including standalone papers)*. Below the overview, a summary line
+  splits **unique** Zotero items (`N unique papers — … in sets · … standalone · …
+  to drop`) because grouping deduplicates by item key.
 - **Standalone papers** — unique papers not placed in any thematic set (plus
   single-paper collections and unfiled items, which skip grouping). An **All
   accounted for** badge means every unique paper is in a set, standalone, or drop.
@@ -113,7 +113,7 @@ Demo mode uses deterministic heuristics (title deduping and tag clustering); wit
 a Claude key the same schema is filled by the model.
 
 <p align="center">
-  <img src="screenshots/groups.svg" alt="Groups view with paper sets, standalone papers, and drop suggestions" width="1000" />
+  <img src="screenshots/groups.svg" alt="Groups view with Papers KPI matching Library, paper sets, standalone papers, and drop suggestions" width="1000" />
 </p>
 
 ## 5. ↯ Plan your reading — *Strategies*
