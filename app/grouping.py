@@ -5,7 +5,11 @@ import re
 from collections import defaultdict
 
 from .mock import _tokens
-from .projects import inactive_reason, library_paper_count
+from .projects import (
+    collection_entry_count,
+    inactive_reason,
+    unique_paper_count,
+)
 
 _STOP = {
     "the", "a", "an", "of", "for", "and", "or", "to", "in", "on", "with", "via",
@@ -144,13 +148,18 @@ def _library_paper_index(projects: dict[str, dict] | list[dict]) -> dict[str, di
 
 
 def _shelf_summary(stats: dict) -> str:
-    shelf = stats.get("shelf_papers", 0)
+    unique = stats.get("unique_papers", stats.get("shelf_papers", 0))
     grouped = stats.get("papers_grouped", 0)
     standalone = stats.get("num_ungrouped", 0)
     drops = stats.get("num_drops", 0)
+    entries = stats.get("collection_entries", 0)
+    extra = ""
+    filings = stats.get("duplicate_filings", 0)
+    if filings:
+        extra = f" ({entries} collection entries; {filings} extra filings across folders)"
     return (
-        f"{shelf} papers on shelf — {grouped} in sets · {standalone} standalone · "
-        f"{drops} to drop"
+        f"{unique} unique papers — {grouped} in sets · {standalone} standalone · "
+        f"{drops} to drop{extra}"
     )
 
 
@@ -199,7 +208,8 @@ def finalize_shelf_coverage(
     grouped = len(assigned)
     drops_n = len(dropped)
     standalone_n = len(ungrouped)
-    shelf = library_paper_count(projects)
+    unique = unique_paper_count(projects)
+    entries = collection_entry_count(projects)
 
     stats = result.setdefault("stats", {})
     stats.update({
@@ -208,7 +218,10 @@ def finalize_shelf_coverage(
         "num_drops": drops_n,
         "num_single_collection": num_single,
         "num_unfiled": num_unfiled,
-        "shelf_papers": shelf,
+        "unique_papers": unique,
+        "collection_entries": entries,
+        "duplicate_filings": max(0, entries - unique),
+        "shelf_papers": unique,
         "papers_accounted": grouped + standalone_n + drops_n,
     })
     result["shelf_summary"] = _shelf_summary(stats)

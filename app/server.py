@@ -18,10 +18,11 @@ from .analysis import AnalysisError, get_analyzer
 from .grouping import finalize_shelf_coverage
 from .config import STATIC_DIR, get_settings
 from .projects import (
+    collection_entry_count,
     is_usable_project,
-    library_paper_count,
     summary_fields,
     total_papers,
+    unique_paper_count,
     usable_projects,
 )
 from .discovery import discover_for_spec
@@ -203,11 +204,14 @@ def create_app() -> FastAPI:
 
         def work(job: jobs.Job) -> dict:
             all_projects = store.get_projects()
-            shelf = library_paper_count(all_projects)
-            n_active = total_papers(projects)
+            n_unique = unique_paper_count(projects)
+            n_entries = collection_entry_count(projects)
             n_projects = len(projects)
             steps = 3
-            scope = f"{shelf} papers on shelf ({n_active} in {n_projects} active projects)"
+            scope = (
+                f"{n_unique} unique papers ({n_entries} collection entries "
+                f"in {n_projects} active projects)"
+            )
             job.set_progress(0, steps, f"Preparing {scope}…")
             job.set_progress(1, steps, f"Analyzing {scope}…", indeterminate=True)
             result = analyzer.find_paper_groups(projects)

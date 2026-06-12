@@ -39,8 +39,28 @@ def total_papers(projects: list[dict]) -> int:
     return sum(item_count(p) for p in projects)
 
 
-def library_paper_count(projects: dict[str, dict] | list[dict]) -> int:
-    """Every paper in the synced library, including unfiled and single-paper collections."""
+def _project_list(projects: dict[str, dict] | list[dict]) -> list[dict]:
     if isinstance(projects, dict):
-        projects = list(projects.values())
-    return sum(item_count(p) for p in projects)
+        return list(projects.values())
+    return projects
+
+
+def collection_entry_count(projects: dict[str, dict] | list[dict]) -> int:
+    """Sum of per-collection item counts — the same Zotero item in N folders counts N times."""
+    return sum(item_count(p) for p in _project_list(projects))
+
+
+def unique_paper_count(projects: dict[str, dict] | list[dict]) -> int:
+    """Distinct Zotero item keys — how grouping deduplicates your shelf."""
+    keys: set[str] = set()
+    for proj in _project_list(projects):
+        for item in proj.get("items") or []:
+            key = (item.get("key") or "").strip()
+            if key:
+                keys.add(key)
+    return len(keys)
+
+
+def library_paper_count(projects: dict[str, dict] | list[dict]) -> int:
+    """Alias for collection_entry_count (backward compatible)."""
+    return collection_entry_count(projects)

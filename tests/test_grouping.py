@@ -102,8 +102,8 @@ def test_append_single_paper_collections():
     keys = {p["paper_key"] for p in out["ungrouped"]}
     assert "LONE" in keys
     assert out["stats"]["num_single_collection"] == 1
-    assert out["stats"]["shelf_papers"] == out["stats"]["total_papers"] + 1
-    assert out["stats"]["papers_accounted"] == out["stats"]["shelf_papers"]
+    assert out["stats"]["unique_papers"] == out["stats"]["total_papers"] + 1
+    assert out["stats"]["papers_accounted"] == out["stats"]["unique_papers"]
 
 
 def test_finalize_shelf_coverage_includes_unfiled():
@@ -124,10 +124,24 @@ def test_finalize_shelf_coverage_includes_unfiled():
     keys = {p["paper_key"] for p in out["ungrouped"]}
     assert "UF1" in keys
     assert out["stats"]["num_unfiled"] == 1
-    assert out["stats"]["papers_accounted"] == out["stats"]["shelf_papers"]
+    assert out["stats"]["papers_accounted"] == out["stats"]["unique_papers"]
 
 
 def test_finalize_shelf_accounts_for_every_paper():
     out = finalize_shelf_coverage(heuristic_paper_groups(_projects()), _projects())
     stats = out["stats"]
-    assert stats["papers_grouped"] + stats["num_ungrouped"] + stats["num_drops"] == stats["shelf_papers"]
+    assert stats["papers_grouped"] + stats["num_ungrouped"] + stats["num_drops"] == stats["unique_papers"]
+
+
+def test_finalize_tracks_duplicate_filings():
+    shared = {"key": "P1", "title": "Shared"}
+    projects = {
+        "a": {"key": "a", "name": "A", "items": [shared, {"key": "P2", "title": "B"}]},
+        "b": {"key": "b", "name": "B", "items": [shared, {"key": "P3", "title": "C"}]},
+    }
+    raw = complete_paper_groups({"overview": "", "groups": [], "drops": []}, list(projects.values()))
+    out = finalize_shelf_coverage(raw, projects)
+    assert out["stats"]["collection_entries"] == 4
+    assert out["stats"]["unique_papers"] == 3
+    assert out["stats"]["duplicate_filings"] == 1
+    assert out["stats"]["papers_accounted"] == 3

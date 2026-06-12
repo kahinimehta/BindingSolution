@@ -1,10 +1,12 @@
 """Tests for project usability rules."""
 from app.projects import (
     UNFILED_KEY,
+    collection_entry_count,
     inactive_reason,
     is_usable_project,
     library_paper_count,
     total_papers,
+    unique_paper_count,
     usable_projects,
 )
 
@@ -59,3 +61,14 @@ def test_library_paper_count_includes_excluded_collections():
         UNFILED_KEY: {"key": UNFILED_KEY, "num_items": 3, "items": [{}, {}, {}]},
     }
     assert library_paper_count(projects) == 6
+    assert collection_entry_count(projects) == 6
+
+
+def test_unique_paper_count_dedupes_across_collections():
+    shared = {"key": "P1", "title": "Shared paper"}
+    projects = {
+        "a": {"key": "a", "num_items": 2, "items": [shared, {"key": "P2"}]},
+        "b": {"key": "b", "num_items": 1, "items": [shared]},
+    }
+    assert collection_entry_count(projects) == 3
+    assert unique_paper_count(projects) == 2

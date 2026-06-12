@@ -541,6 +541,17 @@ function totalPapers(onlyUsable = false) {
   return list.reduce((n, p) => n + (p.num_items || 0), 0);
 }
 
+function uniquePaperCount(onlyUsable = false) {
+  const list = onlyUsable ? usableProjects() : state.projects;
+  const keys = new Set();
+  for (const p of list) {
+    for (const it of p.items || []) {
+      if (it.key) keys.add(it.key);
+    }
+  }
+  return keys.size;
+}
+
 function categorizedCount() {
   return usableProjects().filter((p) => p.category).length;
 }
@@ -582,14 +593,20 @@ async function renderKpiStrip(route) {
     }
   } else if (route === "groups") {
     const active = usableProjects();
-    const libraryTotal = totalPapers();
-    items.push(kpiItem(libraryTotal, "Total papers", "On your shelf", true));
+    const entries = totalPapers();
+    const unique = uniquePaperCount();
+    const entrySub = unique !== entries ? `${unique} unique papers` : "Across collections";
+    items.push(kpiItem(entries, "Collection entries", entrySub, true));
     items.push(kpiItem(active.length, "Active projects", "Used for grouping"));
     try {
       const { paper_groups: g } = await api.get("/groups");
       if (g?.stats) {
-        const shelf = g.stats.shelf_papers ?? libraryTotal;
-        items[0] = kpiItem(shelf, "Total papers", "On your shelf", true);
+        const gEntries = g.stats.collection_entries ?? entries;
+        const gUnique = g.stats.unique_papers ?? g.stats.shelf_papers ?? unique;
+        const gSub = g.stats.duplicate_filings
+          ? `${gUnique} unique · ${g.stats.duplicate_filings} extra filings`
+          : `${gUnique} unique papers`;
+        items[0] = kpiItem(gEntries, "Collection entries", gSub, true);
         items.push(
           kpiItem(g.stats.num_groups || 0, "Paper sets", "Non-overlapping"),
           kpiItem(g.stats.num_ungrouped ?? 0, "Standalone", "Not in a set"),
@@ -887,7 +904,7 @@ async function renderGroups() {
 
   view().replaceChildren(
     viewHero("Shelf organization",
-      "Every paper on your shelf lands in exactly one place: a reading set, standalone, or suggested drop."),
+      "Grouping works on unique papers (each Zotero item once). The same paper filed in multiple collections counts once here, even if your library KPI sums collection entries."),
     el("div", { id: "groups-body" }, el("div", { class: "muted" }, "Loading…")));
 
   try {
@@ -932,21 +949,27 @@ function renderPaperGroups(g) {
     el("p", { class: "lead", style: "margin:0;font-size:1.02rem" }, g.overview)));
 
   const stats = g.stats || {};
-  const shelf = stats.shelf_papers ?? stats.total_papers ?? 0;
+  const unique = stats.unique_papers ?? stats.shelf_papers ?? stats.total_papers ?? 0;
+  const entries = stats.collection_entries ?? 0;
   const grouped = stats.papers_grouped ?? 0;
   const standalone = stats.num_ungrouped ?? 0;
   const drops = stats.num_drops ?? 0;
+  const filings = stats.duplicate_filings ?? 0;
   const accounted = stats.papers_accounted ?? grouped + standalone + drops;
-  if (shelf) {
+  if (unique) {
     const summaryKids = [
-      el("strong", {}, `${shelf} papers on shelf`),
+      el("strong", {}, `${unique} unique papers`),
       el("span", {}, ` — ${grouped} in sets · ${standalone} standalone · ${drops} to drop`),
     ];
-    if (accounted === shelf) {
+    if (accounted === unique) {
       summaryKids.push(el("span", { class: "pill green", style: "margin-left:8px" }, "All accounted for"));
     }
     root.append(el("div", { class: "shelf-accounting muted", style: "margin:-8px 0 18px;font-size:.86rem;display:flex;flex-wrap:wrap;align-items:center;gap:4px" },
       ...summaryKids));
+    if (entries && filings) {
+      root.append(el("p", { class: "muted", style: "margin:-12px 0 18px;font-size:.82rem" },
+        `${entries} collection entries across your library — ${filings} are extra filings of papers already counted in another folder.`));
+    }
   }
 
   if (g.groups?.length) {
