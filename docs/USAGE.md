@@ -16,10 +16,12 @@ whether Claude and Zotero are connected.
 plans, spec screening, PubMed discovery) start a server-side job and return
 immediately. You can close the progress window (✕), switch sidebar views, or
 refresh the page — work continues until it finishes. The progress popup **✕**
-only closes the dialog; it does **not** cancel the job. Open **Running** to see
-live progress; click a row to reopen the progress window. To **cancel** a
-running job, open **Running** and click **✕** on that row (cooperative cancel —
-stops at the next safe step; long Claude steps poll cancel during streaming).
+only closes the dialog; it does **not** cancel the job. The progress window also
+has **Continue in background** (dismiss) and **Cancel job** (cooperative cancel).
+Open **Running** to see live progress; click a row to reopen the progress window.
+You can also click **✕** on an active row in **Running** to cancel. Cancel is
+polled every ~100ms during long Claude steps and does not wait for the HTTP
+stream to finish draining.
 Cancelled jobs disappear from **Running** automatically. **✕** on a finished row
 removes it from the list. Stopping the server
 (Ctrl+C on `make run`) still cancels everything immediately.
@@ -253,7 +255,8 @@ These are planning hints, not deadlines. Skim faster or read deeper and your rea
 Open **Chat** after syncing your library. A compact **overview** at the top
 shows collection counts and what the assistant **can** and **cannot** use from
 your local store (no KPI strip on this view). Type a question and press **Enter**
-or click the green **↑** send button (bottom-right of the compose box).
+or click the green **↑** send button (center-right of the compose box, clear of
+the resize handle).
 
 **Can use:** collection names and counts; categorizations (themes, summaries);
 saved connections, paper groups, reading plans, and spec screenings; titles and

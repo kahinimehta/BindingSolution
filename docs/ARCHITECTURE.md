@@ -95,16 +95,19 @@ still in the registry. The dropdown is an opaque popover anchored above the
 **Running** tab so concurrent jobs do not overlap nav items.
 
 Closing a progress modal, navigating between views, or reloading the page does
-**not** cancel a job. The popup **✕** only dismisses the dialog. Cooperative
-cancel is `POST /api/jobs/{id}/cancel`, triggered from **✕** on an active row in
-the sidebar **Running** dropdown (not from the popup). `Job.check_cancelled()`
-is polled between steps in sync loops, spec screening, and before/after long
-Claude calls; streaming structured responses also poll cancel between stream
-events. Cancelled jobs get status `cancelled` and drop from the **Running** rail
-immediately. **✕** on a finished row only hides it from the UI. Stopping
-the Python process (Ctrl+C) still aborts all threads immediately. Spec
-screening persists relevant hits incrementally, so partial progress survives an
-interruption or cancel.
+**not** cancel a job. The popup **✕** and **Continue in background** only
+dismiss the dialog. Cooperative cancel is `POST /api/jobs/{id}/cancel`, from
+**Cancel job** in the progress window or **✕** on an active row in the sidebar
+**Running** dropdown. `Job.check_cancelled()` is polled between steps in sync
+loops, spec screening, and before/after long Claude calls; streaming structured
+responses poll cancel on a ~100ms timer (not only between stream events) and
+abandon the Claude worker thread without waiting for the HTTP stream to drain.
+Cancelled jobs get status `cancelled` and drop from the **Running** rail
+immediately. **✕** on a finished row only hides it from the UI. Modal scroll
+lock is refcounted and reset when the modal host is hidden (fixes stuck page
+scroll after closing progress dialogs). Stopping the Python process (Ctrl+C)
+still aborts all threads immediately. Spec screening persists relevant hits
+incrementally, so partial progress survives an interruption or cancel.
 
 Job progress exposes `current`, `total`, `message`, and `indeterminate`. Steps
 that are a single long API call (or otherwise non-linear) set
@@ -215,7 +218,8 @@ The **Chat** view calls `POST /api/chat` (`app/chat_context.py`, `app/analysis.p
 
 The Chat view hides the KPI strip and shows a compact **can / cannot** overview
 (local store metadata only — no PDFs or full paper text). The compose box uses a
-large binding-green circular **↑** send button (bottom-right of the input); **Enter** sends,
+large binding-green circular **↑** send button (center-right of the input, clear of
+the resize handle); **Enter** sends,
 **Shift+Enter** inserts a newline. `GET /api/status` exposes `capabilities`
 (`chat`, `jobs_cancel`, etc.) so the UI can detect a stale server missing new
 routes and prompt a restart after updates. The system prompt instructs Claude not to claim access to full

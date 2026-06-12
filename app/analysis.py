@@ -28,6 +28,7 @@ from .schemas import (
     SpecValidation,
 )
 from . import mock
+from .jobs import JobCancelled
 
 # Per-paper summarization is high-volume → keep outputs tight.
 _MAX_TOKENS_LIGHT = 4000
@@ -102,16 +103,23 @@ class Analyzer:
         """Run a blocking Claude call while polling cancel on the caller thread.
 
         Adaptive-thinking streams can go silent for long stretches; cancel must
-        not wait for the next stream event (connections + reading plans).
+        not wait for the next stream event. On cancel, do not wait for the
+        worker thread to drain the Claude HTTP stream (connections, plans).
         """
-        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as pool:
-            future = pool.submit(fn)
+        pool = concurrent.futures.ThreadPoolExecutor(max_workers=1)
+        future = pool.submit(fn)
+        try:
             while True:
                 cancel_check()
                 try:
-                    return future.result(timeout=0.25)
+                    result = future.result(timeout=0.1)
+                    pool.shutdown(wait=False, cancel_futures=True)
+                    return result
                 except concurrent.futures.TimeoutError:
                     continue
+        except JobCancelled:
+            pool.shutdown(wait=False, cancel_futures=True)
+            raise
 
     def _consume_message_stream(
         self,

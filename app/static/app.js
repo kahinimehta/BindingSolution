@@ -216,19 +216,23 @@ async function dismissOrCancelJobEntry(entry) {
       toast("Cancel needs a server restart after updating (Ctrl+C, then make run).", "err");
       return;
     }
+    entry.status = "cancelling";
+    entry.progress = {
+      ...(entry.progress || {}),
+      message: "Cancelling…",
+      indeterminate: false,
+    };
+    renderJobRail();
+    updateProgressModal(entry);
+    ensureJobPoller();
     try {
       await api.post(`/jobs/${entry.id}/cancel`);
-      entry.status = "cancelling";
-      entry.progress = {
-        ...(entry.progress || {}),
-        message: "Cancelling…",
-        indeterminate: false,
-      };
-      renderJobRail();
-      updateProgressModal(entry);
-      toast(`Cancelling ${entry.label}…`, "ok");
-      ensureJobPoller();
     } catch (e) {
+      if (entry.status === "cancelling") {
+        entry.status = "running";
+        renderJobRail();
+        updateProgressModal(entry);
+      }
       toast(e.message, "err");
     }
     return;
@@ -372,6 +376,14 @@ function unlockScroll() {
   }
 }
 
+function syncScrollLock() {
+  if ($("#modal-host")?.hidden && _scrollLock > 0) {
+    _scrollLock = 0;
+    document.documentElement.style.overflow = "";
+    document.body.style.overflow = "";
+  }
+}
+
 function buildModalNode(title, bodyNode, size = "dialog", { onClose, closeLabel, closeTitle } = {}) {
   const closeFn = onClose || closeModal;
   return el("div", { class: `modal modal-${size}`, tabindex: "-1" },
@@ -389,11 +401,12 @@ function buildModalNode(title, bodyNode, size = "dialog", { onClose, closeLabel,
 
 function openModal(title, bodyNode, size = "dialog") {
   const host = $("#modal-host");
+  const wasHidden = host.hidden;
   host.hidden = false;
   host.replaceChildren(buildModalNode(title, bodyNode, size));
   host.onclick = (e) => { if (e.target === host) closeModal(); };
   host.scrollTop = 0;
-  lockScroll();
+  if (wasHidden) lockScroll();
 }
 
 function setModal(title, bodyNode, size = "dialog") {
@@ -413,6 +426,8 @@ function setModal(title, bodyNode, size = "dialog") {
 function closeModal() {
   const host = $("#modal-host");
   if (host.hidden) return;
+  _progressModalJobId = null;
+  _progressModalUpdater = null;
   host.hidden = true;
   host.replaceChildren();
   host.onclick = null;
@@ -450,11 +465,28 @@ function jobBootstrapProgress(kind, message) {
 
 function showProgressModal(title, message, jobId, { kind } = {}) {
   const bar = progressBlock(message, jobBootstrapProgress(kind, message));
-  const box = el("div", { class: "modal-progress" }, bar.node);
+  const actions = jobId
+    ? el("div", { class: "modal-progress-actions spread" },
+      el("button", {
+        type: "button",
+        class: "btn btn-ghost btn-sm",
+        onclick: dismissProgressModal,
+      }, "Continue in background"),
+      el("button", {
+        type: "button",
+        class: "btn btn-ghost btn-sm btn-danger",
+        onclick: () => {
+          const entry = jobStore.byId.get(jobId);
+          if (entry) dismissOrCancelJobEntry(entry);
+        },
+      }, "Cancel job"))
+    : null;
+  const box = el("div", { class: "modal-progress" }, bar.node, actions);
   box._update = bar.update;
   _progressModalJobId = jobId || null;
   _progressModalUpdater = bar.update;
   const host = $("#modal-host");
+  const wasHidden = host.hidden;
   const modalNode = buildModalNode(title, box, "dialog", {
     onClose: dismissProgressModal,
     closeLabel: "Close progress window",
@@ -464,7 +496,7 @@ function showProgressModal(title, message, jobId, { kind } = {}) {
   host.replaceChildren(modalNode);
   host.onclick = (e) => { if (e.target === host) dismissProgressModal(); };
   host.scrollTop = 0;
-  lockScroll();
+  if (wasHidden) lockScroll();
   if (jobId) jobStore.panelOpen = true;
   renderJobRail();
   return box;
@@ -888,7 +920,7 @@ async function categorizeAll(e) {
     const start = await api.post("/projects/categorize-all");
     const box = showProgressModal("Categorizing projects", "Categorizing every project", start.job_id);
     await runJob(start, { label: "Categorize all", onProgress: (p) => box._update(p) });
-    closeModal();
+    dismissProgressModal();
     toast("All projects categorized.", "ok");
     await renderLibrary();
   } catch (err) {
@@ -976,7 +1008,7 @@ async function findConnections() {
     const start = await api.post("/connections");
     const box = showProgressModal("Finding connections", "Preparing active projects", start.job_id, { kind: start.kind });
     await runJob(start, { label: "Find connections", onProgress: (p) => box._update(p) });
-    closeModal();
+    dismissProgressModal();
     toast("Connections mapped.", "ok");
     const { connections } = await api.get("/connections");
     renderConnectionMap(connections);
@@ -1243,7 +1275,7 @@ async function findPaperGroups() {
     const start = await api.post("/groups");
     const box = showProgressModal("Grouping papers", "Preparing shelf for grouping", start.job_id, { kind: start.kind });
     await runJob(start, { label: "Group papers", onProgress: (p) => box._update(p) });
-    closeModal();
+    dismissProgressModal();
     toast("Paper groups ready.", "ok");
     const { paper_groups: g } = await api.get("/groups");
     renderPaperGroups(g);
@@ -1437,7 +1469,7 @@ async function submitStrategy(e) {
     const start = await api.post("/strategies", { goal, mode: strategyMode, project_keys: keys });
     const box = showProgressModal("Generating reading plan", "Designing reading strategy", start.job_id, { kind: start.kind });
     await runJob(start, { label: "Reading plan", onProgress: (p) => box._update(p) });
-    closeModal();
+    dismissProgressModal();
     toast("Reading plan ready.", "ok");
     strategySelection.clear();
     await renderStrategies();
@@ -1689,7 +1721,7 @@ async function runAnalyzeSpec(specId) {
     const start = await api.post(`/specs/${specId}/analyze`, {});
     const box = showProgressModal("Screening library", "Screening synced papers against your spec", start.job_id);
     const result = await runJob(start, { label: "Screen library", onProgress: (p) => box._update(p) });
-    closeModal();
+    dismissProgressModal();
     const n = result?.relevant ?? 0;
     const screened = result?.screened ?? 0;
     const skipped = result?.skipped ?? 0;
@@ -1813,7 +1845,7 @@ async function runDiscoverSpec(specId) {
     const start = await api.post(`/specs/${specId}/discover`, {});
     const box = showProgressModal("Searching PubMed", "Searching PubMed for new papers", start.job_id, { kind: start.kind });
     const result = await runJob(start, { label: "PubMed discovery", onProgress: (p) => box._update(p) });
-    closeModal();
+    dismissProgressModal();
     const n = result?.discovered ?? 0;
     toast(n ? `Found ${n} new paper${n === 1 ? "" : "s"} on PubMed.` : "No new papers found.", n ? "ok" : "");
     selectedSpecId = specId;
@@ -1840,7 +1872,7 @@ async function buildReadingPlanFromSpec(specId) {
     });
     const box = showProgressModal("Generating reading plan", "Designing reading strategy", start.job_id, { kind: start.kind });
     const saved = await runJob(start, { label: "Reading plan", onProgress: (p) => box._update(p) });
-    closeModal();
+    dismissProgressModal();
     toast("Reading plan ready — mapped from your spec.", "ok");
     openStrategy(saved);
   } catch (e) {
@@ -1924,6 +1956,7 @@ const routes = {
   specs: renderSpecs,
 };
 async function route() {
+  syncScrollLock();
   dismissProgressModal();
   const name = (location.hash.replace("#/", "") || "library");
   $$(".nav-item").forEach((n) => n.classList.toggle("active", n.dataset.route === name));
