@@ -43,6 +43,16 @@ Six sidebar views (Library → Connections → Groups → Spec → Strategies �
 
 **Running** — sidebar dropdown tracks background jobs; dismiss the progress popup to keep working; cancel with **Cancel job** in the dialog or **✕** on an active row. Indeterminate progress for single-shot Claude steps.
 
+## Why not just a chatbot?
+
+A general-purpose assistant can answer questions, but it does not know your shelf unless you paste context every time. BindingSolution is built around **your Zotero library**:
+
+- **Sync once** — collections and papers live in a local store; no re-uploading PDFs or re-explaining your folders each session
+- **Structured views** — categorization, cross-project connections, paper groups, spec matches, and reading plans are saved workflows with validated output, not one-off chat replies
+- **Shelf-scale analysis** — screen hundreds of papers against a spec incrementally, group without duplication across collections, and re-open results without paying again
+- **Grounded chat** — the Chat view cites your synced metadata and saved analyses; it is instructed not to pretend it read full text it never saw
+- **Local-first** — runs on `127.0.0.1`; your library and analyses stay in `./data/library.json` on your machine
+
 ## Assumptions
 
 - **Local single-user tool** — server binds to `127.0.0.1`; library and analyses live in `./data/library.json` (gitignored).
