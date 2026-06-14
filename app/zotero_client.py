@@ -190,10 +190,10 @@ def fetch_projects(settings: Settings, progress: ProgressFn | None = None) -> di
 
     unfiled = _fetch_unfiled_items(zot)
     if unfiled:
-        projects[_UNFILED_KEY] = {
-            "key": _UNFILED_KEY,
-            "name": _UNFILED_NAME,
-            "short_name": _UNFILED_NAME,
+        projects[UNFILED_KEY] = {
+            "key": UNFILED_KEY,
+            "name": UNFILED_NAME,
+            "short_name": UNFILED_NAME,
             "parent": None,
             "num_items": len(unfiled),
             "items": unfiled,
