@@ -40,7 +40,10 @@
   --app-max: 100%;
   --shell-max: 100%;
   --content-x: clamp(0.55rem, 0.75vw, 1rem);
-  --rail-w: 720px;
+  /* Responsive UI scale: 3× on large desktops, eased on laptop viewports */
+  --type-base: clamp(18px, 13px + 0.42vw, 22px);
+  --ui-scale: 2.5;
+  --rail-w: clamp(280px, 30vw, 600px);
   --rail-type-scale: 0.75;
   --icon-sm: 0.52rem;
   --icon-md: 0.67rem;
@@ -49,8 +52,10 @@
 * { box-sizing: border-box; }
 
 html {
-  /* 3× type scale — shared by main content and sidebar nav */
-  font-size: clamp(54px, 42px + 1.14vw, 66px);
+  /* 3× type scale on large screens; scales down on laptop-width viewports */
+  font-size: calc(var(--type-base) * var(--ui-scale));
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 html, body {
@@ -65,12 +70,18 @@ html, body {
   line-height: 1.5;
 }
 
-@media (min-width: 1600px) {
-  html { font-size: clamp(57px, 45px + 1.02vw, 72px); }
+@media (min-width: 1800px) {
+  :root {
+    --ui-scale: 3;
+    --rail-w: 720px;
+    --type-base: clamp(18px, 14px + 0.38vw, 22px);
+  }
 }
 
 @media (min-width: 2400px) {
-  html { font-size: clamp(60px, 48px + 0.84vw, 78px); }
+  :root {
+    --type-base: clamp(20px, 16px + 0.32vw, 26px);
+  }
 }
 
 /* layered paper texture */
