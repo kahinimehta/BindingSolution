@@ -363,7 +363,7 @@ function bindJobRail() {
 function toast(msg, kind = "") {
   const node = el("div", { class: `toast ${kind}` }, msg);
   $("#toasts").append(node);
-  setTimeout(() => { node.style.transition = "opacity .3s, transform .3s"; node.style.opacity = "0"; node.style.transform = "translateX(120px)"; setTimeout(() => node.remove(), 300); }, 4200);
+  setTimeout(() => { node.style.transition = "opacity .3s, transform .3s"; node.style.opacity = "0"; node.style.transform = "translateX(60px)"; setTimeout(() => node.remove(), 300); }, 4200);
 }
 
 /* ── modal ────────────────────────────────────────────────────── */
@@ -946,20 +946,20 @@ async function openProject(key, { readOnly = false } = {}) {
     const p = await api.get(`/projects/${key}`);
     const body = el("div", {});
     if (readOnly) {
-      body.append(el("p", { class: "inactive-hint", style: "margin:0 0 72px" },
+      body.append(el("p", { class: "inactive-hint", style: "margin:0 0 36px" },
         "This collection is excluded from analysis. Collections need at least 2 papers to be used."));
     }
     if (p.category) {
       body.append(
-        el("div", { class: "spread", style: "flex-wrap:wrap;gap:48px;margin-bottom:36px" },
+        el("div", { class: "spread", style: "flex-wrap:wrap;gap:24px;margin-bottom:18px" },
           el("span", { class: "pill green" }, p.category.discipline),
           el("span", { class: "pill ink" }, p.category.maturity),
           p.category._mock ? el("span", { class: "mock-note" }, "demo AI") : null),
-        el("p", { class: "lead", style: "margin:72px 0" }, p.category.summary),
+        el("p", { class: "lead", style: "margin:36px 0" }, p.category.summary),
         labeledTags("Themes", p.category.themes),
         labeledTags("Methods", p.category.methods));
     } else if (!readOnly) {
-      body.append(el("button", { class: "btn btn-brass btn-sm", style: "margin-bottom:84px",
+      body.append(el("button", { class: "btn btn-brass btn-sm", style: "margin-bottom:42px",
         onclick: async (e) => { e.currentTarget.disabled = true; await categorizeOne(key); closeModal(); openProject(key); } }, "✦ Categorize this project"));
     }
     const papers = p.items || [];
@@ -976,8 +976,8 @@ async function openProject(key, { readOnly = false } = {}) {
 }
 function labeledTags(label, items) {
   if (!items?.length) return null;
-  return el("div", { style: "margin:60px 0" },
-    el("div", { class: "muted", style: "font-size:.76rem;text-transform:uppercase;letter-spacing:.1em;margin-bottom:36px" }, label),
+  return el("div", { style: "margin:30px 0" },
+    el("div", { class: "muted", style: "font-size:.76rem;text-transform:uppercase;letter-spacing:.1em;margin-bottom:18px" }, label),
     el("div", { class: "tag-row" }, ...items.map((t) => el("span", { class: "tag" }, t))));
 }
 
@@ -1032,30 +1032,30 @@ function projName(key) { return state.projects.find((p) => p.key === key)?.name 
 
 function renderConnectionMap(c) {
   const root = el("div", {});
-  root.append(el("div", { class: "card panel view-hero", style: "padding:132px;margin-bottom:132px;border-left-width:24px" },
-    c._mock ? el("span", { class: "mock-note", style: "margin-bottom:60px" }, "demo AI — connect a Claude key for real analysis") : null,
+  root.append(el("div", { class: "card panel view-hero", style: "padding:66px;margin-bottom:66px;border-left-width:12px" },
+    c._mock ? el("span", { class: "mock-note", style: "margin-bottom:30px" }, "demo AI — connect a Claude key for real analysis") : null,
     el("p", { class: "lead", style: "margin:0;font-size:1.02rem" }, c.overview)));
 
   const scroll = el("div", { class: "scroll-panel scroll-panel--connections" });
 
   if (c.shared_threads?.length) {
-    scroll.append(el("h3", { style: "font-family:var(--font-display);margin:36px 0 72px" }, "Shared threads"));
+    scroll.append(el("h3", { style: "font-family:var(--font-display);margin:18px 0 36px" }, "Shared threads"));
     for (const t of c.shared_threads) {
       scroll.append(el("div", { class: "thread" },
         el("div", {}, el("div", { class: "thread-label" }, t.label), el("div", { class: "thread-kind" }, t.kind)),
         el("div", { class: "links" }, ...t.project_keys.map((k) => el("span", { class: "pill green" }, projName(k)))),
         el("span", { class: `strength ${t.strength}` }, t.strength)));
-      if (t.explanation) scroll.lastChild.after(el("p", { class: "muted", style: "font-size:.83rem;margin:-4px 0 72px 12px" }, t.explanation));
+      if (t.explanation) scroll.lastChild.after(el("p", { class: "muted", style: "font-size:.83rem;margin:-4px 0 36px 6px" }, t.explanation));
     }
   }
 
   if (c.clusters?.length) {
-    scroll.append(el("h3", { style: "font-family:var(--font-display);margin:132px 0 72px" }, "Suggested groupings"));
+    scroll.append(el("h3", { style: "font-family:var(--font-display);margin:66px 0 36px" }, "Suggested groupings"));
     for (const cl of c.clusters) {
       scroll.append(el("div", { class: "card spine cluster" },
         el("h4", {}, cl.name),
         el("div", { class: "links tag-row" }, ...cl.project_keys.map((k) => el("span", { class: "pill green" }, projName(k)))),
-        el("p", { class: "muted", style: "margin:36px 0 84px;font-size:.88rem;line-height:1.5" }, cl.rationale),
+        el("p", { class: "muted", style: "margin:18px 0 42px;font-size:.88rem;line-height:1.5" }, cl.rationale),
         el("button", { class: "btn btn-ghost btn-sm", onclick: () => { location.hash = "#/strategies"; setTimeout(() => prefillStrategy(cl.project_keys), 60); } }, "↯ Build a reading plan")));
     }
   }
@@ -1222,7 +1222,7 @@ async function renderChat() {
   view().replaceChildren(
     chatOverviewPanel(),
     state.status?.using_mock_llm
-      ? el("p", { class: "mock-note", id: "chat-mock-note", style: "margin:0 0 48px" },
+      ? el("p", { class: "mock-note", id: "chat-mock-note", style: "margin:0 0 24px" },
         "demo AI — connect a Claude API key for full answers")
       : el("p", { id: "chat-mock-note", hidden: true }),
     el("div", { class: "chat-panel card panel" },
@@ -1313,8 +1313,8 @@ const dropKindLabel = {
 
 function renderPaperGroups(g) {
   const root = el("div", {});
-  root.append(el("div", { class: "card panel view-hero", style: "padding:132px;margin-bottom:132px;border-left-width:24px" },
-    state.status?.using_mock_llm ? el("span", { class: "mock-note", style: "margin-bottom:60px" }, "demo AI — connect a Claude key for real analysis") : null,
+  root.append(el("div", { class: "card panel view-hero", style: "padding:66px;margin-bottom:66px;border-left-width:12px" },
+    state.status?.using_mock_llm ? el("span", { class: "mock-note", style: "margin-bottom:30px" }, "demo AI — connect a Claude key for real analysis") : null,
     el("p", { class: "lead", style: "margin:0;font-size:1.02rem" }, g.overview)));
 
   const stats = g.stats || {};
@@ -1329,23 +1329,23 @@ function renderPaperGroups(g) {
       el("span", {}, ` — ${grouped} in sets · ${standalone} standalone · ${drops} to drop`),
     ];
     if (accounted === unique) {
-      summaryKids.push(el("span", { class: "pill green", style: "margin-left:48px" }, "All accounted for"));
+      summaryKids.push(el("span", { class: "pill green", style: "margin-left:24px" }, "All accounted for"));
     }
-    root.append(el("div", { class: "shelf-accounting muted", style: "margin:-8px 0 108px;font-size:.86rem;display:flex;flex-wrap:wrap;align-items:center;gap:24px" },
+    root.append(el("div", { class: "shelf-accounting muted", style: "margin:-8px 0 54px;font-size:.86rem;display:flex;flex-wrap:wrap;align-items:center;gap:12px" },
       ...summaryKids));
   }
 
   const scroll = el("div", { class: "scroll-panel scroll-panel--groups" });
 
   if (g.groups?.length) {
-    scroll.append(el("h3", { style: "font-family:var(--font-display);margin:36px 0 72px" }, "Optimal paper sets"));
-    scroll.append(el("p", { class: "muted", style: "margin:-6px 0 84px;font-size:.88rem" },
+    scroll.append(el("h3", { style: "font-family:var(--font-display);margin:18px 0 36px" }, "Optimal paper sets"));
+    scroll.append(el("p", { class: "muted", style: "margin:-6px 0 42px;font-size:.88rem" },
       "Thematic sets may span collections. Each paper is in at most one set."));
     for (const grp of g.groups) {
       const n = grp.num_papers ?? grp.paper_keys?.length ?? grp.papers?.length ?? 0;
       const setSummary = (grp.summary || grp.rationale || "").trim();
       const cardKids = [
-        el("div", { class: "spread", style: "align-items:baseline;gap:60px;flex-wrap:wrap" },
+        el("div", { class: "spread", style: "align-items:baseline;gap:30px;flex-wrap:wrap" },
           el("h4", { style: "margin:0" }, grp.name),
           el("span", { class: "pill ink" }, `${n} paper${n === 1 ? "" : "s"}`)),
         el("div", { class: "links tag-row" }, ...grp.project_keys.map((k) => el("span", { class: "pill green" }, projName(k)))),
@@ -1364,8 +1364,8 @@ function renderPaperGroups(g) {
   }
 
   if (g.ungrouped?.length) {
-    scroll.append(el("h3", { style: "font-family:var(--font-display);margin:132px 0 72px" }, "Standalone papers"));
-    scroll.append(el("p", { class: "muted", style: "margin:-6px 0 84px;font-size:.88rem" },
+    scroll.append(el("h3", { style: "font-family:var(--font-display);margin:66px 0 36px" }, "Standalone papers"));
+    scroll.append(el("p", { class: "muted", style: "margin:-6px 0 42px;font-size:.88rem" },
       `Not in a thematic set — includes loose active papers, single-paper collections, and unfiled library items.`));
     const solo = el("div", { class: "card spine cluster" });
     const list = el("div", { class: "group-paper-lines" });
@@ -1384,8 +1384,8 @@ function renderPaperGroups(g) {
   }
 
   if (g.drops?.length) {
-    scroll.append(el("h3", { style: "font-family:var(--font-display);margin:132px 0 72px" }, "Suggested drops"));
-    scroll.append(el("p", { class: "muted", style: "margin:-6px 0 84px;font-size:.88rem" },
+    scroll.append(el("h3", { style: "font-family:var(--font-display);margin:66px 0 36px" }, "Suggested drops"));
+    scroll.append(el("p", { class: "muted", style: "margin:-6px 0 42px;font-size:.88rem" },
       "Consider removing or archiving these in Zotero — duplicates, weak fits, or redundant entries."));
     for (const d of g.drops) {
       scroll.append(el("div", { class: "relevance-row relevance-row--suggest" },
@@ -1432,7 +1432,7 @@ function buildStrategyForm() {
       el("p", {}, "Sync or load a library with collections that have at least 2 papers each (excluded collections do not count)."),
       el("div", { class: "row" }, el("button", { class: "btn btn-brass", onclick: () => doSync("demo") }, "Load demo library")));
   }
-  const card = el("div", { class: "card panel", style: "padding:144px" });
+  const card = el("div", { class: "card panel", style: "padding:72px" });
   const modeToggle = el("div", { class: "mode-toggle" },
     el("button", { class: strategyMode === "manual" ? "on" : "", onclick: () => setMode("manual") }, "I choose projects"),
     el("button", { class: strategyMode === "auto" ? "on" : "", onclick: () => setMode("auto") }, "Let the agent decide"));
@@ -1526,14 +1526,14 @@ function strategyRow(s) {
         strategyModeLabel(s),
         fmtTime(s.created_at),
       ].filter(Boolean).join(" · "))),
-    el("div", { style: "display:flex;gap:48px" },
+    el("div", { style: "display:flex;gap:24px" },
       el("button", { class: "btn btn-ghost btn-sm", onclick: () => openStrategy(s) }, "Open"),
       el("button", { class: "btn btn-ghost btn-sm btn-danger", onclick: () => deleteStrategy(s.id) }, "Delete")));
 }
 function openStrategy(s) {
   const plan = s.plan || {};
   const body = el("div", {});
-  if (plan._mock) body.append(el("span", { class: "mock-note", style: "margin-bottom:60px" }, "demo AI"));
+  if (plan._mock) body.append(el("span", { class: "mock-note", style: "margin-bottom:30px" }, "demo AI"));
   if (s.spec_id) {
     body.append(el("div", { class: "spec-map-banner" },
       el("span", {}, "Mapped from project spec: "),
@@ -1549,7 +1549,7 @@ function openStrategy(s) {
       el("span", {}, plan.schedule.summary)));
   }
   body.append(el("p", { class: "lead" }, plan.approach || ""));
-  if (plan.goal_restatement) body.append(el("p", { class: "rel-why", style: "margin:60px 0" }, "Goal: " + plan.goal_restatement));
+  if (plan.goal_restatement) body.append(el("p", { class: "rel-why", style: "margin:30px 0" }, "Goal: " + plan.goal_restatement));
   const seq = el("div", { class: "sequence" });
   let lastDay = null;
   (plan.sequence || []).forEach((step, i) => {
@@ -1557,9 +1557,9 @@ function openStrategy(s) {
       lastDay = step.scheduled_day;
       seq.append(el("div", { class: "schedule-day" }, `Day ${lastDay}`));
     }
-    const head = el("div", { class: "spread", style: "align-items:flex-start;gap:60px" },
+    const head = el("div", { class: "spread", style: "align-items:flex-start;gap:30px" },
       el("h4", { style: "margin:0;flex:1" }, step.title),
-      el("div", { style: "display:flex;gap:36px;flex-wrap:wrap;justify-content:flex-end" },
+      el("div", { style: "display:flex;gap:18px;flex-wrap:wrap;justify-content:flex-end" },
         step.read_minutes ? el("span", { class: "read-time" }, fmtReadMinutes(step.read_minutes)) : null,
         step.spec_relevance
           ? el("span", { class: `rel-flag rel-${step.spec_relevance}` }, step.spec_relevance.replace("_", " "))
@@ -1572,7 +1572,7 @@ function openStrategy(s) {
   body.append(seq);
   if (plan.synthesis_prompts?.length) {
     body.append(el("h3", { class: "mt-2", style: "font-family:var(--font-display);font-size:1.05rem" }, "Hold these in mind"),
-      el("ul", { style: "color:var(--ink-2);line-height:1.7;padding-left:120px" }, ...plan.synthesis_prompts.map((q) => el("li", {}, q))));
+      el("ul", { style: "color:var(--ink-2);line-height:1.7;padding-left:60px" }, ...plan.synthesis_prompts.map((q) => el("li", {}, q))));
   }
   openModal(plan.title || "Reading plan", body, "sheet");
 }
@@ -1638,10 +1638,10 @@ async function renderSpecsPanel() {
 }
 
 function specUploader() {
-  const card = el("div", { class: "card panel", style: "padding:132px" });
+  const card = el("div", { class: "card panel", style: "padding:66px" });
   const drop = el("div", { class: "dropzone" },
     el("div", { class: "emoji" }, "✦"),
-    el("p", { style: "margin:48px 0 24px;font-weight:600" }, "Drop a PDF, Word, Markdown, or text file"),
+    el("p", { style: "margin:24px 0 12px;font-weight:600" }, "Drop a PDF, Word, Markdown, or text file"),
     el("p", { class: "muted", style: "margin:0;font-size:.84rem" }, ".pdf · .doc · .docx · .md · .txt — or paste below"),
     el("input", { type: "file", id: "spec-file", accept: ".pdf,.doc,.docx,.md,.txt,.markdown", style: "display:none" }));
   drop.addEventListener("click", () => $("#spec-file", drop).click());
@@ -1695,11 +1695,11 @@ function specStatusPill(s) {
 function specRow(s) {
   return el("div", { class: "row-item" },
     el("div", { style: "flex:1;cursor:pointer", onclick: () => openSpec(s.id) },
-      el("div", { class: "spread", style: "justify-content:flex-start;gap:60px" },
+      el("div", { class: "spread", style: "justify-content:flex-start;gap:30px" },
         el("h4", {}, s.title),
         specStatusPill(s)),
-      el("div", { class: "muted", style: "margin-top:18px" }, esc(s.preview).slice(0, 120) + "…")),
-    el("div", { style: "display:flex;gap:48px" },
+      el("div", { class: "muted", style: "margin-top:9px" }, esc(s.preview).slice(0, 120) + "…")),
+    el("div", { style: "display:flex;gap:24px" },
       el("button", { class: "btn btn-primary btn-sm", onclick: () => confirmAnalyzeSpec(s.id) }, s.status === "analyzed" ? "Re-screen library" : "Find in library"),
       el("button", { class: "btn btn-ghost btn-sm btn-danger", onclick: () => deleteSpec(s.id) }, "Delete")));
 }
@@ -1787,7 +1787,7 @@ async function loadLibraryMatches() {
         return opt;
       })));
     wrap.append(picker);
-    wrap.append(el("p", { class: "muted", style: "margin:72px 0;font-size:.86rem" },
+    wrap.append(el("p", { class: "muted", style: "margin:36px 0;font-size:.86rem" },
       spec.num_screened
         ? `${results.length} matches of ${spec.num_screened} papers screened in your library`
         : `${results.length} library matches`));
@@ -1795,7 +1795,7 @@ async function loadLibraryMatches() {
       wrap.append(el("p", { class: "muted" }, "No matches in your library. Try Suggested papers to search PubMed."));
       wrap.append(el("button", { type: "button", class: "btn btn-primary mt-2", onclick: () => confirmAnalyzeSpec(pick) }, "Re-screen library"));
     } else {
-      wrap.append(el("div", { class: "spread mt-2", style: "margin-bottom:84px;align-items:center" },
+      wrap.append(el("div", { class: "spread mt-2", style: "margin-bottom:42px;align-items:center" },
         el("p", { class: "muted", style: "margin:0;font-size:.86rem" }, "Build a reading plan from these library papers."),
         el("button", { type: "button", class: "btn btn-primary btn-sm", onclick: () => buildReadingPlanFromSpec(pick) }, "↯ Build reading plan")));
       for (const r of results) wrap.append(relevanceRow(r));
@@ -1832,14 +1832,14 @@ async function loadSpecDiscoveries() {
         if (s.id === pick) opt.selected = true;
         return opt;
       }))));
-    wrap.append(el("div", { class: "spread mt-2", style: "margin:72px 0;align-items:center" },
+    wrap.append(el("div", { class: "spread mt-2", style: "margin:36px 0;align-items:center" },
       el("p", { class: "muted", style: "margin:0;font-size:.86rem" },
         results.length
           ? `${results.length} relevant PubMed hit${results.length === 1 ? "" : "s"} (up to 5)`
           : "Up to 5 relevant PubMed papers not already in your library"),
       el("button", { type: "button", class: "btn btn-primary btn-sm", onclick: () => runDiscoverSpec(pick) }, "✦ Discover new papers")));
     if (!results.length) {
-      wrap.append(el("p", { class: "muted", style: "margin-top:48px" },
+      wrap.append(el("p", { class: "muted", style: "margin-top:24px" },
         "Queries PubMed from your spec and project categories, ranks by keyword overlap, and keeps only strong fits (max 5)."));
     } else {
       for (const r of results) wrap.append(discoveryRow(r));
@@ -1948,7 +1948,7 @@ function progressBlock(initial, bootstrap) {
   const fill = el("div", { class: "progress-fill" });
   const msg = el("span", {}, initial);
   const pct = el("span", { class: "muted" }, "");
-  const node = el("div", { class: "progress card", style: "padding:96px" },
+  const node = el("div", { class: "progress card", style: "padding:48px" },
     el("div", { class: "progress-bar" }, fill),
     el("div", { class: "progress-msg" }, msg, pct));
   const api = {
