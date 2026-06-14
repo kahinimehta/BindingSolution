@@ -522,7 +522,7 @@ a { color: inherit; text-decoration: none; }
 .grid { display: grid; gap: 54px; }
 .grid-projects {
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: clamp(0.85rem, 1vw, 1.25rem);
+  gap: clamp(0.65rem, 0.85vw, 1rem);
 }
 
 .card {
