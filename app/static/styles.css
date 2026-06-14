@@ -39,11 +39,11 @@
   --font-body: "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
   --app-max: 100%;
   --shell-max: 100%;
-  --content-x: clamp(0.55rem, 0.75vw, 1rem);
+  --content-x: clamp(0.4rem, 0.58vw, 0.75rem);
   /* Responsive UI scale: 3× on large desktops, eased on laptop viewports */
   --type-base: clamp(18px, 13px + 0.42vw, 22px);
   --ui-scale: 2.5;
-  --rail-w: clamp(280px, 30vw, 600px);
+  --rail-w: clamp(300px, 32vw, 640px);
   --rail-type-scale: 0.75;
   --icon-sm: 0.52rem;
   --icon-md: 0.67rem;
@@ -73,7 +73,7 @@ html, body {
 @media (min-width: 1800px) {
   :root {
     --ui-scale: 3;
-    --rail-w: 720px;
+    --rail-w: 780px;
     --type-base: clamp(18px, 14px + 0.38vw, 22px);
   }
 }
@@ -118,7 +118,7 @@ a { color: inherit; text-decoration: none; }
 /* ── sidebar (same rem scale as main content) ───────────────── */
 .rail {
   display: flex; flex-direction: column;
-  padding: 0.85rem 0.9rem 0.75rem;
+  padding: 0.9rem 1rem 0.8rem;
   background: linear-gradient(165deg, var(--bind-green) 0%, #183a2d 55%, var(--bind-green-2) 100%);
   color: #eef3ee;
   position: sticky; top: 0; height: 100vh;
@@ -334,7 +334,7 @@ a { color: inherit; text-decoration: none; }
 .hero-bar {
   background: linear-gradient(135deg, var(--bind-green) 0%, #254f3f 50%, var(--bind-green-2) 100%);
   color: #fff;
-  padding: 0.7rem var(--content-x) 0.65rem;
+  padding: 0.62rem var(--content-x) 0.58rem;
   box-shadow: 0 12px 60px rgba(31,70,54,.2);
   border-bottom: 3px solid rgba(202,161,74,.22);
 }
@@ -474,7 +474,7 @@ a { color: inherit; text-decoration: none; }
   flex: 1 1 auto;
   display: flex;
   justify-content: flex-start;
-  padding: 0.3rem var(--content-x) 0.95rem;
+  padding: 0.25rem var(--content-x) 0.8rem;
   min-height: 0;
 }
 .view {
@@ -546,7 +546,7 @@ a { color: inherit; text-decoration: none; }
 .grid { display: grid; gap: 54px; }
 .grid-projects {
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: clamp(0.65rem, 0.85vw, 1rem);
+  gap: clamp(0.5rem, 0.7vw, 0.85rem);
 }
 
 .card {
@@ -554,7 +554,7 @@ a { color: inherit; text-decoration: none; }
   border: 3px solid var(--line);
   border-radius: var(--radius);
   box-shadow: var(--shadow-card);
-  padding: 60px;
+  padding: 48px;
   transition: transform .18s ease, box-shadow .18s ease, border-color .18s;
   position: relative; overflow: hidden;
 }
