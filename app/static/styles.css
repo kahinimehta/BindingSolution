@@ -118,7 +118,7 @@ a { color: inherit; text-decoration: none; }
 /* ── sidebar (same rem scale as main content) ───────────────── */
 .rail {
   display: flex; flex-direction: column;
-  padding: 0.9rem 1rem 0.8rem;
+  padding: 0.75rem 1rem 0.8rem;
   background: linear-gradient(165deg, var(--bind-green) 0%, #183a2d 55%, var(--bind-green-2) 100%);
   color: #eef3ee;
   position: sticky; top: 0; height: 100vh;
@@ -130,7 +130,7 @@ a { color: inherit; text-decoration: none; }
 
 .brand {
   display: flex; flex-direction: row; align-items: center; gap: 0.6rem;
-  padding: 0.45rem 0.25rem 0.75rem 0.15rem;
+  padding: 0.15rem 0.25rem 0.75rem 0.15rem;
   margin: 0;
   border-bottom: 2px solid rgba(255,255,255,.08);
   margin-bottom: 0.65rem;
