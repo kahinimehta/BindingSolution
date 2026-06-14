@@ -764,7 +764,7 @@ a { color: inherit; text-decoration: none; }
   box-shadow: 0 0 0 3px rgba(31,70,54,.12);
 }
 .chat-send {
-  width: var(--icon-md); height: var(--icon-md); padding: 0;
+  width: calc(var(--icon-md) * 2); height: calc(var(--icon-md) * 2); padding: 0;
   border: none; border-radius: 50%;
   appearance: none;
   background: var(--bind-green); color: #eef3ee;
@@ -776,8 +776,8 @@ a { color: inherit; text-decoration: none; }
 }
 .chat-send svg {
   display: block;
-  width: 18px;
-  height: 18px;
+  width: 36px;
+  height: 36px;
   pointer-events: none;
 }
 .chat-send:hover:not(:disabled) {
