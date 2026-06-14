@@ -12,15 +12,37 @@
 
 ## Quick start
 
+### macOS / Linux
+
 ```bash
 git clone https://github.com/kahinimehta/bindingsolution.git
 cd bindingsolution
 make setup && make run    # → http://127.0.0.1:8765
 ```
 
+### Windows
+
+**Option A — WSL (recommended):** Install [WSL](https://learn.microsoft.com/en-us/windows/wsl/install), open an Ubuntu terminal, then use the macOS / Linux steps above.
+
+**Option B — native PowerShell:** Requires [Python 3.10+](https://www.python.org/downloads/windows/) (check **Add python.exe to PATH** during install) and [Git for Windows](https://git-scm.com/download/win).
+
+```powershell
+git clone https://github.com/kahinimehta/bindingsolution.git
+cd bindingsolution
+py -3 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+pip install -r requirements-zotero.txt   # optional; skip if it fails
+copy .env.example .env
+python -m app                            # → http://127.0.0.1:8765
+```
+
+If PowerShell blocks `Activate.ps1`, run `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` once, then retry. Local Zotero sync on Windows needs Zotero 7 running with its local API enabled — see [docs/CONFIGURATION.md](docs/CONFIGURATION.md).
+
 Add `ANTHROPIC_API_KEY`, `ZOTERO_LIBRARY_ID`, and `ZOTERO_API_KEY` to the gitignored `.env` from setup — see [docs/CONFIGURATION.md](docs/CONFIGURATION.md).
 
-**No keys?** `make run` → **Load demo library** (heuristic “demo AI”, full UI).
+**No keys?** Start the server → **Load demo library** (heuristic “demo AI”, full UI).
 
 ## Features
 
