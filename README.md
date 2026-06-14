@@ -82,7 +82,7 @@ A general-purpose assistant can answer questions, but it does not know your shel
 - **Metadata, not PDFs** — Claude sees titles, tags, and saved analyses from your local store, not re-uploaded full text.
 - **Paper groups** — non-overlapping sets across projects; ≥90% of papers grouped when possible; balanced set sizes (not uniform chunks).
 - **Reading schedules** — planning hints at ~12 pages/hour, 2 h/day medium pace ([detail](docs/USAGE.md#reading-time-assumptions)).
-- **Display** — large-type layout for ultrawide / high-DPI monitors ([detail](docs/CONFIGURATION.md#display)).
+- **Display** — responsive layout centered on wide monitors ([detail](docs/CONFIGURATION.md#display)).
 
 After `git pull`, restart the server (`Ctrl+C`, then `make run`) so new routes load.
 

@@ -27,20 +27,19 @@ human-readable JSON store, no build step) over scale.
 ## Frontend layout
 
 The SPA (`app/static/`) is a hash router with **six views** (Library, Connections,
-Groups, Spec, Strategies, Chat). CSS centers the whole shell (`max-width: 19200px`
+Groups, Spec, Strategies, Chat). CSS centers the whole shell (`max-width: 6400px`
 via `--app-max`, `margin: 0 auto`) so the green sidebar and main pane move
-together on ultrawide monitors. The sidebar (`--rail-w: 864px`) holds navigation
+together on ultrawide monitors. The sidebar (`--rail-w: 288px`) holds navigation
 and status chips; the **BindingSolution** brand is inset from the divider
 (extra right margin on `.brand`) so it does not crowd the main pane. **Sync
 library** / **Purge library** and per-view actions sit in the hero toolbar. Main
 content fills the remaining width without a separate max-width offset (no
 sidebar/content gap on large displays).
 
-Typography and layout spacing are scaled **3×** from a conventional baseline:
-`html` root font-size clamps to roughly **54–66px** (viewport-responsive), and
-structural `px` values (padding, grid min widths, modal sizes) scale with it so
-text does not clip inside cards or the sidebar. Project cards expand to full
-height instead of using an inner scroll region. Display headings use
+Typography and layout spacing use a viewport-responsive root `font-size`
+(`html` clamps to roughly **18–22px**) so the UI stays readable on wide
+monitors without clipping inside cards or the sidebar. Project cards expand to
+full height instead of using an inner scroll region. Display headings use
 **Montserrat** (`--font-display`); UI body copy uses **Hanken Grotesk**
 (`--font-body`), loaded from Google Fonts in `index.html`.
 
