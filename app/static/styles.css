@@ -862,7 +862,7 @@ a { color: inherit; text-decoration: none; }
   border-color: var(--bind-green); background: #eef4f0;
   box-shadow: inset 0 0 0 3px var(--bind-green), 0 6px 24px rgba(31,70,54,.08);
 }
-.choice input { accent-color: var(--bind-green); width: 18px; height: 18px; flex-shrink: 0; }
+.choice input { accent-color: var(--bind-green); width: 54px; height: 54px; flex-shrink: 0; }
 .choice .c-name { font-weight: 600; font-size: .84rem; line-height: 1.25; }
 .choice .c-sub { font-size: .72rem; color: var(--ink-3); margin-top: 6px; }
 
