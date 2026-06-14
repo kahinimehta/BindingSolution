@@ -851,7 +851,8 @@ async function renderLibrary() {
           el("h2", {}, "Excluded collections"),
           el("p", {}, "Empty folders, single-paper collections, and unfiled papers — shown for reference only, not used in analysis."))),
       el("div", { class: "scroll-panel scroll-panel--library" },
-        el("div", { class: "grid grid-projects grid-inactive" }, ...inactive.map((p) => projectCard(p, true))));
+        el("div", { class: "grid grid-projects grid-inactive" }, ...inactive.map((p) => projectCard(p, true))))
+    );
   }
   view().replaceChildren(...parts);
 }
