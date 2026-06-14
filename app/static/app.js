@@ -1033,9 +1033,9 @@ function projName(key) { return state.projects.find((p) => p.key === key)?.name 
 
 function renderConnectionMap(c) {
   const root = el("div", {});
-  root.append(el("div", { class: "card panel view-hero", style: "padding:66px;margin-bottom:66px;border-left-width:12px" },
+  root.append(el("div", { class: "card panel view-hero", style: "padding:49.5px;margin-bottom:49.5px;border-left-width:9px" },
     c._mock ? el("span", { class: "mock-note", style: "margin-bottom:30px" }, "demo AI — connect a Claude key for real analysis") : null,
-    el("p", { class: "lead", style: "margin:0;font-size:1.02rem" }, c.overview)));
+    el("p", { class: "lead", style: "margin:0;font-size:0.765rem" }, c.overview)));
 
   const scroll = el("div", { class: "scroll-panel scroll-panel--connections" });
 
@@ -1314,9 +1314,9 @@ const dropKindLabel = {
 
 function renderPaperGroups(g) {
   const root = el("div", {});
-  root.append(el("div", { class: "card panel view-hero", style: "padding:66px;margin-bottom:66px;border-left-width:12px" },
+  root.append(el("div", { class: "card panel view-hero", style: "padding:49.5px;margin-bottom:49.5px;border-left-width:9px" },
     state.status?.using_mock_llm ? el("span", { class: "mock-note", style: "margin-bottom:30px" }, "demo AI — connect a Claude key for real analysis") : null,
-    el("p", { class: "lead", style: "margin:0;font-size:1.02rem" }, g.overview)));
+    el("p", { class: "lead", style: "margin:0;font-size:0.765rem" }, g.overview)));
 
   const stats = g.stats || {};
   const unique = stats.unique_papers ?? stats.shelf_papers ?? stats.total_papers ?? 0;

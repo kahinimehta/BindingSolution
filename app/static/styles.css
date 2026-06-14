@@ -399,7 +399,11 @@ a { color: inherit; text-decoration: none; }
   box-shadow: 0 6px 30px rgba(179,137,47,.4);
 }
 .hero-actions .btn-primary:hover { filter: brightness(1.05); }
-.hero-actions .btn-brass { box-shadow: 0 6px 30px rgba(179,137,47,.35); }
+.hero-actions .btn-sm {
+  padding: 13.5px 27px;
+  font-size: .615rem;
+  border-radius: 18px;
+}
 
 /* ── KPI strip ──────────────────────────────────────────────── */
 .content-column {
@@ -499,32 +503,32 @@ a { color: inherit; text-decoration: none; }
 
 /* ── view hero panels ───────────────────────────────────────── */
 .view-hero {
-  border-left: 12px solid var(--brass);
+  border-left: 9px solid var(--brass);
   background: linear-gradient(90deg, #f6edd6 0%, var(--surface) 18%);
   border: 3px solid var(--line);
-  border-left-width: 12px;
+  border-left-width: 9px;
   border-radius: var(--radius);
-  padding: 0.75rem 1rem 0.85rem;
-  margin-bottom: 0.65rem;
+  padding: 0.5625rem 0.75rem 0.6375rem;
+  margin-bottom: 0.4875rem;
   box-shadow: var(--shadow);
 }
 .view-hero h2 {
   font-family: var(--font-display);
-  font-size: 1.15rem; font-weight: 600;
-  margin: 0 0 18px;
+  font-size: 0.8625rem; font-weight: 600;
+  margin: 0 0 13.5px;
 }
 .view-hero p {
   margin: 0;
   color: var(--ink-2);
-  font-size: .9rem;
+  font-size: .675rem;
   line-height: 1.6;
   max-width: 62ch;
 }
 
 .section-label {
-  font-size: .65rem; font-weight: 700;
+  font-size: .4875rem; font-weight: 700;
   letter-spacing: .1em; text-transform: uppercase;
-  color: var(--ink-3); margin-bottom: 30px;
+  color: var(--ink-3); margin-bottom: 22.5px;
 }
 
 /* ── cards / grid ───────────────────────────────────────────── */
@@ -709,8 +713,10 @@ a { color: inherit; text-decoration: none; }
   padding: 12px 9px 12px 0;
 }
 .chat-welcome {
-  align-self: center; max-width: 52ch; line-height: 1.65; padding: 24px 30px;
-  border-radius: 21px; background: var(--surface-2); border: 3px dashed var(--line);
+  align-self: center; max-width: 52ch; line-height: 1.65;
+  font-size: 0.75em;
+  padding: 18px 22.5px;
+  border-radius: 15.75px; background: var(--surface-2); border: 3px dashed var(--line);
 }
 .chat-msg {
   max-width: min(94%, 100%); padding: 18px 24px;
@@ -747,17 +753,17 @@ a { color: inherit; text-decoration: none; }
   background: rgba(31, 70, 54, .08);
 }
 .chat-msg.user .chat-msg-body code { background: rgba(255, 255, 255, .16); }
-.chat-compose { display: flex; flex-direction: column; gap: 9px; }
+.chat-compose { display: flex; flex-direction: column; gap: 6.75px; }
 .chat-compose-box { position: relative; }
 .chat-compose-foot {
   display: flex; align-items: center; justify-content: space-between;
   gap: 15px; padding: 0 3px;
 }
 .chat-input {
-  width: 100%; resize: vertical; min-height: 96px;
-  padding: 21px 24px; border-radius: 18px;
+  width: 100%; resize: vertical; min-height: 72px;
+  padding: 15.75px 18px; border-radius: 13.5px;
   border: 3px solid var(--rule); background: #fff;
-  font: inherit; font-size: .92rem; line-height: 1.5;
+  font: inherit; font-size: .69rem; line-height: 1.5;
 }
 .chat-input:focus {
   outline: none; border-color: var(--bind-green);
@@ -786,7 +792,7 @@ a { color: inherit; text-decoration: none; }
 }
 .chat-send:active:not(:disabled) { transform: scale(0.96); }
 .chat-send:disabled { opacity: .38; cursor: not-allowed; }
-.chat-hint { font-size: .78rem; }
+.chat-hint { font-size: .585rem; }
 
 /* ── connections map ────────────────────────────────────────── */
 .thread {
