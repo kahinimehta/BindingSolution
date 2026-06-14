@@ -1041,7 +1041,7 @@ function renderConnectionMap(c) {
         el("div", {}, el("div", { class: "thread-label" }, t.label), el("div", { class: "thread-kind" }, t.kind)),
         el("div", { class: "links" }, ...t.project_keys.map((k) => el("span", { class: "pill green" }, projName(k)))),
         el("span", { class: `strength ${t.strength}` }, t.strength)));
-      if (t.explanation) root.lastChild.after(el("p", { class: "muted", style: "font-size:.83rem;margin:-12px 0 12px 2px" }, t.explanation));
+      if (t.explanation) root.lastChild.after(el("p", { class: "muted", style: "font-size:.83rem;margin:-4px 0 12px 2px" }, t.explanation));
     }
   }
 
@@ -1325,13 +1325,13 @@ function renderPaperGroups(g) {
     if (accounted === unique) {
       summaryKids.push(el("span", { class: "pill green", style: "margin-left:8px" }, "All accounted for"));
     }
-    root.append(el("div", { class: "shelf-accounting muted", style: "margin:-24px 0 18px;font-size:.86rem;display:flex;flex-wrap:wrap;align-items:center;gap:4px" },
+    root.append(el("div", { class: "shelf-accounting muted", style: "margin:-8px 0 18px;font-size:.86rem;display:flex;flex-wrap:wrap;align-items:center;gap:4px" },
       ...summaryKids));
   }
 
   if (g.groups?.length) {
     root.append(el("h3", { style: "font-family:var(--font-display);margin:6px 0 12px" }, "Optimal paper sets"));
-    root.append(el("p", { class: "muted", style: "margin:-18px 0 14px;font-size:.88rem" },
+    root.append(el("p", { class: "muted", style: "margin:-6px 0 14px;font-size:.88rem" },
       "Thematic sets may span collections. Each paper is in at most one set."));
     for (const grp of g.groups) {
       const n = grp.num_papers ?? grp.paper_keys?.length ?? grp.papers?.length ?? 0;
@@ -1357,7 +1357,7 @@ function renderPaperGroups(g) {
 
   if (g.ungrouped?.length) {
     root.append(el("h3", { style: "font-family:var(--font-display);margin:22px 0 12px" }, "Standalone papers"));
-    root.append(el("p", { class: "muted", style: "margin:-18px 0 14px;font-size:.88rem" },
+    root.append(el("p", { class: "muted", style: "margin:-6px 0 14px;font-size:.88rem" },
       `Not in a thematic set — includes loose active papers, single-paper collections, and unfiled library items.`));
     const solo = el("div", { class: "card spine cluster" });
     const list = el("div", { class: "group-paper-lines" });
@@ -1377,7 +1377,7 @@ function renderPaperGroups(g) {
 
   if (g.drops?.length) {
     root.append(el("h3", { style: "font-family:var(--font-display);margin:22px 0 12px" }, "Suggested drops"));
-    root.append(el("p", { class: "muted", style: "margin:-18px 0 14px;font-size:.88rem" },
+    root.append(el("p", { class: "muted", style: "margin:-6px 0 14px;font-size:.88rem" },
       "Consider removing or archiving these in Zotero — duplicates, weak fits, or redundant entries."));
     for (const d of g.drops) {
       root.append(el("div", { class: "relevance-row relevance-row--suggest" },
