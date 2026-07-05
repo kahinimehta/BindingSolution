@@ -30,11 +30,27 @@ fi
 step "Python $PYVER"
 
 # 2. Virtualenv --------------------------------------------------------
+venv_ok() {
+  [ -x .venv/bin/python ] && .venv/bin/python -c "import pip" >/dev/null 2>&1
+}
+
+if [ -d .venv ] && ! venv_ok; then
+  step "Removing broken virtualenv (.venv)"
+  rm -rf .venv
+fi
+
 if [ ! -d .venv ]; then
   step "Creating virtualenv (.venv)"
   "$PYTHON" -m venv .venv
 else
   step "Virtualenv already exists (.venv)"
+fi
+
+if ! venv_ok; then
+  say "${yellow}Could not create a working .venv.${reset}"
+  say "On macOS with Homebrew Python, you may need: brew install python@3.12"
+  say "On Debian/Ubuntu: sudo apt install python3-venv"
+  exit 1
 fi
 
 # 3. Dependencies ------------------------------------------------------
